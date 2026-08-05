@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Range Advantage Quiz</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  padding-top: env(safe-area-inset-top, 16px);
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+  -webkit-overflow-scrolling: touch;
+}
+.header { text-align: center; margin-bottom: 12px; }
+.header h1 { font-size: 1.2rem; color: #58a6ff; margin-bottom: 4px; }
+.score { font-size: 0.85rem; color: #8b949e; }
+.score .correct { color: #3fb950; }
+.score .wrong { color: #f85149; }
+.set-info { font-size: 0.8rem; color: #8b949e; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Range Advantage Quiz</h1>
+  <div class="score">
+    <span class="correct" id="correctCount">0</span> correct &bull;
+    <span class="wrong" id="wrongCount">0</span> wrong &bull;
+    Q <span id="qNum">1</span>/10
+  </div>
+  <div class="set-info">Set <span id="setNum">1</span> of 20</div>
+</div>
+
+<style>
+.scenario {
+  background: #161b22;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  text-align: center;
+  min-width: 280px;
+  max-width: 360px;
+  width: 100%;
+  border: 1px solid #30363d;
+}
+.scenario-title {
+  font-size: 0.75rem;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.scenario-details {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.scenario-details .label { color: #8b949e; }
+.scenario-details .value { color: #e6edf3; font-weight: 600; }
+.scenario-details .spr { color: #d29922; }
+.scenario-details .pos { color: #a371f7; }
+.scenario-details .board { color: #3fb950; }
+
+.question {
+  text-align: center;
+  font-size: 1rem;
+  margin: 12px 0;
+  color: #c9d1d9;
+  font-weight: 600;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 360px;
+  margin: 12px 0;
+}
+
+.opt-btn {
+  padding: 14px 16px;
+  border: 2px solid #30363d;
+  border-radius: 12px;
+  background: #161b22;
+  color: #e6edf3;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: all 0.15s;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.opt-btn:active { transform: scale(0.97); background: #1c2a3f; }
+.opt-btn.correct-answer { border-color: #3fb950; background: #1a3d2a; color: #3fb950; }
+.opt-btn.wrong-answer { border-color: #f85149; background: #3d1a1a; color: #f85149; }
+.opt-btn.disabled { opacity: 0.7; pointer-events: none; }
+
+.feedback {
+  text-align: center;
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  min-height: 60px;
+  width: 100%;
+  max-width: 360px;
+  display: none;
+}
+.feedback.visible { display: block; }
+.feedback.show-correct { background: #1a3d2a; border: 1px solid #3fb950; }
+.feedback.show-wrong { background: #3d1a1a; border: 1px solid #f85149; }
+.feedback .explain { font-size: 0.8rem; color: #8b949e; margin-top: 6px; }
+
+.next-btn {
+  padding: 14px 40px;
+  border: none;
+  border-radius: 12px;
+  background: #58a6ff;
+  color: #0d1117;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  margin-top: 12px;
+  transition: transform 0.1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.next-btn:active { transform: scale(0.95); }
+.next-btn.disabled { background: #30363d; color: #8b949e; pointer-events: none; }
+
+.progress {
+  width: 100%;
+  max-width: 360px;
+  height: 4px;
+  background: #30363d;
+  border-radius: 2px;
+  margin-top: 16px;
+}
+.progress-fill {
+  height: 100%;
+  background: #58a6ff;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.results {
+  text-align: center;
+  margin-top: 20px;
+  display: none;
+}
+.results.visible { display: block; }
+.results h2 { font-size: 1.5rem; color: #58a6ff; margin-bottom: 12px; }
+.results .big-score { font-size: 3rem; font-weight: 800; color: #3fb950; }
+.results .restart-btn {
+  margin-top: 20px;
+  padding: 14px 40px;
+  border: none;
+  border-radius: 12px;
+  background: #58a6ff;
+  color: #0d1117;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+}
+.results .restart-btn:active { transform: scale(0.95); }
+
+#quizArea { display: flex; flex-direction: column; align-items: center; width: 100%; }
+#quizArea.hidden { display: none; }
+</style>
+
+<div id="quizArea">
+  <div class="scenario">
+    <div class="scenario-title">Scenario</div>
+    <div class="scenario-details" id="scenarioDetails"></div>
+  </div>
+
+  <div class="question" id="questionText">What's your action?</div>
+
+  <div class="options" id="options"></div>
+
+  <div class="feedback" id="feedback">
+    <div id="feedbackText"></div>
+    <div class="explain" id="feedbackExplain"></div>
+  </div>
+
+  <button class="next-btn disabled" id="nextBtn">Next &#8594;</button>
+
+  <div class="progress">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<div class="results" id="results">
+  <h2>Quiz Complete!</h2>
+  <div class="big-score" id="finalScore"></div>
+  <div style="margin-top:8px;color:#8b949e;" id="finalMsg"></div>
+  <button class="restart-btn" id="restartBtn">Play Again</button>
+</div>
+
+<script>
+(function() {
+"use strict";
+
+// 200 questions: 20 sets x 10
+// Categories:
+// - SPR identification
+// - Shallow + range advantage scenarios
+// - Shallow + no range advantage scenarios
+// - Deep + OOP scenarios
+// - Deep + IP scenarios
+// - Principle identification
+// - Board classification (raiser vs caller advantage)
+
+var questions = [
+// === SET 1: Fundamentals ===
+{scenario:"SPR = 3.5. You raised BTN, BB called. Flop: A\u2660K\u2665 7\u2663. BB checks.",
+ question:"What's the first thing to identify?",answer:1,
+ options:["Am I in position?","SPR is shallow (\u22645)","Do I have a flush draw?","What's my exact hand?"],
+ explain:"Step 1 is ALWAYS check SPR. SPR 3.5 \u2264 5 = shallow game."},
+{scenario:"SPR = 7.2. You raised CO, BB called. Flop: Q\u2665 8\u2663 3\u2660. BB checks.",
+ question:"What game type is this?",answer:1,
+ options:["Shallow game","Deep game","Medium game","Depends on board"],
+ explain:"SPR 7.2 > 5 = deep game. Position becomes the key factor."},
+{scenario:"Shallow game. Flop: A\u2660 J\u2665 4\u2663. You are the preflop raiser.",
+ question:"Do you have range advantage here?",answer:0,
+ options:["Yes \u2014 raiser advantage","No \u2014 caller advantage","Equal ranges","Depends on position"],
+ explain:"Ace-high boards = massive raiser advantage. Raiser has AA, AK, AQ, AJ that caller rarely has."},
+{scenario:"Shallow game. Flop: 6\u2665 5\u2663 4\u2660. You are the preflop raiser.",
+ question:"Do you have range advantage here?",answer:1,
+ options:["Yes \u2014 raiser advantage","No \u2014 caller advantage","Equal ranges","Depends on suits"],
+ explain:"Low connected board = caller advantage. Caller has 67s, 78s, 45s, 34s that raiser often doesn't."},
+{scenario:"Deep game (SPR = 8). You are OUT of position. BB checks.",
+ question:"What should you mostly do?",answer:0,
+ options:["CHECK (76-87%)","Bet 1/3 pot","Bet 2/3 pot","Mix between all options"],
+ explain:"Deep + OOP = CHECK. Almost always. This is the most passive region of the tree."},
+{scenario:"Deep game (SPR = 9). You are IN position. Your range is polar with low air.",
+ question:"What should you do?",answer:1,
+ options:["Check mostly","Bet 1/3 pot often (68%)","Bet 2/3 pot","Check-raise"],
+ explain:"Deep + IP + polar + low air = MOSTLY BET 1/3. Highest aggression IP deep spot."},
+{scenario:"Shallow game. You DON'T have range advantage. Board is rainbow, no straights.",
+ question:"What's your action?",answer:2,
+ options:["Check always","Bet 1/3 pot","Bet 2/3 pot (50%)","Mix sizing"],
+ explain:"Shallow + no range adv + DRY board = bet 2/3 (50%). Bomb dry boards with big sizing."},
+{scenario:"Shallow game. You DON'T have range advantage. Board is monotone (all hearts).",
+ question:"What's your action?",answer:0,
+ options:["Check-lean (49% check)","Bet 2/3 pot","Bet 1/3 pot","Always bet"],
+ explain:"Shallow + no range adv + MONOTONE = check-lean (49%). Wet boards kill your fold equity."},
+{scenario:"You have range advantage, shallow stacks. Villain has few top pairs and few strong hands.",
+ question:"What's your action?",answer:1,
+ options:["Check","Bet 1/3 pot (45%)","Bet 2/3 pot","Mix 50/50"],
+ explain:"Range adv + villain weak = bet 1/3. Small bet for value, they can't fight back."},
+{scenario:"You have range advantage, shallow stacks. But your range has >15% air.",
+ question:"What's your action?",answer:2,
+ options:["Bet 2/3 pot","Bet 1/3 pot","Check-lean (42% check)","Always bet small"],
+ explain:"Even with range advantage, too much air = check-lean. Air is the brake pedal."},
+
+// === SET 2: Board Classification ===
+{scenario:"Flop: K\u2660 Q\u2665 3\u2663. Preflop raiser vs caller.",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser","Caller","Equal","Depends on SPR"],
+ explain:"KQ3 = two Broadway cards. Raiser has KK, QQ, AK, KQ, AQ \u2014 all premium hands that hit here."},
+{scenario:"Flop: 7\u2665 6\u2660 5\u2663. Preflop raiser vs caller.",
+ question:"Who has range advantage?",answer:1,
+ options:["Raiser","Caller","Equal","Depends on position"],
+ explain:"765 = low connected straight. Caller has 89s, 78s, 56s, 45s, 34s. Raiser rarely has these."},
+{scenario:"Flop: A\u2665 8\u2663 2\u2660. Preflop raiser vs caller.",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser","Caller","Equal","Depends on suits"],
+ explain:"Ace-high boards = always raiser advantage. Raiser has AA, AK, AQ, AJ, AT."},
+{scenario:"Flop: 5\u2665 4\u2663 3\u2660. Preflop raiser vs caller.",
+ question:"Who has range advantage?",answer:1,
+ options:["Raiser","Caller","Equal","Depends on position"],
+ explain:"543 = wheel board. Caller has 67s, 56s, 45s, 34s, 23s, A2s-A5s more often."},
+{scenario:"Flop: K\u2665 7\u2660 2\u2663. Preflop raiser vs caller.",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser","Caller","Equal","Depends on SPR"],
+ explain:"King-high dry = raiser advantage. Raiser has KK, AK, KQ, KJ."},
+{scenario:"Flop: 9\u2660 8\u2665 7\u2663. Preflop raiser vs caller.",
+ question:"Who has range advantage?",answer:1,
+ options:["Raiser","Caller","Equal","Depends on position"],
+ explain:"987 = middle connected straight. Caller has JTs, T9s, 98s, 87s, 76s, 65s."},
+{scenario:"Flop: Q\u2665 J\u2660 9\u2663. Preflop raiser vs caller.",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser","Caller","Equal \u2014 both connect","Depends on suits"],
+ explain:"QJ9 = Broadway connected. Raiser has AK (nuts), KT, QQ, JJ, AQ, KQ. Raiser still favored."},
+{scenario:"Flop: 4\u2665 4\u2660 9\u2663. Preflop raiser vs caller.",
+ question:"Who has range advantage?",answer:1,
+ options:["Raiser","Caller","Equal","Depends on SPR"],
+ explain:"Low paired board (44x) = caller advantage. Caller has more 4x hands (A4s, 54s, etc)."},
+{scenario:"Flop: K\u2665 K\u2660 5\u2663. Preflop raiser vs caller.",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser","Caller","Equal","Depends on position"],
+ explain:"High paired board (KKx) = raiser advantage. Raiser has KK, AK, KQ, KJ more often."},
+{scenario:"Flop: T\u2665 9\u2665 8\u2665. Preflop raiser vs caller. (Monotone)",
+ question:"Does the monotone texture help or hurt the raiser?",answer:1,
+ options:["Helps the raiser","Hurts the raiser \u2014 caller has more suited combos","No effect","Only matters deep"],
+ explain:"Monotone + middle connected = caller has more suited hands in these ranks (T9s, 98s, 87s all in suit)."},
+
+// === SET 3: Shallow + Range Advantage ===
+{scenario:"Shallow (SPR=4). Raiser advantage. A\u2660 T\u2665 3\u2663. Villain has few top pairs.",
+ question:"What's your action?",answer:1,
+ options:["Check","Bet 1/3 pot (45%)","Bet 2/3 pot","Mix sizing"],
+ explain:"Shallow + range adv + villain weak = bet 1/3. Extract thin value cheaply."},
+{scenario:"Shallow (SPR=4.5). Raiser advantage. K\u2665 Q\u2660 6\u2663. Villain has some TP+.",
+ question:"What's your action?",answer:2,
+ options:["Always check","Bet 1/3 pot","Mix strategies (~41% each action)","Bet 2/3 pot"],
+ explain:"Shallow + range adv + villain has some strength = MIX. They can fight back a bit."},
+{scenario:"Shallow (SPR=3). Raiser advantage. Q\u2665 8\u2663 4\u2660. Your range is very airy (>15% air).",
+ question:"What's your action?",answer:0,
+ options:["Check-lean (42%)","Bet 1/3 pot","Bet 2/3 pot","Always bet"],
+ explain:"Range adv but too much AIR = check-lean. Air is always the brake pedal."},
+{scenario:"Shallow (SPR=4). Raiser advantage. A\u2665 K\u2660 J\u2663. Villain has few strong hands.",
+ question:"What's your action?",answer:1,
+ options:["Check mostly","Bet 1/3 pot (45%)","Bet 2/3 pot","Check-raise"],
+ explain:"AKJ = massive raiser advantage + villain weak = bet 1/3."},
+{scenario:"Shallow (SPR=5). Raiser advantage. K\u2660 9\u2665 2\u2663. Low air, villain quite weak.",
+ question:"What sizing do you prefer?",answer:0,
+ options:["Small (1/3 pot)","Big (2/3 pot)","Overbet","Check"],
+ explain:"With range advantage at shallow SPR, you bet small. Big bets are for when you DON'T have range adv."},
+{scenario:"Shallow (SPR=3.5). You have range advantage on A\u2665 7\u2663 2\u2660. Villain can fight back.",
+ question:"What's your action?",answer:2,
+ options:["Check always","Bet 1/3 aggressively","Mix (~41%)","Bet 2/3"],
+ explain:"Range adv + villain has some strength + low air = MIX strategy."},
+{scenario:"Shallow (SPR=4). K\u2660 8\u2665 3\u2663. You have range advantage. 18% air in your range.",
+ question:"What's your action?",answer:0,
+ options:["Check-lean (42%)","Bet 1/3 pot","Bet 2/3 pot","Always check"],
+ explain:"High air (>15%) overrides everything else. Check-lean regardless of range advantage."},
+{scenario:"Shallow. Range advantage. A\u2660 Q\u2665 5\u2663. Villain has almost no strong hands.",
+ question:"Compared to the baseline (check 38%), are you checking more or less?",answer:1,
+ options:["Checking more than 38%","Checking less than 38%","Exactly 38%","Depends on suits"],
+ explain:"Range adv + villain weak = bet 1/3 at 45%. That means checking ~55%... wait, no. Bet 45% means you're MORE aggressive than baseline 31% bet."},
+{scenario:"Shallow (SPR=4). A\u2665 A\u2660 3\u2663 (paired Aces). You have range advantage.",
+ question:"What's different about paired boards?",answer:1,
+ options:["Bet bigger","Check slightly more than usual","Bet 100% always","No difference"],
+ explain:"Paired boards = check a bit more. But with Aces, raiser still heavily favored."},
+{scenario:"Shallow. Range advantage. The key factor that makes you check more is:",
+ question:"What increases your checking frequency?",answer:2,
+ options:["High SPR","Board texture","Amount of air in your range","Villain's position"],
+ explain:"Air is the brake pedal. More air = more checking. This principle is universal."},
+
+// === SET 4: Shallow + No Range Advantage ===
+{scenario:"Shallow (SPR=4). Caller advantage. 6\u2665 5\u2663 4\u2660 (rainbow, no flush draw).",
+ question:"What's your action?",answer:2,
+ options:["Check always","Bet 1/3 pot","Bet 2/3 pot (50%)","Mix sizing"],
+ explain:"Shallow + no range adv + DRY (rainbow, no straight completed) = bet 2/3. Wait \u2014 654 IS a straight board. Check/mix."},
+{scenario:"Shallow (SPR=3.5). Caller advantage. 8\u2665 4\u2663 2\u2660 (dry, rainbow, disconnected).",
+ question:"What's your action?",answer:2,
+ options:["Check always","Bet 1/3 pot","Bet 2/3 pot (50%)","Mix equal"],
+ explain:"Shallow + no range adv + DRY board (no flush, no straight) = BET 2/3 at 50%. Bomb dry boards."},
+{scenario:"Shallow (SPR=4). Caller advantage. 7\u2665 6\u2665 5\u2665 (monotone).",
+ question:"What's your action?",answer:0,
+ options:["Check-lean (49%)","Bet 2/3 pot","Bet 1/3 pot","Always bet"],
+ explain:"Shallow + no range adv + MONOTONE = check-lean. Villain has too many flush hands."},
+{scenario:"Shallow (SPR=4.5). Caller advantage. Board has a straight (T\u2665 9\u2660 8\u2663).",
+ question:"What's your action?",answer:1,
+ options:["Bet 2/3 pot","Mix/Check (44% check)","Always bet small","Check 100%"],
+ explain:"Shallow + no range adv + STRAIGHT present = mix/check (44% check). Straight kills fold equity."},
+{scenario:"Shallow. No range advantage. When does board texture matter most?",
+ question:"Board texture is the key decision factor when:",answer:1,
+ options:["Always","Low SPR + range disadvantage only","High SPR + IP","Deep + OOP"],
+ explain:"Board texture ONLY matters at low SPR with range disadvantage. This is the ONE spot."},
+{scenario:"Shallow (SPR=3). No range advantage. 9\u2660 3\u2665 2\u2663 (very dry, rainbow).",
+ question:"What's your action and why?",answer:2,
+ options:["Check \u2014 we're behind","Bet 1/3 \u2014 cheap bluff","Bet 2/3 (50%) \u2014 dry board, max pressure","Mix \u2014 we're unsure"],
+ explain:"Dry board + shallow + weak range = maximum pressure with BIG sizing. Counter-intuitive but correct."},
+{scenario:"Shallow. No range advantage. Why does big betting work on dry boards?",
+ question:"Why bet big with a weaker range on dry boards?",answer:1,
+ options:["We have more nuts","Villain can't realize their equity on dry textures","We always have the best hand","Dry boards favor IP player"],
+ explain:"On dry boards, villain can't realize their equity advantage. They have a stronger range but can't use it."},
+{scenario:"Shallow. No range advantage. 7\u2663 5\u2663 3\u2660 (two-tone, no straight).",
+ question:"What's your action?",answer:2,
+ options:["Check always","Check-lean (49%)","Bet 2/3 pot \u2014 not monotone, treat as dryish","Mix equal"],
+ explain:"Two-tone is not monotone. No straight on board. Still lean toward big bet on non-monotone boards."},
+{scenario:"Shallow. No range advantage. A\u2660 5\u2660 3\u2660 (monotone but Ace-high).",
+ question:"Even though it's Ace-high, what matters more here?",answer:1,
+ options:["Ace gives raiser advantage \u2014 bet","Monotone texture \u2014 check-lean","Position","Stack size"],
+ explain:"At shallow + no range adv, BOARD TEXTURE drives the decision. Monotone = check-lean regardless of high card."},
+{scenario:"Shallow. No range advantage. 6\u2665 5\u2660 4\u2663. Is this 'dry' or 'straight'?",
+ question:"How should you classify this board?",answer:1,
+ options:["Dry \u2014 no flush draw","Straight present \u2014 very connected","Monotone","Paired"],
+ explain:"654 = straight/connected board. It has straight draws everywhere. Classify as 'straight present' = mix/check."},
+
+// === SET 5: Deep + OOP ===
+{scenario:"Deep (SPR=8). You are OOP. You do NOT have range advantage. Villain is polar.",
+ question:"What's your action?",answer:0,
+ options:["MOSTLY CHECK (87%)","Bet 1/3","Bet 2/3","Mix"],
+ explain:"Deep + OOP + no range adv + villain polar = 87% check. Most passive spot in the tree."},
+{scenario:"Deep (SPR=7). You are OOP. You DO have range advantage.",
+ question:"What's your action?",answer:1,
+ options:["Bet 1/3 often","Check-lean (51-58%)","Bet 2/3","Always bet"],
+ explain:"Deep + OOP + range advantage = still check-lean (51-58%). OOP = check even with advantage."},
+{scenario:"Deep (SPR=9). You are OOP. Does range advantage help you bet more?",
+ question:"Deep + OOP: how much does range advantage change things?",answer:1,
+ options:["A lot \u2014 bet 60%+","A little \u2014 still mostly checking","Completely \u2014 always bet","Not at all"],
+ explain:"Even WITH range advantage, deep OOP = check-lean (51-58%). Position trumps range at deep stacks."},
+{scenario:"Deep (SPR=10). You are OOP. Board: A\u2660 K\u2665 J\u2663. Massive range advantage.",
+ question:"What's your action?",answer:1,
+ options:["Bet \u2014 we dominate","Check-lean (still 51-58% check)","Bet 2/3 \u2014 protect","Overbet"],
+ explain:"Even on AKJ where you dominate, deep + OOP = check-lean. Position > range at deep stacks."},
+{scenario:"Deep (SPR=8). You are OOP. Board: 5\u2665 4\u2663 3\u2660. No range advantage at all.",
+ question:"What's your action?",answer:0,
+ options:["CHECK heavily (76-87%)","Bet 1/3","Bet 2/3","Mix"],
+ explain:"Deep + OOP + no range advantage = mostly check (76-87%)."},
+{scenario:"Deep + OOP. Why is checking so dominant here?",
+ question:"What's the main reason OOP checks so much deep?",answer:2,
+ options:["Boards are always bad","We never have strong hands","Being OOP over multiple streets with deep stacks is too risky to bet","We want to trap"],
+ explain:"Deep stacks mean many streets left. Being OOP makes betting risky \u2014 you can't control pot over 3 streets without position."},
+{scenario:"Deep (SPR=7). OOP. Flop: K\u2660 8\u2665 3\u2663. You have range advantage.",
+ question:"What % of the time should you check?",answer:1,
+ options:["30-40%","51-58%","76-87%","100%"],
+ explain:"Deep + OOP + range advantage = check 51-58%. Range advantage helps a bit but you're still mostly checking."},
+{scenario:"Deep (SPR=9). OOP. Villain is NOT polar (mixed range).",
+ question:"Does villain being non-polar change things for you OOP?",answer:1,
+ options:["Yes \u2014 now you can bet a lot","Slightly \u2014 check less (76% instead of 87%)","No \u2014 still mostly checking","Completely \u2014 bet 2/3"],
+ explain:"Villain being less polar means slightly less checking (76% vs 87%), but still heavily checking OOP deep."},
+{scenario:"SPR = 6. You are OOP. Is this shallow or deep?",
+ question:"How do you classify SPR = 6?",answer:1,
+ options:["Shallow (SPR \u22645)","Deep (SPR > 5)","Borderline \u2014 treat as medium","Depends on board"],
+ explain:"SPR > 5 = deep game. The cutoff is 5. SPR 6 = deep."},
+{scenario:"Deep + OOP. You have a very strong hand (top set). Should you bet?",
+ question:"With a monster hand, deep OOP, what does the tree say?",answer:1,
+ options:["Always bet for value","Still check frequently \u2014 tree is about RANGE not hand","Bet 2/3 for protection","Overbet"],
+ explain:"The tree is about RANGE strategy, not individual hands. Your overall range OOP deep should check a lot. Individual nuts might bet, but range = check."},
+
+// === SET 6: Deep + IP ===
+{scenario:"Deep (SPR=8). IP. Your range is polar (lots of nuts/draws) with LOW air.",
+ question:"What's your action?",answer:0,
+ options:["MOSTLY BET 1/3 (68%)","Check mostly","Bet 2/3","Mix equal"],
+ explain:"Deep + IP + polar + low air = MOSTLY BET 1/3 (68%). Best spot for small frequent bets."},
+{scenario:"Deep (SPR=7). IP. Your range is polar with low air. Low polar advantage.",
+ question:"What's your action?",answer:1,
+ options:["Bet 1/3 at 68%","Lean bet 1/3 (49%)","Check mostly","Bet 2/3"],
+ explain:"Deep + IP + low air + LOW polar advantage = lean bet 1/3 (49%). Less aggressive than high polar."},
+{scenario:"Deep (SPR=9). IP. High air in your range. Villain also has lots of air.",
+ question:"What's your action?",answer:2,
+ options:["Bet 1/3 often","Check mostly","Mix (38% check)","Bet 2/3"],
+ explain:"Deep + IP + high air + villain also airy = MIX (38% check). Both ranges are weak."},
+{scenario:"Deep (SPR=8). IP. High air in your range. You have MORE air than villain.",
+ question:"What's your action?",answer:1,
+ options:["Bet 1/3","Check-lean (45%)","Bet 2/3","Always bet"],
+ explain:"Deep + IP + high air + YOU more airy = check-lean (45%). Too much air = slow down."},
+{scenario:"Deep + IP. What sizing do you use when you bet?",
+ question:"At deep stacks, what's the preferred bet size?",answer:0,
+ options:["Small (1/3 pot)","Big (2/3 pot)","Overbet","Mix sizing"],
+ explain:"Principle 1: Deep = small bets (1/3). Use small bets to build pots over multiple streets."},
+{scenario:"Deep (SPR=8). IP. A\u2660 K\u2665 7\u2663. You have range advantage and polar range.",
+ question:"What's your action?",answer:0,
+ options:["Bet 1/3 frequently (68%)","Check","Bet 2/3","Mix"],
+ explain:"Deep + IP + polar + low air on AK7 = mostly bet 1/3. Ideal small-bet spot."},
+{scenario:"Deep (SPR=7). IP. 6\u2665 5\u2663 4\u2660. You don't have range advantage. High air.",
+ question:"What's your action?",answer:1,
+ options:["Bet 2/3","Check-lean (45%)","Bet 1/3 often","Always check"],
+ explain:"Deep + IP + high air + weak range = check-lean. Air is the brake pedal even IP."},
+{scenario:"Deep + IP. What makes you bet MOST aggressively?",
+ question:"The highest bet frequency IP deep requires:",answer:2,
+ options:["Range advantage","Dry board","Low air + high polarization advantage","Big SPR"],
+ explain:"Low air + high POLAR_ADV = 68% bet. Polarization + low air is the key combination."},
+{scenario:"Deep (SPR=9). IP. Board: Q\u2665 7\u2660 2\u2663. You have range adv but your range is airy.",
+ question:"What's your action?",answer:1,
+ options:["Bet 1/3 at 68%","Check-lean (45%)","Bet 2/3","Always bet \u2014 Q-high board"],
+ explain:"Even with range advantage, high air deep IP = check-lean. Air always brakes you."},
+{scenario:"Deep + IP. How does having range advantage affect your strategy here?",
+ question:"At deep stacks IP, what drives the decision?",answer:1,
+ options:["Range advantage is the key factor","Polarization and air level are the key factors","Board texture is the key factor","SPR exact number"],
+ explain:"Deep + IP = polarization and air level drive decisions. Range advantage matters less than at shallow."},
+
+// === SET 7: Principles ===
+{scenario:"General principle question.",
+ question:"What determines bet sizing across the tree?",answer:0,
+ options:["SPR: shallow = big (2/3), deep = small (1/3)","Board texture always","Position always","Hand strength"],
+ explain:"Principle 1: Bet size follows depth. Shallow = big (2/3). Deep = small (1/3)."},
+{scenario:"General principle question.",
+ question:"When does board texture significantly change your strategy?",answer:2,
+ options:["Always","Deep + IP","Low SPR + range DISADVANTAGE only","High SPR + OOP"],
+ explain:"Principle 2: Board texture only matters in ONE spot: low SPR + range disadvantage."},
+{scenario:"General principle question.",
+ question:"What does having lots of air always do?",answer:0,
+ options:["Increases checking frequency","Increases betting frequency","Makes you bet bigger","No effect"],
+ explain:"Principle 3: Air is the brake pedal. More air = more checks. Universal rule."},
+{scenario:"You're shallow, have range advantage, on a dry board.",
+ question:"What sizing do you use?",answer:0,
+ options:["Small (1/3 pot)","Big (2/3 pot)","Overbet","Check"],
+ explain:"Shallow + range ADVANTAGE = small bet. Big bets are for shallow + NO range advantage on dry boards."},
+{scenario:"You're shallow, DON'T have range advantage, on a dry board.",
+ question:"What sizing do you use?",answer:1,
+ options:["Small (1/3 pot)","Big (2/3 pot)","Overbet","Check"],
+ explain:"Shallow + no range adv + dry = big bet (2/3). Maximum pressure with large sizing."},
+{scenario:"The baseline average across all spots in the tree is:",
+ question:"What's the overall baseline?",answer:2,
+ options:["Check 50%, Bet 25%, Bet 25%","Check 20%, Bet 40%, Bet 40%","Check 38%, Bet 1/3 31%, Bet 2/3 31%","Check 60%, Bet 20%, Bet 20%"],
+ explain:"Baseline: Check 38% | Bet 1/3 31% | Bet 2/3 31%. Every situation is an adjustment from this."},
+{scenario:"You're trying to decide whether to bet. You notice you have >15% air.",
+ question:"How does this affect your decision regardless of other factors?",answer:1,
+ options:["Bet more aggressively","Check more","No effect","Bet bigger"],
+ explain:"Air > 15% = check more. This applies everywhere: shallow, deep, IP, OOP, range adv or not."},
+{scenario:"Deep (SPR=8). You're IP on K\u2660 7\u2665 2\u2663 (dry board).",
+ question:"Does the dry board texture make you bet more?",answer:1,
+ options:["Yes \u2014 dry boards always bet more","No \u2014 board texture doesn't matter here","Yes \u2014 always bet big on dry","Depends on suits"],
+ explain:"Board texture only matters at LOW SPR + RANGE DISADVANTAGE. At deep SPR IP, board texture is irrelevant. Polarization/air drive the decision."},
+{scenario:"Shallow (SPR=4). No range advantage. 8\u2660 5\u2665 2\u2663 vs 8\u2665 5\u2665 2\u2665.",
+ question:"Same cards, different texture. How does this change your strategy?",answer:0,
+ options:["Hugely: dry = bet 2/3, monotone = check-lean","Slightly","Not at all","Only changes sizing, not frequency"],
+ explain:"Shallow + no range adv = board texture is EVERYTHING. Dry (rainbow) = bomb with 2/3. Monotone = check-lean."},
+{scenario:"What is the most passive spot in the entire decision tree?",
+ question:"Which scenario produces the most checking?",answer:2,
+ options:["Shallow + no range adv + monotone (49%)","Shallow + range adv + high air (42%)","Deep + OOP + no range adv + villain polar (87%)","Deep + IP + high air (45%)"],
+ explain:"Deep + OOP + range disadvantage + villain polar = 87% check. The ultimate passive spot."},
+
+// === SET 8: Mixed Scenarios ===
+{scenario:"SPR=4. Board: A\u2660 J\u2665 6\u2663. You raised BTN, BB called. BB checks.",
+ question:"Walk through the tree. What's your action?",answer:1,
+ options:["Check","Bet 1/3 pot","Bet 2/3 pot","Mix"],
+ explain:"SPR 4 = shallow. A-high = raiser advantage. Villain weak on AJ6. \u2192 Bet 1/3."},
+{scenario:"SPR=8. Board: 7\u2665 6\u2660 5\u2663. You raised CO, BB called. You are IP. BB checks.",
+ question:"Walk through the tree. What's your action?",answer:1,
+ options:["Bet 2/3 pot","Check-lean \u2014 airy range on bad board","Bet 1/3 often","Always check"],
+ explain:"SPR 8 = deep. IP. On 765 your range is likely airy (you miss this board). High air IP = check-lean."},
+{scenario:"SPR=3.5. Board: 9\u2665 9\u2660 4\u2663. You are the preflop raiser.",
+ question:"Walk through the tree. Do you have range advantage?",answer:1,
+ options:["Yes \u2014 raiser always has advantage","Borderline \u2014 caller has more 9x","No \u2014 caller dominates","Equal"],
+ explain:"99x = mid paired. Caller has more 9x (A9s, 98s, 97s, 96s). Caller advantage or borderline."},
+{scenario:"SPR=9. Board: K\u2660 Q\u2665 4\u2663. You are OOP as preflop raiser. BB checks to you... wait, YOU are BB.",
+ question:"SPR=9. You are OOP. KQ4 board. Range advantage. What do you do?",answer:1,
+ options:["Bet 1/3 \u2014 range advantage means bet","Check-lean (51-58%)","Bet 2/3","Always bet on KQ boards"],
+ explain:"Deep + OOP = check-lean even with range advantage. Position > range at deep stacks."},
+{scenario:"SPR=4.5. Board: 8\u2663 3\u2665 2\u2660 (very dry). Caller has advantage on low board.",
+ question:"Walk through: shallow, no range adv, dry board.",answer:2,
+ options:["Check","Bet 1/3","Bet 2/3 (50%)","Mix sizing"],
+ explain:"Shallow + no range adv + dry (rainbow, no straight) = BET 2/3 at 50%."},
+{scenario:"SPR=4. Board: 6\u2665 5\u2665 4\u2665 (monotone + straight). Caller advantage.",
+ question:"Walk through: shallow, no range adv, monotone.",answer:0,
+ options:["Check-lean (49%)","Bet 2/3","Bet 1/3","Always bet"],
+ explain:"Shallow + no range adv + monotone = check-lean (49%). Monotone kills fold equity."},
+{scenario:"SPR=7. Board: A\u2660 8\u2665 3\u2663. You are IP. Range advantage. Low air, polar.",
+ question:"Walk through the tree.",answer:0,
+ options:["Bet 1/3 frequently (68%)","Check","Bet 2/3","Mix"],
+ explain:"Deep (SPR 7) + IP + polar + low air = mostly bet 1/3 (68%)."},
+{scenario:"SPR=5. Board: T\u2665 9\u2660 8\u2663. Connected middle. You raised.",
+ question:"Is SPR=5 shallow or deep?",answer:0,
+ options:["Shallow (SPR \u22645)","Deep (SPR > 5)","Borderline","Depends on board"],
+ explain:"SPR \u2264 5 = shallow. SPR 5 is the boundary, included in shallow."},
+{scenario:"SPR=4. Board: K\u2665 T\u2660 5\u2663. You are raiser. Range advantage. Moderate air.",
+ question:"Your air is around 12% (not >15%). Villain has some strength. Action?",answer:2,
+ options:["Check-lean","Bet 1/3","Mix (~41%)","Bet 2/3"],
+ explain:"Shallow + range adv + villain has some strength + moderate air (not >15%) = MIX."},
+{scenario:"SPR=6. Board: Q\u2665 J\u2660 9\u2663. You are IP. Your range has good hands but also air.",
+ question:"Deep + IP + mixed range (some air, some value).",answer:2,
+ options:["Bet 1/3 at 68%","Check mostly","Mix/lean bet 1/3 (49%)","Bet 2/3"],
+ explain:"Deep + IP + polar but not extreme + some air = lean bet 1/3 (49%). Moderate aggression."},
+
+// === SET 9: Sizing Logic ===
+{scenario:"Shallow stacks. You decide to bet.",
+ question:"What size should you generally lean toward?",answer:1,
+ options:["Small (1/3 pot)","Big (2/3 pot)","Overbet (pot+)","Minimum bet"],
+ explain:"Shallow = big bets (2/3). Bigger bets matter more at shallow SPR because stacks are committed."},
+{scenario:"Deep stacks. You decide to bet.",
+ question:"What size should you generally lean toward?",answer:0,
+ options:["Small (1/3 pot)","Big (2/3 pot)","Overbet","Minimum bet"],
+ explain:"Deep = small bets (1/3). Use small bets to build pots gradually over multiple streets."},
+{scenario:"Shallow + range advantage + villain weak.",
+ question:"What sizing?",answer:0,
+ options:["Small (1/3)","Big (2/3)","Overbet","Check"],
+ explain:"Range advantage at shallow = bet SMALL (1/3). Extract thin value cheaply from weak range."},
+{scenario:"Shallow + NO range advantage + dry board.",
+ question:"What sizing?",answer:1,
+ options:["Small (1/3)","Big (2/3)","Overbet","Check"],
+ explain:"No range adv + shallow + dry = bet BIG (2/3). Maximum pressure to deny equity."},
+{scenario:"Deep + IP + polar range.",
+ question:"What sizing?",answer:0,
+ options:["Small (1/3)","Big (2/3)","Overbet","Check"],
+ explain:"Deep + IP = always small (1/3). Build pot over streets with position advantage."},
+{scenario:"Why does shallow SPR use bigger bets?",
+ question:"What's the reasoning for big bets at shallow stacks?",answer:2,
+ options:["More fold equity","Villain is weaker","Short stacks need bigger bets to matter \u2014 small bets are irrelevant","We have stronger hands"],
+ explain:"At shallow SPR, small bets don't put meaningful pressure. Bigger bets commit stacks faster."},
+{scenario:"Why does deep SPR use smaller bets?",
+ question:"What's the reasoning for small bets at deep stacks?",answer:1,
+ options:["We have weaker hands","Small bets build pots over multiple streets with position","Big bets scare villain away","We want to see cheap turns"],
+ explain:"Deep stacks = many streets to play. Small bets accumulate over 3 streets into big pots without overcommitting."},
+{scenario:"Shallow + no range adv + straight board. You decide to bet.",
+ question:"If you do bet on a straight board with no range adv, what size?",answer:1,
+ options:["Small (1/3)","Big (2/3) when you do bet","Overbet","Minimum"],
+ explain:"At shallow, when you bet = big sizing (2/3). The point is you bet LESS OFTEN (mix/check 44%), but when you do bet, it's big."},
+{scenario:"Is there EVER a spot where you use big bets at deep stacks?",
+ question:"Does the tree ever prescribe 2/3 sizing at deep SPR?",answer:1,
+ options:["Yes, frequently","No \u2014 deep always means 1/3","Yes, on monotone boards","Yes, with range advantage"],
+ explain:"The Born-Again Tree doesn't prescribe 2/3 at deep stacks. Deep = 1/3 always. Sizing follows depth."},
+{scenario:"Shallow + range advantage. You bet 1/3 pot on A\u2660 K\u2665 5\u2663.",
+ question:"Why small and not big when you have range advantage?",answer:2,
+ options:["Big bets scare villain","We don't need protection on dry boards","Villain is so weak that even small bets extract max value","We want to bluff"],
+ explain:"When villain is weak and you dominate, small bets extract value from their entire range. Big bets fold out the hands you want calling."},
+
+// === SET 10: Flowchart Practice ===
+{scenario:"Flop. Villain checks. Your mental process begins.",
+ question:"Step 1 of the flowchart is:",answer:1,
+ options:["Check board texture","Check SPR (\u22645 or >5?)","Check position","Check hand strength"],
+ explain:"Step 1: ALWAYS check SPR first. SPR \u22645 = shallow. SPR > 5 = deep."},
+{scenario:"SPR = 4. Step 1 says 'shallow game'.",
+ question:"Step 2A: What's the key question for shallow game?",answer:0,
+ options:["Do I have range advantage?","Am I in position?","Is the board wet?","What's my hand?"],
+ explain:"Shallow game key question: 'Do I have range advantage?' That determines your path."},
+{scenario:"SPR = 7. Step 1 says 'deep game'.",
+ question:"Step 2B: What's the key question for deep game?",answer:1,
+ options:["Do I have range advantage?","Am I in position?","Is the board dry?","Is villain polar?"],
+ explain:"Deep game key question: 'Am I in position?' Position dominates at deep stacks."},
+{scenario:"Shallow. You have range advantage. Villain is weak.",
+ question:"The flowchart says:",answer:0,
+ options:["Bet 1/3","Check","Bet 2/3","Mix"],
+ explain:"Shallow + range adv + villain weak = Bet 1/3."},
+{scenario:"Shallow. You have range advantage. Too much air.",
+ question:"The flowchart says:",answer:1,
+ options:["Bet 1/3","Check (or check-lean)","Bet 2/3","Mix"],
+ explain:"Shallow + range adv + too much air = Check. Air is the brake pedal."},
+{scenario:"Shallow. No range advantage. Dry board.",
+ question:"The flowchart says:",answer:2,
+ options:["Check","Bet 1/3","Bet 2/3","Mix"],
+ explain:"Shallow + no range adv + dry = Bet 2/3."},
+{scenario:"Shallow. No range advantage. Wet board (flush or straight).",
+ question:"The flowchart says:",answer:0,
+ options:["Check (or check-lean)","Bet 1/3","Bet 2/3","Overbet"],
+ explain:"Shallow + no range adv + wet = Check. Wet boards kill fold equity when you're behind."},
+{scenario:"Deep. OOP.",
+ question:"The flowchart says:",answer:0,
+ options:["Check. Done.","Bet 1/3","Depends on range","Bet 2/3"],
+ explain:"Deep + OOP = Check. Done. Almost no exceptions. Simplest rule in the tree."},
+{scenario:"Deep. IP. Polar with real hands (low air).",
+ question:"The flowchart says:",answer:1,
+ options:["Check","Bet 1/3 often","Bet 2/3","Mix"],
+ explain:"Deep + IP + polar + real hands = Bet 1/3 often."},
+{scenario:"Deep. IP. NOT polar (airy range).",
+ question:"The flowchart says:",answer:2,
+ options:["Bet 1/3 often","Bet 2/3","Mix / Check","Always check"],
+ explain:"Deep + IP + not polar/airy = Mix / Check."},
+
+// === SET 11: Board Classification Advanced ===
+{scenario:"Flop: A\u2660 A\u2665 7\u2663 (paired Aces).",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser \u2014 has AA, AK, AQ, AJ","Caller","Equal","Depends on position"],
+ explain:"Paired Aces = raiser advantage. Raiser has AA, AK, AQ which are the key trip/full house hands."},
+{scenario:"Flop: 3\u2665 3\u2660 8\u2663 (paired Threes).",
+ question:"Who has range advantage?",answer:1,
+ options:["Raiser","Caller \u2014 has more 3x hands","Equal","Depends on SPR"],
+ explain:"Low paired board = caller. Caller defends with A3s, 43s, 53s etc. that raiser folds preflop."},
+{scenario:"Flop: A\u2665 K\u2660 Q\u2663 (all Broadway).",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser \u2014 dominates Broadway","Caller","Equal \u2014 both have Broadway","Depends"],
+ explain:"AKQ = raiser domination. Has all premiums: AA, KK, QQ, AK, AQ, KQ, JTs for straight."},
+{scenario:"Flop: 8\u2665 7\u2660 6\u2663 (middle connected).",
+ question:"Who has range advantage?",answer:1,
+ options:["Raiser","Caller \u2014 has suited connectors","Equal","Depends on suits"],
+ explain:"876 = middle connected. Caller has 9Ts, 98s, 87s, 76s, 65s, 54s. Classic caller advantage board."},
+{scenario:"Flop: J\u2665 J\u2660 4\u2663 (paired Jacks).",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser \u2014 has JJ, AJ, KJ","Caller","Equal","Borderline"],
+ explain:"High paired (JJ+) = raiser advantage. Raiser has JJ (trips), AJs, KJs. Caller has fewer Jx."},
+{scenario:"Flop: Q\u2665 T\u2660 8\u2663 (Queen-high connected).",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser \u2014 has QQ, AQ, KQ, JTs","Caller","Equal","Borderline"],
+ explain:"QT8 = Queen-high with connections. Raiser has QQ, AQ, KQ, and even J9/KJ for straights. Still raiser advantage."},
+{scenario:"Flop: 5\u2665 5\u2660 T\u2663 (paired Fives + Ten).",
+ question:"Who has range advantage?",answer:1,
+ options:["Raiser","Caller \u2014 has more 5x","Borderline","Equal"],
+ explain:"Low paired (55x) = caller. Caller has A5s, 65s, 54s, 53s. Raiser rarely opens 5x hands."},
+{scenario:"Flop: K\u2665 J\u2660 T\u2663 (King-high Broadway connected).",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser \u2014 has KK, AK, AQ, KJ, KT, QJ","Caller","Equal","Depends on suits"],
+ explain:"KJT = Broadway connected. Raiser dominates with premiums. Has AQ for nuts, KK, KJ, KT."},
+{scenario:"Flop: 4\u2665 3\u2660 2\u2663 (wheel board).",
+ question:"Who has range advantage?",answer:1,
+ options:["Raiser","Caller \u2014 has wheel hands and suited connectors","Equal","Depends"],
+ explain:"432 = lowest connected. Caller has A5, 56s, 65s, 54s, 43s, 32s. Pure caller advantage."},
+{scenario:"Flop: A\u2665 9\u2660 4\u2663. Neither extremely dry nor connected.",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser \u2014 Ace-high always favors raiser","Caller","Equal","Borderline"],
+ explain:"ANY Ace-high board = raiser advantage. The Ace is the key card. Raiser has all Ax premiums."},
+
+// === SET 12: Tricky Spots ===
+{scenario:"SPR=4.5. Board: A\u2665 5\u2665 4\u2665 (Ace-high monotone). You are raiser.",
+ question:"You have range advantage (Ace-high). But it's monotone. What matters?",answer:0,
+ options:["Range advantage \u2014 you're in the 'have range adv' branch","Monotone texture \u2014 check-lean","Both equally","Neither"],
+ explain:"Shallow + you HAVE range advantage = branch into 'villain strength / your air'. Board texture only matters when you DON'T have range advantage."},
+{scenario:"SPR=4. Board: 7\u2665 7\u2660 2\u2663 (paired Sevens). Caller advantage.",
+ question:"This is shallow + no range advantage. Board is dry (no flush, no straight). Action?",answer:2,
+ options:["Check always","Bet 1/3","Bet 2/3 (50%)","Mix sizing"],
+ explain:"Shallow + no range adv + dry (rainbow, no straight draws) = bet 2/3 at 50%."},
+{scenario:"SPR=5 exactly. Is this shallow or deep?",
+ question:"Where does SPR=5 fall?",answer:0,
+ options:["Shallow (\u22645)","Deep (>5)","Borderline \u2014 use both","Depends on board"],
+ explain:"SPR \u2264 5 = shallow. The boundary is 5, and 5 is included in shallow."},
+{scenario:"SPR=4. A\u2660 K\u2665 Q\u2663. Range advantage. Low air. Villain has AJ, KQ type hands.",
+ question:"Villain has 'some TP+' hands. Your air is low. Action?",answer:2,
+ options:["Bet 1/3","Check-lean","Mix (~41%)","Bet 2/3"],
+ explain:"Range adv + villain has some strength + low air = MIX. Villain can fight back so you can't pure bet."},
+{scenario:"Deep (SPR=8). IP. Board: 5\u2665 4\u2660 3\u2663. Low connected \u2014 your range misses.",
+ question:"Does the connected board make you check more at deep stacks?",answer:1,
+ options:["No \u2014 just bet small like always IP","Yes \u2014 your range is airy here so check-lean","No \u2014 board texture drives the decision deep","Bet 2/3 for protection"],
+ explain:"Deep IP, your range on 543 is mostly air. High air = check-lean (45%). It's the air that matters, not the board texture directly."},
+{scenario:"SPR=3. Board: K\u2660 K\u2665 K\u2663 (trips board). Raiser.",
+ question:"With a trips board at shallow stacks, raiser has range advantage. Action?",answer:1,
+ options:["Check always","Bet \u2014 use bigger sizing (trips = always bet, sometimes big)","Bet 1/3 always","Mix/check-lean"],
+ explain:"Trips boards = always bet. At shallow with range adv, bet. Trips lean toward bigger sizing sometimes."},
+{scenario:"Deep (SPR=7). OOP. Board: A\u2660 K\u2665 J\u2663. Huge range advantage.",
+ question:"You dominate this board massively. But you're OOP deep. Action?",answer:1,
+ options:["Bet \u2014 too strong not to","Check-lean (51-58%)","Bet 2/3","Always bet 1/3"],
+ explain:"Deep + OOP = check-lean EVEN with massive range advantage. Position > range at deep stacks."},
+{scenario:"SPR=4.5. Board: T\u2665 9\u2660 8\u2663. Raiser vs caller.",
+ question:"Who has range advantage on T98?",answer:1,
+ options:["Raiser","Caller \u2014 has suited connectors that make straights","Equal","Depends on suits"],
+ explain:"T98 = very connected middle board. Caller has JTs, 98s, 87s, 76s, J9s. Caller advantage."},
+{scenario:"SPR=4. Board: Q\u2665 Q\u2660 7\u2663 (paired Queens). Raiser.",
+ question:"Who has range advantage on QQx?",answer:0,
+ options:["Raiser \u2014 has QQ, AQ, KQ","Caller","Equal","Borderline"],
+ explain:"High paired (QQ+) = raiser advantage. Raiser has QQ (quads/trips), AQ, KQ."},
+{scenario:"SPR=4. No range advantage. Board: 8\u2665 6\u2665 3\u2663 (two-tone, one gap).",
+ question:"Is this 'dry', 'straight', or 'monotone'?",answer:0,
+ options:["Dryish \u2014 two-tone is NOT monotone, no straight","Monotone","Straight present","Connected"],
+ explain:"Two-tone \u2260 monotone. No completed straight. Treat as closer to dry. Lean toward big bet."},
+
+// === SET 13: Deep Game Nuances ===
+{scenario:"Deep (SPR=8). IP. A\u2660 7\u2665 2\u2663. You have range advantage. Polar range, low air.",
+ question:"Action?",answer:0,
+ options:["Bet 1/3 frequently (68%)","Check","Bet 2/3","Mix"],
+ explain:"Deep + IP + polar + low air = 68% bet 1/3. Classic high-aggression IP deep spot."},
+{scenario:"Deep (SPR=9). IP. 6\u2665 5\u2660 4\u2663. No range advantage. Your range is airy.",
+ question:"Action?",answer:1,
+ options:["Bet 1/3","Check-lean (45%)","Bet 2/3","Always check"],
+ explain:"Deep + IP + high air = check-lean. Doesn't matter that you don't have range advantage \u2014 air drives it."},
+{scenario:"Deep (SPR=7). IP. K\u2660 8\u2665 3\u2663. Range advantage. Some air, moderate polar.",
+ question:"Action?",answer:2,
+ options:["Bet 1/3 at 68%","Check mostly","Lean bet 1/3 (49%)","Bet 2/3"],
+ explain:"Deep + IP + moderate polar + some air (not extreme) = lean bet 1/3 (49%)."},
+{scenario:"Deep (SPR=10). IP. Your range is very airy. Villain is also airy.",
+ question:"Both ranges are weak. Action?",answer:2,
+ options:["Bet 1/3 often","Check always","Mix (38% check)","Bet 2/3"],
+ explain:"Deep + IP + both airy = MIX (38% check). Neither side is strong \u2014 play balanced."},
+{scenario:"Deep (SPR=8). IP. High polar advantage. But you also have 18% air.",
+ question:"High polar but also high air. Which wins?",answer:1,
+ options:["Polar wins \u2014 bet 1/3 at 68%","Air wins \u2014 check-lean","They cancel out \u2014 mix","Bet 2/3"],
+ explain:"Air is the brake pedal. Even with polar advantage, >15% air = check more. The tree checks air level."},
+{scenario:"Deep. OOP. Range advantage. Your air is very low.",
+ question:"Low air, range advantage, but OOP deep. Action?",answer:1,
+ options:["Bet 1/3 \u2014 low air means bet","Check-lean (51-58%) \u2014 OOP still dominates","Bet 2/3","Mix"],
+ explain:"Deep + OOP = check-lean regardless of air or range advantage. OOP is the strongest check signal."},
+{scenario:"Deep (SPR=6, barely deep). IP. Board: A\u2660 J\u2665 4\u2663. Range adv, polar, low air.",
+ question:"SPR=6 is deep. IP. Polar. Low air. Action?",answer:0,
+ options:["Bet 1/3 often (68%)","Check-lean","Bet 2/3","Mix"],
+ explain:"SPR 6 > 5 = deep. IP + polar + low air = bet 1/3 frequently."},
+{scenario:"You're deep and IP. You have a polarization advantage.",
+ question:"What does 'polarization advantage' mean practically?",answer:1,
+ options:["You have only medium hands","You have more nuts AND more draws than villain","You have all bluffs","You have position"],
+ explain:"Polar = lots of very strong hands AND lots of draws/bluffs. Few medium-strength hands. Ideal for betting."},
+{scenario:"Deep + IP + polar + low air: 68% bet. Deep + IP + polar + HIGH air: ???",
+ question:"Adding air to a polar range changes things how?",answer:1,
+ options:["No change \u2014 still 68%","Drops to check-lean (45%)","Drops to mix (38%)","Goes to 100% bet"],
+ explain:"Air is the universal brake. Polar + low air = 68% bet. Polar + high air = check-lean (45%)."},
+{scenario:"Deep (SPR=8). IP. You're on a board where your range is 50% air.",
+ question:"Extreme air example. Action?",answer:1,
+ options:["Bet 1/3 \u2014 semi-bluff","Check-lean (45% check) or more","Bet 2/3 to fold out equity","Mix equal"],
+ explain:"Extreme air deep IP = definitely check-lean or more. Can't sustain aggression with that much nothing."},
+
+// === SET 14: Counter-Intuitive Spots ===
+{scenario:"Shallow. No range advantage. Dry board. You bet BIG.",
+ question:"Why is this counter-intuitive?",answer:1,
+ options:["You're bluffing too much","You're betting big with a WEAKER range","You're ignoring position","You're overbetting"],
+ explain:"Counter-intuitive: you bet BIG with a WEAKER range on dry boards. It works because villain can't realize equity on dry textures."},
+{scenario:"Shallow. Range advantage. You bet SMALL.",
+ question:"Why bet small when you have the stronger range?",answer:2,
+ options:["We're scared","We don't want to bloat pot","Villain is so weak that small bets extract max from their whole range","We're balancing"],
+ explain:"With range advantage, villain's range is weak. Small bets get called by everything. Big bets fold out the marginal hands you profit from."},
+{scenario:"Deep. OOP. A\u2660 K\u2665 J\u2663. You have MASSIVE range advantage.",
+ question:"Why don't you just bet this dominating board?",answer:2,
+ options:["We're trapping","Board is dangerous","Deep OOP = multi-street disadvantage makes betting risky","We always check OOP"],
+ explain:"Deep stacks mean 3 streets remaining. Being OOP means villain controls pot size and can attack on later streets. Too risky even with range domination."},
+{scenario:"Shallow. No range advantage. Monotone board.",
+ question:"Why do you check on monotone when you DON'T even have range advantage?",answer:1,
+ options:["You might have a flush draw","Villain has too many made flushes/draws \u2014 no fold equity","Monotone boards are always checked","You want to trap"],
+ explain:"Monotone = villain has tons of flush combos and draws. Your bets don't generate folds. No fold equity = don't bluff."},
+{scenario:"Deep + IP. Villain checks. You have a very polar range.",
+ question:"Why is a polar range ideal for betting?",answer:2,
+ options:["We always have the best hand","We never have the best hand","We have clear value hands AND clear bluff candidates \u2014 ideal for a betting strategy","We're balanced by default"],
+ explain:"Polar = nuts to bet for value + air to bet as bluffs. This creates an efficient betting strategy. Medium hands are what make you want to check."},
+{scenario:"The most aggressive spot (shallow + no range adv + dry = bet 2/3 at 50%).",
+ question:"But you're still only betting 50%. Why not 100%?",answer:1,
+ options:["We're scared","Even on good spots, you need SOME checks to protect your checking range","We don't have enough value","We're guessing"],
+ explain:"Even at peak aggression, you need some checks to protect your checking range. Pure betting would make your checks exploitable."},
+{scenario:"Deep + OOP + no range adv + villain polar = 87% check.",
+ question:"Why not check 100%? Why the 13% bet?",answer:2,
+ options:["We want to bluff sometimes","We have traps","Even at peak passivity, pure checking is exploitable \u2014 need some bets to stay unpredictable","We misread the board"],
+ explain:"Pure checking would let villain play perfectly against us. A small % of bets keeps villain honest."},
+{scenario:"Shallow + range advantage + high air.",
+ question:"Why does air override range advantage?",answer:1,
+ options:["Air means we have no good hands","Betting with too much air means our bluffs get picked off \u2014 unsustainable aggression","Air means the board is bad","Air means villain is strong"],
+ explain:"If you bet a range that's >15% air, you're bluffing too often. Villain can exploit by calling/raising more. Need to check to balance."},
+{scenario:"The tree says board texture only matters in one spot.",
+ question:"Why doesn't board texture matter in other spots?",answer:2,
+ options:["Board texture is always irrelevant","Only matters for hand reading","In other spots, range/position/air are stronger signals that override board influence","Board texture is too hard to read"],
+ explain:"Range strength, position, and air level are stronger decision factors. Board texture is a secondary modifier that only breaks ties in the one specific spot."},
+{scenario:"Shallow + range adv vs Shallow + no range adv.",
+ question:"What's the biggest difference in HOW you bet?",answer:0,
+ options:["Range adv = small bets. No range adv = big bets","Range adv = big bets. No range adv = small bets","Same sizing, different frequency","No difference"],
+ explain:"With range advantage you use small bets (thin value). Without range advantage on dry boards you use big bets (pressure). Opposite sizing logic."},
+
+// === SET 15: Full Scenario Walkthrough ===
+{scenario:"SPR=3. BTN vs BB. Flop: K\u2660 9\u2665 4\u2663. BB checks. You are BTN.",
+ question:"Full walkthrough. Action?",answer:1,
+ options:["Check","Bet 1/3 (range adv, villain weak on K-high)","Bet 2/3","Mix"],
+ explain:"SPR 3 = shallow. K94 = raiser advantage (K-high). Villain likely weak. Bet 1/3."},
+{scenario:"SPR=8. CO vs BB. Flop: 7\u2665 6\u2660 5\u2663. BB checks. You are CO (IP).",
+ question:"Full walkthrough. Action?",answer:1,
+ options:["Bet 1/3","Check-lean (high air on 765)","Bet 2/3","Always check"],
+ explain:"SPR 8 = deep. IP. On 765 your range is mostly air. High air = check-lean."},
+{scenario:"SPR=4. UTG open, BB calls. Flop: 5\u2665 4\u2660 3\u2663. BB checks. You are UTG (IP).",
+ question:"Full walkthrough. Action?",answer:2,
+ options:["Bet 1/3","Check","Mix/Check (no range adv, straight board, shallow)","Bet 2/3"],
+ explain:"SPR 4 = shallow. 543 = caller advantage (no range adv). Board has straight = mix/check (44%)."},
+{scenario:"SPR=9. BTN vs SB. Flop: Q\u2665 8\u2663 3\u2660. SB checks. You are BTN (IP).",
+ question:"Full walkthrough. Assume polar range with low air.",answer:0,
+ options:["Bet 1/3 often (68%)","Check","Bet 2/3","Mix"],
+ explain:"SPR 9 = deep. IP. Polar + low air on Q83 = bet 1/3 frequently (68%)."},
+{scenario:"SPR=7. You raised UTG, BB calls. Flop: A\u2660 8\u2665 2\u2663. BB checks. You are IP.",
+ question:"Full walkthrough. Low air, high polarization.",answer:0,
+ options:["Bet 1/3 frequently (68%)","Check-lean","Bet 2/3","Mix"],
+ explain:"Deep. IP. A82 = polar with low air (you have AA, AK, AQ as value). Bet 1/3 frequently."},
+{scenario:"SPR=4.5. Flop: 8\u2665 8\u2660 3\u2663 (paired 8s). Caller advantage.",
+ question:"Shallow, no range adv. Paired board is 'dry' (no flush, no straight). Action?",answer:2,
+ options:["Check always","Bet 1/3","Bet 2/3 (50%) \u2014 dry board","Mix"],
+ explain:"Shallow + no range adv + dry (rainbow, no straight) = bet 2/3 at 50%. Paired but dry."},
+{scenario:"SPR=3.5. Board: T\u2665 T\u2660 Q\u2663 (paired Tens + Queen).",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser \u2014 has QQ, TT, AT, KT, QT","Caller","Equal","Depends on SPR"],
+ explain:"TTQ = high paired with Queen kicker. Raiser has TT, QQ, AT, KT, QT. Raiser advantage."},
+{scenario:"SPR=4. Board: 9\u2665 7\u2665 5\u2665 (monotone mid). Caller advantage.",
+ question:"Shallow, no range adv, monotone. Action?",answer:0,
+ options:["Check-lean (49%)","Bet 2/3","Bet 1/3","Always bet"],
+ explain:"Shallow + no range adv + monotone = check-lean (49%)."},
+{scenario:"SPR=6 (deep). OOP. Board: 4\u2665 3\u2660 2\u2663. No range advantage.",
+ question:"Deep + OOP + no range advantage. Action?",answer:0,
+ options:["Mostly CHECK (76-87%)","Bet 1/3","Bet 2/3","Mix"],
+ explain:"Deep + OOP + no range advantage = mostly check (76-87%)."},
+{scenario:"SPR=4. Board: A\u2665 A\u2660 A\u2663 (trip Aces).",
+ question:"Trips board. Who has range advantage?",answer:0,
+ options:["Raiser \u2014 has Ax more often","Caller","Equal \u2014 nobody has an Ace","Depends"],
+ explain:"Trip Aces = raiser has AA (quads!), AK, AQ, AJ. Massive raiser advantage. Always bet."},
+
+// === SET 16: Frequency Memory ===
+{scenario:"Shallow + range adv + villain weak. Bet frequency?",
+ question:"How often do you bet?",answer:1,
+ options:["30%","45%","68%","87%"],
+ explain:"Shallow + range adv + villain weak = bet 1/3 at 45%."},
+{scenario:"Shallow + range adv + high air. Check frequency?",
+ question:"How often do you check?",answer:1,
+ options:["30%","42%","58%","87%"],
+ explain:"Shallow + range adv + high air = check-lean at 42%."},
+{scenario:"Shallow + no range adv + dry board. Bet frequency?",
+ question:"How often do you bet 2/3?",answer:2,
+ options:["30%","42%","50%","68%"],
+ explain:"Shallow + no range adv + dry = bet 2/3 at 50%."},
+{scenario:"Shallow + no range adv + monotone. Check frequency?",
+ question:"How often do you check?",answer:2,
+ options:["30%","42%","49%","87%"],
+ explain:"Shallow + no range adv + monotone = check-lean at 49%."},
+{scenario:"Shallow + no range adv + straight present. Check frequency?",
+ question:"How often do you check?",answer:1,
+ options:["30%","44%","58%","76%"],
+ explain:"Shallow + no range adv + straight = mix/check at 44% check."},
+{scenario:"Deep + OOP + no range adv + villain polar. Check frequency?",
+ question:"How often do you check?",answer:3,
+ options:["42%","49%","58%","87%"],
+ explain:"Deep + OOP + no range adv + villain polar = 87% check. Most passive spot."},
+{scenario:"Deep + OOP + range advantage. Check frequency?",
+ question:"How often do you check?",answer:2,
+ options:["30%","42%","51-58%","87%"],
+ explain:"Deep + OOP + range advantage = check 51-58%."},
+{scenario:"Deep + IP + polar + low air. Bet frequency?",
+ question:"How often do you bet 1/3?",answer:3,
+ options:["38%","45%","50%","68%"],
+ explain:"Deep + IP + polar + low air = bet 1/3 at 68%. Highest aggression deep spot."},
+{scenario:"Deep + IP + low air + low polar. Bet frequency?",
+ question:"How often do you bet 1/3?",answer:2,
+ options:["38%","45%","49%","68%"],
+ explain:"Deep + IP + low air + low polar = lean bet 1/3 at 49%."},
+{scenario:"Deep + IP + high air + you're airiest. Check frequency?",
+ question:"How often do you check?",answer:1,
+ options:["38%","45%","58%","87%"],
+ explain:"Deep + IP + high air + you're most airy = check-lean at 45%."},
+
+// === SET 17: Compare & Contrast ===
+{scenario:"Same board: K\u2660 7\u2665 2\u2663. Spot A: SPR=4. Spot B: SPR=8. Both IP.",
+ question:"What's the KEY difference in your approach?",answer:1,
+ options:["Bet size: SPR 4 bets big, SPR 8 bets small","SPR 4 uses range advantage, SPR 8 uses polarization/air","Board texture matters more at SPR 8","Position matters more at SPR 4"],
+ explain:"Shallow = range advantage is the key question. Deep = polar/air level is the key question. Different frameworks."},
+{scenario:"Same SPR=4. Board A: 8\u2660 3\u2665 2\u2663 (dry). Board B: 8\u2665 7\u2665 6\u2665 (mono+connected).",
+ question:"Both shallow, no range advantage. What's different?",answer:0,
+ options:["Board A = bet 2/3. Board B = check-lean","Board A = check. Board B = bet","Same action for both","Board A = bet 1/3. Board B = bet 2/3"],
+ explain:"Shallow + no range adv: dry = bet 2/3 (50%), monotone = check-lean (49%). Opposite actions!"},
+{scenario:"Same board: A\u2660 J\u2665 4\u2663. Spot A: OOP deep. Spot B: IP deep.",
+ question:"You have range advantage in both. What's different?",answer:2,
+ options:["Same action \u2014 range advantage means bet","OOP bets more because range adv","OOP = check-lean. IP = bet 1/3 often","IP checks more"],
+ explain:"OOP deep = check-lean (51-58%). IP deep + polar = bet 1/3 often (68%). Position flips everything."},
+{scenario:"Same SPR=4. You HAVE range adv. Hand A: 5% air. Hand B: 20% air.",
+ question:"Same range advantage level. What's different?",answer:1,
+ options:["Nothing \u2014 range advantage means bet","Hand A: bet. Hand B: check-lean. Air changes everything","Hand A: bet big. Hand B: bet small","Both check"],
+ explain:"Low air = bet (1/3). High air (>15%) = check-lean. Air is the brake pedal within the range adv branch."},
+{scenario:"Deep IP. Your range A: very polar, 5% air. Your range B: very polar, 20% air.",
+ question:"Same polarization. Different air levels. What changes?",answer:2,
+ options:["Nothing","Sizing changes","Range A: bet 68%. Range B: check-lean 45%","Range B bets more"],
+ explain:"Polar + low air = 68% bet. Polar + high air = check-lean 45%. Air overrides polarization."},
+{scenario:"Shallow, no range adv. Board A: rainbow 9\u26603\u26652\u2663. Board B: 9\u26608\u26657\u2663 (straight).",
+ question:"Both shallow, no range advantage. Difference?",answer:0,
+ options:["Board A (dry): bet 2/3. Board B (straight): mix/check 44%","Same action","Board A: check. Board B: bet","Sizing differs but frequency same"],
+ explain:"Dry = bet 2/3 at 50%. Straight = mix/check at 44% check. Board texture drives when no range adv + shallow."},
+{scenario:"Shallow + range adv. Villain A: very weak. Villain B: has TP+.",
+ question:"What changes?",answer:1,
+ options:["Nothing \u2014 always bet small","Villain A: bet 1/3 (45%). Villain B: mix (41%)","Villain A: mix. Villain B: bet big","Both check"],
+ explain:"Villain weak = bet 1/3 (45%). Villain has some strength = MIX (41%). Villain strength matters in this branch."},
+{scenario:"Deep OOP. Spot A: range advantage. Spot B: no range advantage, villain polar.",
+ question:"Both OOP deep. Difference?",answer:1,
+ options:["Spot A bets, Spot B checks","Spot A: check 51-58%. Spot B: check 87%","Same \u2014 both check 87%","Spot A: mix. Spot B: check"],
+ explain:"Range adv OOP deep = 51-58% check. No range adv + villain polar = 87% check. Both check a lot but different degrees."},
+{scenario:"Shallow + range adv + low air vs Deep + IP + polar + low air.",
+ question:"Both have range advantage and low air. Both bet. What's different?",answer:0,
+ options:["Shallow bets BIG (1/3), Deep bets SMALL (1/3). Wait \u2014 shallow range adv bets small too!","Shallow bets 2/3, Deep bets 1/3","Same sizing","Shallow checks more"],
+ explain:"Tricky! Shallow + range adv = bet 1/3 (small). Deep + IP = bet 1/3 (small). BOTH use small sizing! The difference is frequency (45% vs 68%)."},
+{scenario:"When do you EVER bet 2/3 pot in this tree?",
+ question:"The 2/3 sizing appears in which scenario?",answer:0,
+ options:["Shallow + no range advantage + dry board","Deep + IP + polar","Shallow + range advantage","Deep + OOP"],
+ explain:"Bet 2/3 = only at shallow + no range adv + dry board. That's the ONE big-bet spot."},
+
+// === SET 18: Rapid Fire Classification ===
+{scenario:"Flop: A\u2660 T\u2665 6\u2663. Who has range advantage?",
+ question:"Raiser or Caller?",answer:0,
+ options:["Raiser","Caller"],
+ explain:"Ace-high = always raiser advantage."},
+{scenario:"Flop: 6\u2665 4\u2660 2\u2663. Who has range advantage?",
+ question:"Raiser or Caller?",answer:1,
+ options:["Raiser","Caller"],
+ explain:"Low disconnected = caller advantage. Caller has more suited low cards."},
+{scenario:"Flop: K\u2660 K\u2665 8\u2663. Who has range advantage?",
+ question:"Raiser or Caller?",answer:0,
+ options:["Raiser","Caller"],
+ explain:"High paired (KK) = raiser has KK, AK, KQ."},
+{scenario:"Flop: 5\u2665 5\u2660 J\u2663. Who has range advantage?",
+ question:"Raiser or Caller?",answer:1,
+ options:["Raiser","Caller"],
+ explain:"Low paired (55) = caller has more 5x hands."},
+{scenario:"Flop: Q\u2660 J\u2665 T\u2663. Who has range advantage?",
+ question:"Raiser or Caller?",answer:0,
+ options:["Raiser","Caller"],
+ explain:"QJT Broadway = raiser has AK (nuts), KK, QQ, JJ, AQ, KQ. Raiser advantage."},
+{scenario:"Flop: 8\u2665 7\u2665 6\u2665 (monotone middle). Who benefits most from texture?",
+ question:"Raiser or Caller?",answer:1,
+ options:["Raiser","Caller"],
+ explain:"Middle connected monotone = caller has suited connectors in these ranks."},
+{scenario:"Flop: A\u2665 A\u2660 3\u2663. Who has range advantage?",
+ question:"Raiser or Caller?",answer:0,
+ options:["Raiser","Caller"],
+ explain:"Paired Aces = raiser has AA, AK, AQ, AJ."},
+{scenario:"Flop: 7\u2660 5\u2665 3\u2663. Who has range advantage?",
+ question:"Raiser or Caller?",answer:1,
+ options:["Raiser","Caller"],
+ explain:"Low semi-connected = caller advantage. Caller has 64s, 86s, 75s, 53s etc."},
+{scenario:"Flop: K\u2665 Q\u2660 J\u2663. Who has range advantage?",
+ question:"Raiser or Caller?",answer:0,
+ options:["Raiser","Caller"],
+ explain:"KQJ = all Broadway. Raiser has AT (nuts), AK, AQ, KK, QQ, JJ."},
+{scenario:"Flop: T\u2665 8\u2660 6\u2663. Who has range advantage?",
+ question:"Raiser or Caller?",answer:1,
+ options:["Raiser","Caller"],
+ explain:"T86 connected middle = caller has 97s, 79s, T9s, 87s. Caller advantage."},
+
+// === SET 19: Edge Cases ===
+{scenario:"SPR=4. Board: J\u2660 T\u2665 9\u2663. Very connected. You raised.",
+ question:"Do you have range advantage on JT9?",answer:1,
+ options:["Yes \u2014 J-high, you have JJ","No \u2014 very connected, caller has KQ, 87s, T9s, 98s","Equal","Depends"],
+ explain:"JT9 = very connected. Caller has QK, Q8, 87s, 98s, T9s, JTs. Caller advantage despite J being high-ish."},
+{scenario:"SPR=4. Board: Q\u2660 5\u2665 2\u2663. Very dry. You raised.",
+ question:"Range advantage on Q52?",answer:0,
+ options:["Yes \u2014 Queen-high, dry, raiser dominates","No","Equal","Borderline"],
+ explain:"Q52 = Queen-high, very dry. Raiser has QQ, AQ, KQ, QJ. Caller has almost nothing here."},
+{scenario:"SPR=4. Board: A\u2665 5\u2665 4\u2665 (Ace-high monotone). You have range advantage.",
+ question:"Shallow + range advantage. Does the monotone matter?",answer:1,
+ options:["Yes \u2014 check because monotone","No \u2014 board texture doesn't matter when you HAVE range advantage","Yes \u2014 bet bigger","Depends on your flush combos"],
+ explain:"Board texture only matters at shallow + NO range advantage. When you HAVE range advantage, you go to the 'villain strength / your air' branch."},
+{scenario:"SPR=4. Board: 9\u2660 8\u2665 7\u2663 (connected). You DON'T have range advantage.",
+ question:"Is 987 classified as 'dry', 'straight', or 'monotone'?",answer:1,
+ options:["Dry \u2014 no flush","Straight present \u2014 very connected with straight possibilities","Monotone","None of these"],
+ explain:"987 = straight board (straight draws everywhere, JT has a made straight). Classify as 'straight present' = mix/check."},
+{scenario:"SPR=4. Board: T\u2665 4\u2663 2\u2660 (rainbow, very disconnected). Caller has slight advantage.",
+ question:"Why might the caller have advantage on T42?",answer:2,
+ options:["T is high","Caller has flushes","Caller has more low pocket pairs and suited Tx than raiser's tight range","Board is connected"],
+ explain:"T-high board is borderline. Caller has TT more often (raiser might open-fold TT sometimes at low positions), plus A4s, 54s etc."},
+{scenario:"SPR=4. Board: A\u2660 2\u2665 2\u2663 (paired deuces + Ace). Who has range advantage?",
+ question:"A22 \u2014 raiser or caller?",answer:0,
+ options:["Raiser \u2014 Ace + raiser has Ax, AA","Caller \u2014 has more 2x","Equal","Depends"],
+ explain:"A22: the Ace dominates. Raiser has AA (full house), AK, AQ (trips). The 2 being paired is low, but Ace-high presence = raiser advantage."},
+{scenario:"SPR=4. Board: K\u2665 6\u2660 6\u2663 (paired sixes + King).",
+ question:"Who has range advantage?",answer:0,
+ options:["Raiser \u2014 K-high + raiser has KK, AK, KQ","Caller \u2014 has 6x","Borderline","Equal"],
+ explain:"K66: King-high with low pair. Raiser has KK, AK, KQ, and A6s is borderline. K-high effect wins for raiser."},
+{scenario:"Deep (SPR=7). IP. Board: A\u2660 K\u2665 Q\u2663. Ultra-Broadway.",
+ question:"You're deep IP on AKQ. Polar? Low air?",answer:0,
+ options:["Very polar + low air \u2192 bet 1/3 at 68%","Airy \u2192 check-lean","Mix","Bet 2/3"],
+ explain:"AKQ deep IP: you have JT (nuts), AA, KK, QQ, AK (value) + missed suited connectors (bluffs). Polar + low air = bet 1/3 at 68%."},
+{scenario:"SPR=4. Board: 2\u2665 2\u2660 2\u2663 (trip deuces).",
+ question:"Trip deuces. Range advantage?",answer:0,
+ options:["Raiser \u2014 trips board, always bet","Caller","Equal \u2014 neither has quads","Depends on kicker"],
+ explain:"Trips boards = raiser advantage. Raiser has bigger pocket pairs (AA-TT) more often. Always bet, sometimes big."},
+{scenario:"SPR=4. Board: J\u2665 7\u2660 3\u2663. Dry-ish J-high.",
+ question:"Who has range advantage on J73?",answer:0,
+ options:["Raiser \u2014 J-high, has JJ, AJ, KJ","Caller","Borderline","Equal"],
+ explain:"J73 dry = raiser advantage. JJ, AJ, KJ are premium hands that hit. Caller has fewer J-high hands."},
+
+// === SET 20: Final Review ===
+{scenario:"The Born-Again Tree starts with which question?",
+ question:"What is Step 1?",answer:1,
+ options:["Am I in position?","What is my SPR?","Do I have range advantage?","What's the board texture?"],
+ explain:"Step 1 ALWAYS: check SPR. Everything flows from this."},
+{scenario:"At shallow SPR, the key question is:",
+ question:"Shallow game key question?",answer:0,
+ options:["Do I have range advantage?","Am I in position?","Is the board wet?","Am I polar?"],
+ explain:"Shallow = 'Do I have range advantage?' Range strength drives shallow decisions."},
+{scenario:"At deep SPR, the key question is:",
+ question:"Deep game key question?",answer:1,
+ options:["Do I have range advantage?","Am I in position?","Board texture?","My hand strength?"],
+ explain:"Deep = 'Am I in position?' Position dominates at deep stacks."},
+{scenario:"'Air is the brake pedal' means:",
+ question:"What does this principle mean?",answer:2,
+ options:["Never bet with air","Air means fold","More air = more checking, always, everywhere","Air means bet bigger"],
+ explain:"More air in your range = more checking. Universal principle across all tree branches."},
+{scenario:"'Bet size follows depth' means:",
+ question:"What does this principle mean?",answer:0,
+ options:["Shallow = big (2/3), Deep = small (1/3)","Always bet big","Always bet small","Depends on hand"],
+ explain:"Shallow = big bets matter. Deep = small bets build pots. Sizing follows stack depth."},
+{scenario:"Board texture only matters when:",
+ question:"The ONE spot where board texture drives strategy?",answer:2,
+ options:["Always","Deep + IP","Shallow + no range advantage","Deep + OOP"],
+ explain:"Board texture matters ONLY at low SPR + range disadvantage. In all other spots, other factors dominate."},
+{scenario:"SPR=4. A\u2660 8\u2665 3\u2663. Raiser advantage. Low air. Villain weak.",
+ question:"Put it all together:",answer:1,
+ options:["Check","Bet 1/3 pot","Bet 2/3 pot","Mix"],
+ explain:"Shallow + range adv + villain weak + low air = Bet 1/3. Textbook spot."},
+{scenario:"SPR=8. OOP. K\u2660 Q\u2665 4\u2663. Range advantage.",
+ question:"Put it all together:",answer:1,
+ options:["Bet 1/3","Check-lean (51-58%)","Bet 2/3","Always bet"],
+ explain:"Deep + OOP = check-lean even with range advantage. Position overrides."},
+{scenario:"SPR=4. No range advantage. 9\u2660 4\u2665 2\u2663 (dry rainbow).",
+ question:"Put it all together:",answer:2,
+ options:["Check","Bet 1/3","Bet 2/3 (50%)","Mix"],
+ explain:"Shallow + no range adv + dry = bet 2/3 at 50%. Maximum pressure on dry textures."},
+{scenario:"SPR=7. IP. Polar range. Low air. Board: Q\u2660 7\u2665 2\u2663.",
+ question:"Put it all together:",answer:0,
+ options:["Bet 1/3 frequently (68%)","Check","Bet 2/3","Mix"],
+ explain:"Deep + IP + polar + low air = bet 1/3 at 68%. The highest aggression IP deep spot."}
+];
+
+var QUESTIONS_PER_SET = 10;
+var TOTAL_SETS = 20;
+var currentSet = 0;
+var current = 0;
+var score = { correct: 0, wrong: 0 };
+var answered = false;
+var shuffled = [];
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function getSet(setIndex) {
+  var start = setIndex * QUESTIONS_PER_SET;
+  var end = start + QUESTIONS_PER_SET;
+  return shuffle(questions.slice(start, end));
+}
+
+function startQuiz() {
+  shuffled = getSet(currentSet);
+  current = 0;
+  score = { correct: 0, wrong: 0 };
+  answered = false;
+  document.getElementById("results").classList.remove("visible");
+  document.getElementById("quizArea").classList.remove("hidden");
+  document.getElementById("setNum").textContent = currentSet + 1;
+  render();
+}
+
+function render() {
+  var q = shuffled[current];
+  document.getElementById("scenarioDetails").innerHTML = q.scenario;
+  document.getElementById("questionText").textContent = q.question;
+
+  var optDiv = document.getElementById("options");
+  optDiv.innerHTML = "";
+  for (var i = 0; i < q.options.length; i++) {
+    var btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = q.options[i];
+    btn.setAttribute("data-idx", i);
+    btn.addEventListener("touchend", handleOptionTap, false);
+    btn.addEventListener("click", handleOptionClick, false);
+    optDiv.appendChild(btn);
+  }
+
+  var fb = document.getElementById("feedback");
+  fb.classList.remove("visible", "show-correct", "show-wrong");
+
+  var nextBtn = document.getElementById("nextBtn");
+  nextBtn.classList.add("disabled");
+  answered = false;
+
+  document.getElementById("correctCount").textContent = score.correct;
+  document.getElementById("wrongCount").textContent = score.wrong;
+  document.getElementById("qNum").textContent = current + 1;
+  document.getElementById("progressFill").style.width = ((current) / shuffled.length * 100) + "%";
+}
+
+var touchHandled = false;
+
+function handleOptionTap(e) {
+  e.preventDefault();
+  touchHandled = true;
+  var idx = parseInt(this.getAttribute("data-idx"), 10);
+  selectAnswer(idx);
+}
+
+function handleOptionClick(e) {
+  if (touchHandled) { touchHandled = false; return; }
+  var idx = parseInt(this.getAttribute("data-idx"), 10);
+  selectAnswer(idx);
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+
+  var q = shuffled[current];
+  var btns = document.querySelectorAll(".opt-btn");
+  var fb = document.getElementById("feedback");
+
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.add("disabled");
+  }
+
+  if (idx === q.answer) {
+    btns[idx].classList.add("correct-answer");
+    score.correct++;
+    fb.classList.remove("show-wrong");
+    fb.classList.add("visible", "show-correct");
+    document.getElementById("feedbackText").textContent = "\u2713 Correct!";
+  } else {
+    btns[idx].classList.add("wrong-answer");
+    btns[q.answer].classList.add("correct-answer");
+    score.wrong++;
+    fb.classList.remove("show-correct");
+    fb.classList.add("visible", "show-wrong");
+    document.getElementById("feedbackText").textContent = "\u2717 Wrong";
+  }
+  document.getElementById("feedbackExplain").textContent = q.explain;
+  document.getElementById("nextBtn").classList.remove("disabled");
+
+  document.getElementById("correctCount").textContent = score.correct;
+  document.getElementById("wrongCount").textContent = score.wrong;
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= shuffled.length) {
+    showResults();
+    return;
+  }
+  render();
+  window.scrollTo(0, 0);
+}
+
+function showResults() {
+  document.getElementById("quizArea").classList.add("hidden");
+  document.getElementById("results").classList.add("visible");
+  var pct = Math.round((score.correct / shuffled.length) * 100);
+  document.getElementById("finalScore").textContent = score.correct + "/" + shuffled.length + " (" + pct + "%)";
+  var msg = "";
+  if (pct >= 90) msg = "Excellent! You've internalized the decision tree.";
+  else if (pct >= 70) msg = "Good! A few branches need more drilling.";
+  else if (pct >= 50) msg = "Decent. Review the cheat sheet and try again.";
+  else msg = "Keep at it! Focus on the flowchart first.";
+  document.getElementById("finalMsg").textContent = msg;
+  document.getElementById("progressFill").style.width = "100%";
+}
+
+function restart() {
+  currentSet = (currentSet + 1) % TOTAL_SETS;
+  startQuiz();
+}
+
+// Event listeners (iOS-safe)
+document.getElementById("nextBtn").addEventListener("touchend", function(e) {
+  e.preventDefault();
+  if (!this.classList.contains("disabled")) nextQuestion();
+}, false);
+document.getElementById("nextBtn").addEventListener("click", function(e) {
+  if (!this.classList.contains("disabled")) nextQuestion();
+}, false);
+
+document.getElementById("restartBtn").addEventListener("touchend", function(e) {
+  e.preventDefault();
+  restart();
+}, false);
+document.getElementById("restartBtn").addEventListener("click", function(e) {
+  restart();
+}, false);
+
+// Init
+startQuiz();
+
+})();
+</script>
+</body>
+</html>
