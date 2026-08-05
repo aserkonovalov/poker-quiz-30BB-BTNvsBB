@@ -21,9 +21,24 @@ body {
 }
 h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; }
 .sub { text-align: center; font-size: 0.75rem; color: #8b949e; margin-bottom: 16px; }
+.back-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background: #161b22;
+  color: #8b949e;
+  font-size: 0.8rem;
+  text-decoration: none;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  margin-bottom: 12px;
+}
+.back-btn:active { background: #1c2a3f; color: #58a6ff; }
 </style>
 </head>
 <body>
+<a href="index.html" class="back-btn">&larr; Back to Menu</a>
 
 <h1>Range Advantage<br>Flop Decision Tree</h1>
 <p class="sub">Born-Again Tree &mdash; Preflop Raiser vs Checker</p>
@@ -163,27 +178,52 @@ td { background: #161b22; }
 <div class="card green">
   <div class="card-title">2A-YES: You HAVE range advantage</div>
   <div class="card-action"><span class="action-bet-small">Bet small (1/3)</span> or <span class="action-check">Check</span></div>
+  <div style="font-size:0.85rem;color:#8b949e;margin-bottom:10px;">
+    You have range advantage on: <strong style="color:#e6edf3;">A-high, K-high, Q-high, J-high dry, Broadway-heavy, high paired (KKx, QQx, JJx)</strong><br>
+    Examples: A&#9824;J&#9829;4&#9827; &bull; K&#9829;8&#9830;2&#9827; &bull; Q&#9830;T&#9824;5&#9829; &bull; A&#9829;K&#9824;J&#9827; &bull; K&#9829;K&#9830;5&#9827;
+  </div>
   <div class="table-wrap"><table>
     <tr><th>Villain's Strength</th><th>Your Air Level</th><th>Action</th></tr>
     <tr><td>Low TP+, few strong hands</td><td>Any</td><td><strong style="color:#58a6ff;">BET 1/3</strong> (45%)</td></tr>
     <tr><td>Some TP+ or strong</td><td>Low air</td><td><strong style="color:#a371f7;">MIX</strong> (~41%)</td></tr>
     <tr><td>Any</td><td>High air (&gt;15%)</td><td><strong style="color:#3fb950;">CHECK-LEAN</strong> (42%)</td></tr>
   </table></div>
+
   <div class="examples">
-    <strong>Rule:</strong> "I'm strong, they're weak = bet small. Too much air = check."
+    <strong>What does this table mean?</strong><br><br>
+
+    <strong style="color:#58a6ff;">Row 1 &mdash; BET 1/3 (45%):</strong> Villain's range is weak. They have few top pairs, few sets, few strong hands. You dominate them &mdash; bet small to extract value from their entire calling range. Big bets would fold out the marginal hands you profit from.<br>
+    <em>Example:</em> You raise BTN, BB calls. Flop A&#9824;7&#9829;2&#9827;. BB's range has almost no Ax (they'd 3-bet AK/AQ). You have all the Aces. Villain is weak &rarr; bet 1/3.<br><br>
+
+    <strong style="color:#a371f7;">Row 2 &mdash; MIX (~41%):</strong> Villain has some top-pair+ hands or strong draws that can fight back. You still have range advantage, but can't just bet freely because they'll raise or call with real hands. Spread your strategy: bet some, check some.<br>
+    <em>Example:</em> You raise BTN, BB calls. Flop K&#9829;Q&#9824;9&#9827;. You have range advantage (KK, AK, KQ), but BB also has K9s, Q9s, JTs (straight). They can fight back &rarr; mix.<br><br>
+
+    <strong style="color:#3fb950;">Row 3 &mdash; CHECK-LEAN (42%):</strong> YOUR range has too much air (unmade hands, missed draws, random overcards). Even though you have overall range advantage, you can't sustain betting because too many of your bets would be bluffs. Villain can exploit by calling/raising.<br>
+    <em>Example:</em> You raise BTN with a wide range. Flop K&#9824;8&#9829;3&#9827;. You have range advantage (KK, AK, KQ), BUT a large chunk of your range is stuff like 76s, T9s, 54s that missed completely. &gt;15% of your range is air &rarr; check more.<br><br>
+
+    <strong>Rule:</strong> "I'm strong, they're weak = bet small. Too much air = check."<br>
+    <strong>Key insight:</strong> Air is ALWAYS the brake pedal. It overrides everything else.
   </div>
 </div>
 
 <div class="card red">
   <div class="card-title">2A-NO: You DON'T have range advantage</div>
   <div class="card-action"><span class="action-bet-big">Bet big (2/3)</span> on dry, <span class="action-check">Check</span> on wet</div>
+  <div style="font-size:0.85rem;color:#8b949e;margin-bottom:10px;">
+    Caller has advantage on: <strong style="color:#e6edf3;">Low connected (654, 765, 543), mid connected (987, T98), low paired (55x, 44x, 33x), monotone low/mid</strong><br>
+    Examples: 6&#9829;5&#9830;4&#9827; &bull; 8&#9824;7&#9829;6&#9830; &bull; 5&#9829;5&#9824;9&#9827; &bull; 7&#9829;6&#9829;3&#9829;
+  </div>
   <div class="table-wrap"><table>
-    <tr><th>Board Texture</th><th>Action</th></tr>
-    <tr><td>Dry (no flush, no straight)</td><td><strong style="color:#d29922;">BET 2/3</strong> (50%)</td></tr>
-    <tr><td>Straight present</td><td><strong style="color:#a371f7;">MIX/CHECK</strong> (44% check)</td></tr>
-    <tr><td>Monotone (all one suit)</td><td><strong style="color:#3fb950;">CHECK-LEAN</strong> (49%)</td></tr>
+    <tr><th>Board Texture</th><th>Action</th><th>Why</th></tr>
+    <tr><td>Dry (no flush, no straight)</td><td><strong style="color:#d29922;">BET 2/3</strong> (50%)</td><td>Villain can't realize equity</td></tr>
+    <tr><td>Straight present</td><td><strong style="color:#a371f7;">MIX/CHECK</strong> (44% check)</td><td>Too many made hands in villain's range</td></tr>
+    <tr><td>Monotone (all one suit)</td><td><strong style="color:#3fb950;">CHECK-LEAN</strong> (49%)</td><td>No fold equity vs flush draws/made flushes</td></tr>
   </table></div>
   <div class="examples">
+    <strong>Examples:</strong><br>
+    8&#9824;4&#9829;2&#9827; (dry, rainbow) &rarr; BET 2/3. Villain has range advantage but can't use it on a dry board.<br>
+    7&#9829;6&#9824;5&#9827; (straight draws everywhere) &rarr; MIX/CHECK. Villain has too many straights/draws.<br>
+    6&#9829;5&#9829;3&#9829; (monotone) &rarr; CHECK. Villain's flush combos destroy your fold equity.<br><br>
     <strong>Rule:</strong> "Weak range, shallow: bomb dry boards, surrender on wet boards."
   </div>
 </div>
@@ -212,6 +252,10 @@ td { background: #161b22; }
 <div class="card orange">
   <div class="card-title">2B-IP: In Position</div>
   <div class="card-action"><span class="action-bet-small">Bet small (1/3)</span> when polar, <span class="action-check">Check</span> when airy</div>
+  <div style="font-size:0.85rem;color:#8b949e;margin-bottom:10px;">
+    <strong style="color:#e6edf3;">Polar range</strong> = lots of very strong hands (sets, overpairs, top pair good kicker) AND lots of draws/bluffs. Few medium-strength hands.<br>
+    <strong style="color:#e6edf3;">Air</strong> = hands with no made value and no draw (random overcards that missed).
+  </div>
   <div class="table-wrap"><table>
     <tr><th>Your Range</th><th>Action</th></tr>
     <tr><td>Low air + high polar advantage</td><td><strong style="color:#58a6ff;">MOSTLY BET 1/3</strong> (68%)</td></tr>
@@ -219,8 +263,59 @@ td { background: #161b22; }
     <tr><td>High air + villain more airy</td><td><strong style="color:#a371f7;">MIX</strong> (38%)</td></tr>
     <tr><td>High air + you more airy</td><td><strong style="color:#3fb950;">CHECK-LEAN</strong> (45%)</td></tr>
   </table></div>
+
   <div class="examples">
-    <strong>Rule:</strong> "Deep + IP: polar with value = bet small often. Airy = slow down."
+    <strong style="color:#58a6ff;">Row 1 &mdash; MOSTLY BET 1/3 (68%):</strong> You have clear value hands AND clear bluffs, with few awkward medium hands. This is the ideal betting structure &mdash; you know what you're doing with each hand.<br>
+    <em>Example:</em> You raise BTN, BB calls. SPR=8. Flop A&#9824;7&#9829;2&#9827;. Your range: AA/AK/AQ (strong value) + flush draws/gutshots like 5&#9824;4&#9824; (bluffs). Few medium hands. Villain's range is capped (no AA/AK). You're very polar with almost no air &rarr; bet 1/3 at 68%.<br><br>
+
+    <strong style="color:#58a6ff;">Row 2 &mdash; LEAN BET 1/3 (49%):</strong> You still have value + bluffs, but less extreme. More medium-strength hands mixed in (second pair, weak top pair). You're polar-ish but not dominated by extremes.<br>
+    <em>Example:</em> You raise BTN, BB calls. SPR=7. Flop K&#9824;8&#9829;5&#9827;. Your range: KK/AK (strong) + some draws, but also KJ/KT/K9 (medium top pairs) and some 9T/JT that have a bit of equity. Not as cleanly polar &rarr; lean bet 1/3 at 49%.<br><br>
+
+    <strong style="color:#a371f7;">Row 3 &mdash; MIX (38% check):</strong> You have lots of air (missed hands), BUT villain also has lots of air. Neither side is strong. Since both ranges are weak, you can still bet sometimes (villain is also weak and will fold), but you can't go crazy.<br>
+    <em>Example:</em> You raise BTN, BB calls. SPR=8. Flop 9&#9824;6&#9829;2&#9827;. Your range has overcards that missed (AJ, AQ, KQ = air), but BB also has lots of air (J8, T7, Q4 type hands). Both weak &rarr; mix. You can bluff some but not a lot.<br><br>
+
+    <strong style="color:#3fb950;">Row 4 &mdash; CHECK-LEAN (45%):</strong> You have lots of air AND villain has LESS air than you. You're the weaker side. Villain connects better with this board. Betting would be pure bluffing and villain will catch you too often.<br>
+    <em>Example:</em> You raise BTN, BB calls. SPR=8. Flop 7&#9829;5&#9824;4&#9827;. Your range: mostly overcards that missed (AK, AQ, KJ = air). But BB has 67s, 86s, 54s, 43s, A5s &mdash; they connect. You have MORE air than them &rarr; check-lean (45%).<br><br>
+
+    <strong>Key insight:</strong> The decision tree here is: <em>First</em> &mdash; how much air do you have? (low vs high). <em>Then</em> &mdash; if low air, how polar are you? If high air, who is airier?
+  </div>
+</div>
+
+<div class="section-title">Key Concepts: Air &amp; Polar</div>
+
+<div class="card orange">
+  <div class="card-title">What is "Air"?</div>
+  <div style="font-size:0.85rem;">
+    <strong style="color:#e6edf3;">Air = hands that completely missed the board.</strong> No pair, no draw, no real equity. Just overcards or random cards that have nothing.<br><br>
+    <strong style="color:#3fb950;">How to estimate your air level:</strong> Think about your full opening range on this specific flop. What percentage of your hands missed completely?
+  </div>
+  <div class="examples">
+    <strong>High Air boards</strong> (your range mostly misses):<br>
+    &bull; 7&#9829;5&#9824;4&#9827; &mdash; if you raised BTN, most of your range (AK, AQ, KJ, QJ, KT, JT, T9) missed. Only 77, 55, 44, 76s, 65s connect. &gt;15% air.<br>
+    &bull; 8&#9824;4&#9829;2&#9827; &mdash; almost nothing in a BTN range hits. AA-99 are overpairs but KQ, QJ, JT, T9, A5, K7 are all pure air.<br>
+    &bull; 6&#9830;5&#9830;3&#9829; &mdash; your broadway hands (AK, AQ, KJ, QJ, KT) are all dead here.<br><br>
+    <strong>Low Air boards</strong> (your range connects well):<br>
+    &bull; A&#9824;K&#9829;7&#9827; &mdash; AA, AK, AQ, AJ, KK, KQ, KJ all hit. Very few hands miss completely.<br>
+    &bull; Q&#9829;J&#9824;T&#9827; &mdash; AK (straight), KQ, QJ, JT, KT, AQ, 98 all connect. Almost no air.<br>
+    &bull; K&#9830;8&#9829;3&#9827; &mdash; KK, AK, KQ, KJ, KT, 88, 99-AA all connect. Low air from EP/MP; moderate air from BTN (wider open).<br><br>
+    <strong style="color:#d29922;">Rule of thumb:</strong> High-card boards (A/K/Q) = low air for raiser. Low connected boards (765, 543) = high air for raiser. The lower/more connected the board, the more of your opening range is air.
+  </div>
+</div>
+
+<div class="card blue">
+  <div class="card-title">What is "Polar"?</div>
+  <div style="font-size:0.85rem;">
+    <strong style="color:#e6edf3;">Polar range = lots of very strong hands + lots of draws/bluffs. Few medium-strength hands.</strong><br>
+    A polar range is ideal for betting because every hand has a clear plan: value hands bet for value, bluffs bet to fold out better hands. Medium hands are what make you want to check.
+  </div>
+  <div class="examples">
+    <strong>High Polar</strong> (clear nuts + clear bluffs):<br>
+    &bull; A&#9824;7&#9829;2&#9827; &mdash; You have AA/AK/AQ (clear value) + 5&#9824;4&#9824;, 9&#9824;8&#9824; (clear bluffs). Few hands like A8 or A6 that are medium.<br>
+    &bull; K&#9824;4&#9829;2&#9827; &mdash; You have KK/AK (value) + random suited connectors (bluffs). 99, TT are clear overpairs. Very polar.<br><br>
+    <strong>Low Polar</strong> (lots of medium-strength hands):<br>
+    &bull; K&#9829;Q&#9824;9&#9827; &mdash; You have KQ, KJ, K9, QJ, Q9 (all medium top/second pair). Hard to categorize hands as "nuts" or "bluffs". Lots of in-between.<br>
+    &bull; J&#9829;T&#9824;8&#9827; &mdash; You have JT, J8, T8 (medium pairs), QJ, KJ (overcards+pair). Many hands are decent-but-not-great.<br><br>
+    <strong style="color:#d29922;">Rule of thumb:</strong> Dry boards with one high card (A72, K42) = highly polar. Connected boards with multiple cards your range hits (KQ9, JT8) = low polar (lots of medium hands).
   </div>
 </div>
 

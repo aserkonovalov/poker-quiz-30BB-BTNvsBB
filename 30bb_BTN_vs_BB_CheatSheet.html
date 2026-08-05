@@ -92,9 +92,22 @@ h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; 
   font-size: 0.7rem;
   color: #484f58;
 }
+.back-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background: #161b22;
+  color: #8b949e;
+  font-size: 0.8rem;
+  text-decoration: none;
+  margin-bottom: 12px;
+}
+.back-btn:active { background: #1c2a3f; color: #58a6ff; }
 </style>
 </head>
 <body>
+<a href="index.html" class="back-btn">&larr; Back to Menu</a>
 
 <h1>30bb BTN vs BB<br>Flop C-Bet Strategy</h1>
 <p class="sub">Simplified GTO &mdash; Villain checks, you decide</p>
@@ -206,6 +219,26 @@ h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; 
     <div class="modifier-text"><strong>Connected texture</strong> (e.g., J&#9829;T&#9830;9&#9827;, 8&#9824;7&#9829;6&#9830;)<br>
     Check more than default. When you do bet &rarr; prefer big.
     </div>
+  </div>
+</div>
+
+<!-- AIR CONCEPT -->
+<div class="section-title">Understanding Air (Why You Check)</div>
+
+<div class="card">
+  <div class="card-title">What is "Air" in your range?</div>
+  <div style="font-size:0.85rem;margin-bottom:8px;">
+    Air = hands that completely missed the board. No pair, no draw, no equity. When too much of your range is air, you must check more often &mdash; otherwise you're bluffing too much and villain can exploit you.
+  </div>
+  <div class="examples">
+    <strong>Where is your air HIGH? (check more)</strong><br>
+    &bull; Low connected boards: 6&#9829;5&#9830;4&#9827;, 7&#9824;6&#9830;5&#9827; &mdash; your AK, AQ, KJ, QJ, KT, JT all missed completely<br>
+    &bull; Low disconnected: 8&#9824;4&#9829;2&#9827; &mdash; only overpairs hit; your suited connectors and broadway are dead<br><br>
+    <strong>Where is your air LOW? (bet freely)</strong><br>
+    &bull; A-high boards: A&#9824;7&#9829;2&#9827; &mdash; your AA, AK, AQ, AJ, AT all connect. Most of your range has something.<br>
+    &bull; K/Q-high: K&#9829;8&#9830;2&#9827; &mdash; KK, AK, KQ, KJ, KT + overpairs all hit.<br>
+    &bull; Broadway: Q&#9829;J&#9824;T&#9827; &mdash; AK, KQ, KT, QJ, JT, AQ, 98 all connect.<br><br>
+    <strong style="color:#d29922;">This is exactly why:</strong> A/K/Q-high = bet 100% (low air). Low connected = check 40% (high air).
   </div>
 </div>
 
