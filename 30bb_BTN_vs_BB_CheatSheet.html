@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>30bb BTN vs BB C-Bet</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  padding: 16px;
+  line-height: 1.6;
+}
+h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; }
+.sub { text-align: center; font-size: 0.75rem; color: #8b949e; margin-bottom: 16px; }
+.card {
+  background: #161b22;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-left: 4px solid #30363d;
+}
+.card.green { border-left-color: #3fb950; }
+.card.blue { border-left-color: #58a6ff; }
+.card.orange { border-left-color: #d29922; }
+.card.red { border-left-color: #f85149; }
+.card.purple { border-left-color: #a371f7; }
+.card-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+.card-action {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.action-bet-small { color: #58a6ff; }
+.action-bet-big { color: #d29922; }
+.action-bet-mix { color: #a371f7; }
+.action-check { color: #3fb950; }
+.examples {
+  font-size: 0.8rem;
+  color: #8b949e;
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: #0d1117;
+  border-radius: 6px;
+}
+.examples strong { color: #c9d1d9; }
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #58a6ff;
+  margin: 20px 0 10px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #30363d;
+}
+.context {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+}
+.context strong { color: #58a6ff; }
+.default-box {
+  text-align: center;
+  background: #1c2128;
+  border: 2px dashed #30363d;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 16px 0;
+  font-size: 0.95rem;
+}
+.default-box .big { font-size: 1.2rem; font-weight: 800; color: #58a6ff; }
+.modifier {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.modifier-icon { font-size: 1.2rem; flex-shrink: 0; }
+.modifier-text { font-size: 0.85rem; }
+.modifier-text strong { color: #e6edf3; }
+.footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.7rem;
+  color: #484f58;
+}
+</style>
+</head>
+<body>
+
+<h1>30bb BTN vs BB<br>Flop C-Bet Strategy</h1>
+<p class="sub">Simplified GTO &mdash; Villain checks, you decide</p>
+
+<div class="context">
+  <strong>Situation:</strong> You open BTN 2bb, BB calls. Flop comes. BB checks.<br>
+  <strong>SPR:</strong> ~4.5 (shallow)<br>
+  <strong>Sizings:</strong> Small = 25% pot (~1/4) | Big = 62% pot (~2/3)<br>
+  <strong>Position:</strong> You are IP (last to act)
+</div>
+
+<div class="default-box">
+  <div class="big">Default: Bet 80% small</div>
+  <div>When in doubt, bet small. You can't go far wrong.</div>
+</div>
+
+<!-- RULES -->
+<div class="section-title">5 Rules by High Card</div>
+
+<div class="card blue">
+  <div class="card-title">Rule 1: Ace-High Board</div>
+  <div class="card-action action-bet-mix">BET 100% &mdash; Mix sizing</div>
+  <div>Bet every time. Use big on dry boards, small on connected.</div>
+  <div class="examples">
+    <strong>Examples:</strong><br>
+    A&#9824;7&#9829;2&#9827; (dry) &rarr; Bet big (62%)<br>
+    A&#9829;K&#9824;9&#9827; (Broadway) &rarr; Bet small (25%)<br>
+    A&#9829;J&#9830;T&#9827; (connected) &rarr; Bet small (25%)<br>
+    A&#9830;5&#9827;3&#9829; (straight-possible) &rarr; Bet small (25%)
+  </div>
+</div>
+
+<div class="card blue">
+  <div class="card-title">Rule 2: King or Queen-High Board</div>
+  <div class="card-action action-bet-small">BET 100% SMALL (25% pot)</div>
+  <div>Always bet. Always small. Pure and simple.</div>
+  <div class="examples">
+    <strong>Examples:</strong><br>
+    K&#9829;8&#9830;2&#9827; &rarr; Bet small<br>
+    K&#9824;Q&#9829;4&#9830; &rarr; Bet small<br>
+    Q&#9829;7&#9830;3&#9827; &rarr; Bet small<br>
+    K&#9830;6&#9829;3&#9827; &rarr; Bet small
+  </div>
+</div>
+
+<div class="card orange">
+  <div class="card-title">Rule 3: Jack or Ten-High Board</div>
+  <div class="card-action">BET 75% small &bull; <span class="action-check">CHECK 25%</span></div>
+  <div>Bet most of the time (small), but mix in some checks. Check more on connected textures.</div>
+  <div class="examples">
+    <strong>Examples:</strong><br>
+    J&#9829;7&#9830;2&#9827; (dry) &rarr; Bet small (most of the time)<br>
+    T&#9824;8&#9829;3&#9827; (slightly connected) &rarr; Bet small, sometimes check<br>
+    J&#9830;T&#9829;8&#9827; (very connected) &rarr; Check more often<br>
+    T&#9829;9&#9830;7&#9827; (straight board) &rarr; Check ~40%
+  </div>
+</div>
+
+<div class="card red">
+  <div class="card-title">Rule 4: Low Connected Board (7-high or less, connected)</div>
+  <div class="card-action"><span class="action-check">CHECK 40%</span> &bull; <span class="action-bet-big">Bet 60% BIG (62% pot)</span></div>
+  <div>This is your WORST texture. Check often. When you do bet, go big (polarized).</div>
+  <div class="examples">
+    <strong>Examples:</strong><br>
+    6&#9829;5&#9830;4&#9827; (straight) &rarr; Check 40%, bet big 60%<br>
+    7&#9824;6&#9830;5&#9827; (straight) &rarr; Check 40%, bet big 60%<br>
+    5&#9829;4&#9830;3&#9827; (straight) &rarr; Check 40%, bet big 60%<br>
+    7&#9829;5&#9824;4&#9830; (OESD) &rarr; Check ~35%, bet big
+  </div>
+</div>
+
+<div class="card purple">
+  <div class="card-title">Rule 5: Low Unconnected Board (9-high or less, disconnected)</div>
+  <div class="card-action">BET 75% &bull; <span class="action-bet-mix">Mix sizing</span></div>
+  <div>Still bet most of the time, but mix your sizing between small and big.</div>
+  <div class="examples">
+    <strong>Examples:</strong><br>
+    9&#9829;6&#9830;3&#9827; (rainbow dry) &rarr; Bet big more often<br>
+    8&#9824;5&#9829;2&#9827; (disconnected) &rarr; Bet, mix sizing<br>
+    9&#9830;5&#9827;2&#9829; (dry low) &rarr; Bet, lean big<br>
+    8&#9829;4&#9830;2&#9827; (very dry) &rarr; Bet big
+  </div>
+</div>
+
+<!-- MODIFIERS -->
+<div class="section-title">Modifiers (adjust from base rule)</div>
+
+<div class="card">
+  <div class="modifier">
+    <div class="modifier-icon">&#x1F3B2;</div>
+    <div class="modifier-text"><strong>Paired board</strong> (e.g., K&#9829;K&#9830;5&#9827;, 9&#9824;9&#9830;3&#9827;)<br>
+    Check a bit more (+10-20% check). When you bet &rarr; small.
+    </div>
+  </div>
+  <div class="modifier">
+    <div class="modifier-icon">&#x1F3B0;</div>
+    <div class="modifier-text"><strong>Trips board</strong> (e.g., 2&#9829;2&#9830;2&#9827;, T&#9824;T&#9830;T&#9829;)<br>
+    Always bet. Use big sizing ~50% of the time.
+    </div>
+  </div>
+  <div class="modifier">
+    <div class="modifier-icon">&#x1F3A8;</div>
+    <div class="modifier-text"><strong>Monotone board</strong> (e.g., A&#9824;8&#9824;5&#9824;, K&#9829;9&#9829;7&#9829;)<br>
+    Still bet (don't slow down!), but shift to BIGGER sizing. Charge the draws.
+    </div>
+  </div>
+  <div class="modifier">
+    <div class="modifier-icon">&#x1F517;</div>
+    <div class="modifier-text"><strong>Connected texture</strong> (e.g., J&#9829;T&#9830;9&#9827;, 8&#9824;7&#9829;6&#9830;)<br>
+    Check more than default. When you do bet &rarr; prefer big.
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div class="section-title">One-Line Summary</div>
+<div class="default-box">
+  <div class="big">"Bet everything small on high boards.<br>Check more and size up on low connected boards."</div>
+  <div style="margin-top:8px;">That's 90% of the strategy.</div>
+</div>
+
+<div class="footer">
+  30bb 6-max NL Holdem &bull; BTN vs BB SRP &bull; GTO Simplified<br>
+  Source: RangeConverter Aggregate Report + Solver Data
+</div>
+
+</body>
+</html>
