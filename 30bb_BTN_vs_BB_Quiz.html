@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>30bb C-Bet Quiz</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  padding-top: env(safe-area-inset-top, 16px);
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+  -webkit-overflow-scrolling: touch;
+}
+.header { text-align: center; margin-bottom: 12px; }
+.header h1 { font-size: 1.2rem; color: #58a6ff; margin-bottom: 4px; }
+.score { font-size: 0.85rem; color: #8b949e; }
+.score .correct { color: #3fb950; }
+.score .wrong { color: #f85149; }
+.set-info { font-size: 0.8rem; color: #8b949e; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>30bb BTN vs BB Quiz</h1>
+  <div class="score">
+    <span class="correct" id="correctCount">0</span> correct &bull;
+    <span class="wrong" id="wrongCount">0</span> wrong &bull;
+    Q <span id="qNum">1</span>/10
+  </div>
+  <div class="set-info">Set <span id="setNum">1</span> of 20</div>
+</div>
+
+<style>
+.board-display {
+  background: #1c6e3d;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin: 16px 0;
+  text-align: center;
+  min-width: 280px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.board-cards {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+.board-info {
+  font-size: 0.8rem;
+  color: #a8e6cf;
+}
+.card-red { color: #ff6b6b; }
+.card-white { color: #ffffff; }
+
+.question {
+  text-align: center;
+  font-size: 1rem;
+  margin: 12px 0;
+  color: #c9d1d9;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 360px;
+  margin: 12px 0;
+}
+
+.opt-btn {
+  padding: 14px 16px;
+  border: 2px solid #30363d;
+  border-radius: 12px;
+  background: #161b22;
+  color: #e6edf3;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: all 0.15s;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.opt-btn:active { transform: scale(0.97); background: #1c2a3f; }
+.opt-btn.selected { border-color: #58a6ff; background: #1c2a3f; }
+.opt-btn.correct-answer { border-color: #3fb950; background: #1a3d2a; color: #3fb950; }
+.opt-btn.wrong-answer { border-color: #f85149; background: #3d1a1a; color: #f85149; }
+.opt-btn.disabled { opacity: 0.7; pointer-events: none; }
+
+.feedback {
+  text-align: center;
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  min-height: 60px;
+  width: 100%;
+  max-width: 360px;
+  display: none;
+}
+.feedback.visible { display: block; }
+.feedback.show-correct { background: #1a3d2a; border: 1px solid #3fb950; }
+.feedback.show-wrong { background: #3d1a1a; border: 1px solid #f85149; }
+.feedback .explain { font-size: 0.8rem; color: #8b949e; margin-top: 6px; }
+
+.next-btn {
+  padding: 14px 40px;
+  border: none;
+  border-radius: 12px;
+  background: #58a6ff;
+  color: #0d1117;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  margin-top: 12px;
+  transition: transform 0.1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.next-btn:active { transform: scale(0.95); }
+.next-btn.disabled { background: #30363d; color: #8b949e; pointer-events: none; }
+
+.progress {
+  width: 100%;
+  max-width: 360px;
+  height: 4px;
+  background: #30363d;
+  border-radius: 2px;
+  margin-top: 16px;
+}
+.progress-fill {
+  height: 100%;
+  background: #58a6ff;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.results {
+  text-align: center;
+  margin-top: 20px;
+  display: none;
+}
+.results.visible { display: block; }
+.results h2 { font-size: 1.5rem; color: #58a6ff; margin-bottom: 12px; }
+.results .big-score { font-size: 3rem; font-weight: 800; color: #3fb950; }
+.results .restart-btn {
+  margin-top: 20px;
+  padding: 14px 40px;
+  border: none;
+  border-radius: 12px;
+  background: #58a6ff;
+  color: #0d1117;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+}
+.results .restart-btn:active { transform: scale(0.95); }
+
+#quizArea { display: flex; flex-direction: column; align-items: center; width: 100%; }
+#quizArea.hidden { display: none; }
+</style>
+
+<div id="quizArea">
+  <div class="board-display">
+    <div class="board-cards" id="boardCards"></div>
+    <div class="board-info" id="boardInfo"></div>
+  </div>
+
+  <div class="question">BB checks. What's your action?</div>
+
+  <div class="options" id="options"></div>
+
+  <div class="feedback" id="feedback">
+    <div id="feedbackText"></div>
+    <div class="explain" id="feedbackExplain"></div>
+  </div>
+
+  <button class="next-btn disabled" id="nextBtn">Next &#8594;</button>
+
+  <div class="progress">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<div class="results" id="results">
+  <h2>Quiz Complete!</h2>
+  <div class="big-score" id="finalScore"></div>
+  <div style="margin-top:8px;color:#8b949e;" id="finalMsg"></div>
+  <button class="restart-btn" id="restartBtn">Play Again</button>
+</div>
+
+<script>
+(function() {
+"use strict";
+
+// Suit symbols as actual unicode (no HTML entities - fixes iOS rendering)
+var SUITS = { s: "\u2660", h: "\u2665", d: "\u2666", c: "\u2663" };
+var SUIT_CLASS = { s: "card-white", h: "card-red", d: "card-red", c: "card-white" };
+
+function cardHTML(card) {
+  var rank = card.slice(0, -1);
+  var suit = card.slice(-1);
+  return '<span class="' + SUIT_CLASS[suit] + '">' + rank + SUITS[suit] + '</span>';
+}
+
+// 200 questions: 20 sets x 10 questions
+// Categories: A-high, K-high, Q-high, J-high, T-high, Low connected,
+//             Low disconnected, Paired, Monotone, Two-tone
+var questions = [
+
+// === SET 1 ===
+{board:["As","7h","2c"],info:"A-high, rainbow, dry",answer:0,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small, check 25%","Check 40%, bet 60% big"],
+ explain:"A-high dry rainbow = bet 100%. Dry board = prefer big sizing."},
+{board:["Ah","Kd","9c"],info:"A-high, rainbow, Broadway",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small, check 25%","Check 40%, bet 60% big"],
+ explain:"AK9 connected A-high = bet 100% small. Connected boards use small sizing."},
+{board:["Kh","8d","2c"],info:"K-high, rainbow, dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75% small, check 25%","Check 40%, bet big"],
+ explain:"K-high dry = bet 100% small. K/Q boards are pure small bet spots."},
+{board:["Qh","7d","3c"],info:"Q-high, rainbow, dry",answer:0,
+ options:["Bet 100% small","Bet 75% small, check 25%","Bet 100% big","Check 40%"],
+ explain:"Q-high dry = bet 100% small. K/Q-high boards are the purest small bet textures."},
+{board:["Jh","7d","2c"],info:"J-high, rainbow, dry",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"J-high dry = bet ~75% small, check ~25%. J/T boards have more checking than K/Q."},
+{board:["Ts","8h","3c"],info:"T-high, rainbow, slightly connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T83 = T-high, slightly connected. Bet ~75% small, check ~25%."},
+{board:["6h","5d","4c"],info:"Low, rainbow, straight",answer:3,
+ options:["Bet 100% small","Bet 75% small, check 25%","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"654 = low connected straight. Worst texture. Check 40%. When betting, go BIG."},
+{board:["9h","6d","3c"],info:"Low-mid, rainbow, disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"963 = low-ish disconnected rainbow. Bet ~75%, mix sizing lean big."},
+{board:["Kh","Kd","5c"],info:"Paired Kings, rainbow",answer:1,
+ options:["Bet 100% big","Bet ~80% small, check ~20%","Check 40%, bet big","Bet 100% small"],
+ explain:"KK5 = paired board. Check a bit more (+10-20%). When betting, small sizing."},
+{board:["Ks","9s","7s"],info:"K-high, monotone",answer:2,
+ options:["Bet 100% small","Check 40%, bet big","Bet, but SIZE UP (use big sizing)","Check 100%"],
+ explain:"K97 monotone = still bet but shift to BIGGER sizing. Charge flush draws."},
+
+// === SET 2 ===
+{board:["Ad","Jh","Ts"],info:"A-high, rainbow, connected straight",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 40%, bet 60% big","Bet 75%, mix sizing"],
+ explain:"AJT = connected A-high. Still bet 100%, but use small sizing since connected."},
+{board:["As","5s","3d"],info:"A-high, 2-tone, straight-possible",answer:1,
+ options:["Check 40%, bet 60% big","Bet 100% small","Bet 75%, mix sizing","Bet 100% big"],
+ explain:"A53 2-tone = still bet 100%, use small. A-high always bets."},
+{board:["Ks","Qh","4d"],info:"K-high, rainbow, 2 Broadway",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, mix sizing","Check 40%, bet big"],
+ explain:"KQ4 = King-high with Broadway. Pure small bet, always."},
+{board:["Qd","Jh","5s"],info:"Q-high, rainbow, 2 Broadway",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 50%"],
+ explain:"QJ5 = Q-high, 2 Broadway. Still bet 100% small."},
+{board:["Jd","Th","8c"],info:"J-high, rainbow, very connected",answer:2,
+ options:["Bet 100% small","Bet 75% small, check 25%","Check ~35%, bet mix sizing","Check 50%, bet big"],
+ explain:"JT8 = very connected J-high. More checking (~35%). When betting, mix sizing."},
+{board:["Ts","9d","7c"],info:"T-high, rainbow, straight texture",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~40%, bet mix (lean big)","Bet 100% big"],
+ explain:"T97 = straight board, T-high. Check more (~40%). Connected boards slow you down."},
+{board:["7s","6d","5c"],info:"Low, rainbow, straight",answer:3,
+ options:["Bet 100% small","Bet 75%, mix sizing","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"765 = low connected straight. Check 40%, bet big 60%. BB has range advantage."},
+{board:["8s","5h","2c"],info:"Low, rainbow, very disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 75% small"],
+ explain:"852 = very disconnected low board. Bet ~75%, prefer bigger sizing since low."},
+{board:["Qh","Qd","7c"],info:"Paired Queens, rainbow",answer:1,
+ options:["Bet 100% big","Bet ~80% small, check ~20%","Check 40%, bet big","Bet 100% small"],
+ explain:"QQ7 = paired board. Check more (+10-20%). When betting, use small."},
+{board:["Jh","Js","4d"],info:"Paired Jacks, 2-tone",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet small when betting","Bet 100% big"],
+ explain:"JJ4 = paired + 2-tone. Extra checking. When betting, small sizing."},
+
+// === SET 3 ===
+{board:["Ac","Td","6h"],info:"A-high, rainbow, gap",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet 70% big","Bet 75% small"],
+ explain:"AT6 = A-high rainbow. Always bet 100% on A-high. Use small when semi-connected."},
+{board:["Ad","8c","4h"],info:"A-high, rainbow, disconnected",answer:0,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small, check 25%","Check 40%"],
+ explain:"A84 = A-high dry disconnected. Bet 100% big sizing on dry A-high boards."},
+{board:["Kd","Jc","3h"],info:"K-high, rainbow, Broadway",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 40%, bet big"],
+ explain:"KJ3 = K-high with Broadway card. Bet 100% small."},
+{board:["Kc","7h","4d"],info:"K-high, rainbow, dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75% small","Check 40%, bet big"],
+ explain:"K74 = K-high dry. Pure 100% small bet spot."},
+{board:["Qc","9h","2d"],info:"Q-high, rainbow, dry",answer:0,
+ options:["Bet 100% small","Bet 75% small, check 25%","Bet 100% big","Check 40%"],
+ explain:"Q92 = Q-high dry rainbow. Bet 100% small. Pure spot."},
+{board:["Jc","8h","5d"],info:"J-high, rainbow, semi-connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%, bet mix","Bet 100% big"],
+ explain:"J85 = J-high, some connectivity. Bet ~75% small, check ~25%."},
+{board:["5h","4d","3c"],info:"Low, rainbow, straight",answer:3,
+ options:["Bet 75% small","Bet 100% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"543 = low connected straight. Check 40%. Betting = big sizing only (polarized)."},
+{board:["7h","5s","4d"],info:"Low, rainbow, OESD",answer:2,
+ options:["Bet 100% small","Bet 100% big","Check ~35%, bet big when betting","Bet 75% small"],
+ explain:"754 = low with OESD. Check more, bet big when you do."},
+{board:["Ah","Ad","7c"],info:"Paired Aces, rainbow",answer:1,
+ options:["Bet 100% big","Bet ~85% small, check ~15%","Check 40%","Bet 75% big"],
+ explain:"AA7 = paired Aces. Still heavily betting, small sizing. Slight check frequency."},
+{board:["Qh","Qc","Ts"],info:"Paired Queens, 2-tone",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~25%, bet small","Bet 100% big"],
+ explain:"QQT = paired + 2-tone + Broadway. Check a bit more, small when betting."},
+
+// === SET 4 ===
+{board:["Ac","Qh","5d"],info:"A-high, rainbow, Broadway",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75%, check 25%","Check 40%, bet big"],
+ explain:"AQ5 = A-high with Broadway. Bet 100% small."},
+{board:["As","9d","3c"],info:"A-high, rainbow, dry",answer:0,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%, bet big"],
+ explain:"A93 = A-high dry rainbow. Bet 100% big sizing."},
+{board:["Kh","Td","6c"],info:"K-high, rainbow, gap",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75% small","Check 35%, bet big"],
+ explain:"KT6 = K-high rainbow. Bet 100% small."},
+{board:["Qd","8c","4h"],info:"Q-high, rainbow, disconnected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 40%, bet big"],
+ explain:"Q84 = Q-high disconnected. Bet 100% small."},
+{board:["Jd","6c","2h"],info:"J-high, rainbow, dry",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Bet 100% big","Check 40%"],
+ explain:"J62 = J-high very dry. Bet ~75% small, check ~25%."},
+{board:["Td","7h","4c"],info:"T-high, rainbow, disconnected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T74 = T-high disconnected. Bet ~75% small, check ~25%."},
+{board:["8h","7d","6c"],info:"Low-mid, rainbow, straight",answer:3,
+ options:["Bet 100% small","Bet 75%, mix","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"876 = connected straight board. Check 40%, bet big 60%. BB has strong range here."},
+{board:["9c","4h","2d"],info:"Low, rainbow, disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"942 = low disconnected. Bet ~75%, lean toward big sizing."},
+{board:["Th","Td","6c"],info:"Paired Tens, rainbow",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet small","Bet 100% big"],
+ explain:"TT6 = paired T. More checking than high pairs. Small when betting."},
+{board:["Ad","Ah","Jc"],info:"Paired Aces + Broadway",answer:1,
+ options:["Bet 100% big","Bet ~85% small, check ~15%","Check 40%","Bet 75%, mix"],
+ explain:"AAJ = paired Aces + Broadway. Heavily betting small. Slight check."},
+
+// === SET 5 ===
+{board:["Ah","Td","7c"],info:"A-high, rainbow, semi-connected",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%, bet big"],
+ explain:"AT7 = A-high semi-connected. Bet 100% small."},
+{board:["Ac","6h","2d"],info:"A-high, rainbow, very dry",answer:0,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small, check 25%","Check 40%"],
+ explain:"A62 = A-high very dry. Bet 100% big sizing."},
+{board:["Kd","9c","5h"],info:"K-high, rainbow, gap",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"K95 = K-high rainbow. Bet 100% small."},
+{board:["Qs","Td","8c"],info:"Q-high, rainbow, connected",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 35%, bet mix","Bet 75% small"],
+ explain:"QT8 = Q-high connected. Still bet 100%, use small on connected boards."},
+{board:["Js","9h","6c"],info:"J-high, rainbow, semi-connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet mix sizing","Bet 100% big"],
+ explain:"J96 = J-high semi-connected. Some checking, mix sizing when betting."},
+{board:["Tc","6h","2d"],info:"T-high, rainbow, dry",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T62 = T-high dry. Bet ~75% small, check ~25%."},
+{board:["6d","4c","2h"],info:"Low, rainbow, gapped",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"642 = low gapped. Near-worst texture. Check 40%, big when betting."},
+{board:["8c","6h","4d"],info:"Low-mid, rainbow, connected",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"864 = connected low. Check 40%, bet big. BB connects strongly."},
+{board:["7h","7d","3c"],info:"Paired Sevens, rainbow",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~35%, bet small","Bet 100% big"],
+ explain:"773 = low paired. Check significantly more. Small when betting."},
+{board:["Ah","Jh","4h"],info:"A-high, monotone",answer:2,
+ options:["Bet 100% small","Check 40%, bet big","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"AJ4 monotone = still bet since A-high, but size up. Charge flush draws."},
+
+// === SET 6 ===
+{board:["As","Kh","4c"],info:"A-high, rainbow, AK board",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"AK4 = A-high with K. Bet 100% small. AK boards always small."},
+{board:["Ad","Qc","8h"],info:"A-high, rainbow, AQ board",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet big","Bet 75%, mix"],
+ explain:"AQ8 = A-high with Q. Bet 100% small."},
+{board:["Kc","Qd","9h"],info:"K-high, rainbow, 2 Broadway",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 40%"],
+ explain:"KQ9 = K-high connected Broadway. Bet 100% small."},
+{board:["Qs","9c","6d"],info:"Q-high, rainbow, gapped",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"Q96 = Q-high gapped. Bet 100% small."},
+{board:["Jc","Td","5h"],info:"J-high, rainbow, JT connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet small","Bet 100% big"],
+ explain:"JT5 = J-high with T. Some connectivity so check a bit, small when betting."},
+{board:["Ts","9h","4c"],info:"T-high, rainbow, T9 connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T94 = T-high with 9 connected. Bet ~75% small, check ~25%."},
+{board:["7d","6c","3h"],info:"Low, rainbow, semi-connected",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"763 = low semi-connected. Check 40%, big when betting."},
+{board:["9s","7h","5c"],info:"Low-mid, rainbow, connected",answer:2,
+ options:["Bet 100% small","Bet 100% big","Check ~35%, bet big when betting","Bet 75% small"],
+ explain:"975 = connected mid. Check more, bet big. Straight draws everywhere."},
+{board:["5s","5h","9c"],info:"Paired Fives, rainbow",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~35%, bet small","Bet 100% big"],
+ explain:"559 = low paired. Check more. BB has more 5x. Small when betting."},
+{board:["Td","8d","3d"],info:"T-high, monotone",answer:2,
+ options:["Bet 100% small","Check 50%, bet small","Check ~30%, bet BIG","Check 100%"],
+ explain:"T83 monotone = still bet but size up significantly. Need to charge flush draws."},
+
+// === SET 7 ===
+{board:["As","Jd","6c"],info:"A-high, rainbow, gapped",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75%, check 25%","Check 40%"],
+ explain:"AJ6 = A-high with Broadway. Bet 100% small."},
+{board:["Ad","5h","4c"],info:"A-high, rainbow, wheel draw",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet big","Bet 75% small"],
+ explain:"A54 = A-high with wheel connectivity. Still bet 100% small."},
+{board:["Kh","6c","3d"],info:"K-high, rainbow, very dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 30%"],
+ explain:"K63 = K-high very dry. Bet 100% small."},
+{board:["Qh","Td","7c"],info:"Q-high, rainbow, semi-connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"QT7 = Q-high with some connectivity. Still bet 100% small."},
+{board:["Js","6d","4c"],info:"J-high, rainbow, dry",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%, bet mix","Bet 100% big"],
+ explain:"J64 = J-high dry. Bet ~75% small, check ~25%."},
+{board:["Td","5h","2c"],info:"T-high, rainbow, very dry",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T52 = T-high very dry. Bet ~75% small, check ~25%."},
+{board:["8d","7c","5h"],info:"Low-mid, rainbow, connected",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"875 = connected mid. Check 40%, bet big 60%. Straight-heavy texture."},
+{board:["9d","3h","2c"],info:"Low, rainbow, very disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"932 = low very disconnected. Bet ~75%, lean big."},
+{board:["8h","8d","4c"],info:"Paired Eights, rainbow",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet small","Bet 100% big"],
+ explain:"884 = mid paired. Check more than unpaired. Small when betting."},
+{board:["Qd","7d","4d"],info:"Q-high, monotone",answer:2,
+ options:["Bet 100% small","Check 50%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"Q74 monotone = still bet but go big. Flush draw protection."},
+
+// === SET 8 ===
+{board:["Ah","9c","6d"],info:"A-high, rainbow, gap",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"A96 = A-high with gap. Bet 100% small."},
+{board:["As","Th","5c"],info:"A-high, rainbow, semi-connected",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet big","Bet 75%"],
+ explain:"AT5 = A-high semi-connected. Bet 100% small."},
+{board:["Kd","Tc","7h"],info:"K-high, rainbow, 2 gaps",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 40%"],
+ explain:"KT7 = K-high. Bet 100% small."},
+{board:["Qc","6h","2d"],info:"Q-high, rainbow, very dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 40%"],
+ explain:"Q62 = Q-high very dry. Bet 100% small. Pure spot."},
+{board:["Jh","9c","7d"],info:"J-high, rainbow, connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet mix sizing","Bet 100% big"],
+ explain:"J97 = J-high connected. More checking, mix sizing."},
+{board:["Ts","6d","3h"],info:"T-high, rainbow, dry",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T63 = T-high dry. Bet ~75% small, check ~25%."},
+{board:["6c","5h","3d"],info:"Low, rainbow, gapped straight",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"653 = low gapped straight. Check 40%, big when betting."},
+{board:["8h","4d","2c"],info:"Low, rainbow, disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"842 = low disconnected. Bet ~75%, lean big."},
+{board:["6h","6d","Kc"],info:"Paired Sixes + King",answer:2,
+ options:["Bet 100% small","Bet 100% big","Check ~25%, bet small","Bet 75%, mix"],
+ explain:"66K = low paired + high kicker. Check slightly more. Small when betting."},
+{board:["Js","7s","2s"],info:"J-high, monotone",answer:2,
+ options:["Bet 100% small","Check 50%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"J72 monotone = bet but go big. Must charge flush draws."},
+
+// === SET 9 ===
+{board:["Ac","Kh","Jd"],info:"A-high, rainbow, AKJ Broadway",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%","Bet 75%, mix"],
+ explain:"AKJ = all Broadway. Bet 100% small. Connected + BTN advantage."},
+{board:["Ad","9h","7c"],info:"A-high, rainbow, semi-connected",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75%, check 25%","Check 35%"],
+ explain:"A97 = A-high with middling cards. Bet 100% small."},
+{board:["Kh","Jd","8c"],info:"K-high, rainbow, connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%, bet big"],
+ explain:"KJ8 = K-high connected. Bet 100% small."},
+{board:["Qh","8c","5d"],info:"Q-high, rainbow, gapped",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 40%"],
+ explain:"Q85 = Q-high gapped. Bet 100% small."},
+{board:["Jd","Tc","6h"],info:"J-high, rainbow, JT connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet mix","Bet 100% big"],
+ explain:"JT6 = J-high with T. Connected top = some checking, mix sizing."},
+{board:["Td","8c","6h"],info:"T-high, rainbow, connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~35%, bet mix (lean big)","Bet 100% big"],
+ explain:"T86 = T-high connected. Check more (~35%), mix sizing lean big."},
+{board:["7c","6h","4d"],info:"Low, rainbow, gapped straight",answer:3,
+ options:["Bet 100% small","Bet 75%, mix","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"764 = low gapped straight. Check 40%, bet big."},
+{board:["9h","5d","3c"],info:"Low, rainbow, disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"953 = low disconnected. Bet ~75%, lean big."},
+{board:["9h","9d","Kc"],info:"Paired Nines + King",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~25%, bet small","Bet 100% big"],
+ explain:"99K = mid paired + high kicker. Check a bit more. Small when betting."},
+{board:["8c","5c","2c"],info:"Low, monotone",answer:3,
+ options:["Bet 100% small","Bet 100% big","Bet, SIZE UP","Check ~45%, bet BIG"],
+ explain:"852 monotone low = worst of both worlds. Check significantly more AND size up."},
+
+// === SET 10 ===
+{board:["Ah","Kc","Td"],info:"A-high, rainbow, AKT Broadway",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet big","Bet 75%"],
+ explain:"AKT = super connected Broadway. Bet 100% small."},
+{board:["Ac","8h","3d"],info:"A-high, rainbow, dry",answer:0,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"A83 = A-high dry. Bet 100% big."},
+{board:["Kd","8h","6c"],info:"K-high, rainbow, semi-dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"K86 = K-high. Bet 100% small."},
+{board:["Qd","Tc","6h"],info:"Q-high, rainbow, semi-connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"QT6 = Q-high semi-connected. Bet 100% small."},
+{board:["Jh","8d","4c"],info:"J-high, rainbow, gapped",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%, bet mix","Bet 100% big"],
+ explain:"J84 = J-high gapped. Bet ~75% small, check ~25%."},
+{board:["Ts","7c","5h"],info:"T-high, rainbow, semi-connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T75 = T-high semi-connected. Bet ~75% small, check ~25%."},
+{board:["5c","4h","2d"],info:"Low, rainbow, wheel draw",answer:3,
+ options:["Bet 100% small","Bet 75%, mix","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"542 = low wheel draw. Check 40%, bet big."},
+{board:["8d","6c","2h"],info:"Low-mid, rainbow, disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"862 = low-mid disconnected. Bet ~75%, lean big."},
+{board:["4h","4d","Tc"],info:"Paired Fours + Ten",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~35%, bet small","Bet 100% big"],
+ explain:"44T = low paired + mid kicker. Check more. BB has more 4x. Small when betting."},
+{board:["As","Ks","5s"],info:"AK monotone",answer:2,
+ options:["Bet 100% small","Check 40%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"AK5 monotone = A-high still bets but must size up for flush protection."},
+
+// === SET 11 ===
+{board:["Ac","Jd","8h"],info:"A-high, rainbow, AJ board",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"AJ8 = A-high with Broadway. Bet 100% small."},
+{board:["Ad","4c","2h"],info:"A-high, rainbow, very dry low",answer:0,
+ options:["Bet 100% big","Bet 100% small","Bet 75%, check 25%","Check 30%"],
+ explain:"A42 = A-high very dry. Bet 100% big."},
+{board:["Kc","Td","8h"],info:"K-high, rainbow, connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"KT8 = K-high connected. Bet 100% small."},
+{board:["Qh","Jc","3d"],info:"Q-high, rainbow, QJ connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"QJ3 = Q-high with J. Bet 100% small."},
+{board:["Jd","5h","3c"],info:"J-high, rainbow, dry",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%","Bet 100% big"],
+ explain:"J53 = J-high dry. Bet ~75% small, check ~25%."},
+{board:["Ts","4d","2h"],info:"T-high, rainbow, very dry",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T42 = T-high very dry. Bet ~75% small, check ~25%."},
+{board:["6c","4h","3d"],info:"Low, rainbow, connected",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"643 = low connected. Check 40%, bet big."},
+{board:["9c","8h","6d"],info:"Mid, rainbow, connected",answer:2,
+ options:["Bet 100% small","Bet 100% big","Check ~35%, bet big when betting","Bet 75% small"],
+ explain:"986 = connected mid. Check more, bet big when you do."},
+{board:["3h","3d","Kc"],info:"Paired Threes + King",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~35%, bet small","Bet 100% big"],
+ explain:"33K = low paired + K kicker. Check more. Small when betting."},
+{board:["9h","6h","3h"],info:"Low-mid, monotone",answer:3,
+ options:["Bet 100% small","Bet 100% big","Bet, SIZE UP","Check ~45%, bet BIG"],
+ explain:"963 monotone = low + mono. Check significantly more AND size up when betting."},
+
+// === SET 12 ===
+{board:["Ah","Qd","Jc"],info:"A-high, rainbow, AQJ straight",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%","Bet 75%, mix"],
+ explain:"AQJ = very connected Broadway. Bet 100% small."},
+{board:["As","7c","4h"],info:"A-high, rainbow, dry gapped",answer:0,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"A74 = A-high dry. Bet 100% big."},
+{board:["Kh","5c","2d"],info:"K-high, rainbow, very dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 30%"],
+ explain:"K52 = K-high very dry. Bet 100% small."},
+{board:["Qc","Jd","9h"],info:"Q-high, rainbow, very connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Check 30%, bet mix","Bet 75%"],
+ explain:"QJ9 = Q-high very connected. Bet 100% small (Q+ boards always bet)."},
+{board:["Jh","9d","4c"],info:"J-high, rainbow, J9 connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 30%, bet mix","Bet 100% big"],
+ explain:"J94 = J-high with 9. Bet ~75% small, check ~25%."},
+{board:["Tc","9h","5d"],info:"T-high, rainbow, T9 connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%, bet mix","Bet 100% big"],
+ explain:"T95 = T-high with 9. Bet ~75% small, check ~25%."},
+{board:["7h","4c","2d"],info:"Low, rainbow, disconnected",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"742 = low disconnected. Check 40%, bet big."},
+{board:["9d","7c","4h"],info:"Low-mid, rainbow, semi-connected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"974 = mid semi-connected. Bet ~75%, lean big."},
+{board:["2h","2d","Ac"],info:"Paired Deuces + Ace",answer:1,
+ options:["Bet 100% big","Bet ~80% small, check ~20%","Check 40%","Bet 75%, mix"],
+ explain:"22A = low paired + Ace. A-high dominance means still bet a lot. Small sizing."},
+{board:["Kd","Td","4d"],info:"K-high, monotone, KT",answer:2,
+ options:["Bet 100% small","Check 40%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"KT4 monotone = bet but size up. Flush draws need to pay."},
+
+// === SET 13 ===
+{board:["Ah","Kd","6c"],info:"A-high, rainbow, AK dry",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75%, check 25%","Check 30%"],
+ explain:"AK6 = A-high + K. Bet 100% small."},
+{board:["Ac","Td","3h"],info:"A-high, rainbow, gapped",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet big","Bet 75%"],
+ explain:"AT3 = A-high gapped. Bet 100% small."},
+{board:["Kh","Jc","6d"],info:"K-high, rainbow, KJ",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"KJ6 = K-high with J. Bet 100% small."},
+{board:["Qd","9h","7c"],info:"Q-high, rainbow, semi-connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Check 30%, bet mix","Bet 75%"],
+ explain:"Q97 = Q-high semi-connected. Bet 100% small."},
+{board:["Jc","8d","6h"],info:"J-high, rainbow, connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet mix sizing","Bet 100% big"],
+ explain:"J86 = J-high connected. Some checking, mix sizing when betting."},
+{board:["Ts","9d","3c"],info:"T-high, rainbow, T9",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%, bet mix","Bet 100% big"],
+ explain:"T93 = T-high with 9. Bet ~75% small, check ~25%."},
+{board:["8c","7h","4d"],info:"Low-mid, rainbow, semi-connected",answer:3,
+ options:["Bet 100% small","Bet 75%, mix","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"874 = connected mid-low. Check 40%, bet big."},
+{board:["6d","3c","2h"],info:"Low, rainbow, very disconnected",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"632 = low disconnected. Still a tough texture for BTN. Check 40%, big."},
+{board:["Jh","Jd","8c"],info:"Paired Jacks, rainbow",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~25%, bet small","Bet 100% big"],
+ explain:"JJ8 = paired J. Check a bit more. Small when betting."},
+{board:["Ac","8c","6c"],info:"A-high, monotone",answer:2,
+ options:["Bet 100% small","Check 40%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"A86 monotone = A-high still bets but must size up for flush draw protection."},
+
+// === SET 14 ===
+{board:["Ah","Qc","7d"],info:"A-high, rainbow, AQ",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75%, check 25%","Check 30%"],
+ explain:"AQ7 = A-high with Q. Bet 100% small."},
+{board:["As","6d","5c"],info:"A-high, rainbow, connected low",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet big","Bet 75%"],
+ explain:"A65 = A-high with connected low cards. Still bet 100% small."},
+{board:["Kc","9h","6d"],info:"K-high, rainbow, gapped",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"K96 = K-high gapped. Bet 100% small."},
+{board:["Qh","5c","3d"],info:"Q-high, rainbow, dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 40%"],
+ explain:"Q53 = Q-high dry. Bet 100% small."},
+{board:["Jd","Tc","9h"],info:"J-high, rainbow, very connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~35%, bet mix sizing","Check 50%, bet big"],
+ explain:"JT9 = very connected J-high. Lots of checking (~35%). Mix sizing."},
+{board:["Tc","8d","5h"],info:"T-high, rainbow, semi-connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T85 = T-high semi-connected. Bet ~75% small, check ~25%."},
+{board:["5d","4c","2h"],info:"Low, rainbow, wheel",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"542 = low wheel draw. Check 40%, bet big."},
+{board:["9h","8c","4d"],info:"Mid, rainbow, semi-connected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"984 = mid semi-connected. Bet ~75%, lean big."},
+{board:["Kh","Kc","9d"],info:"Paired Kings + Nine",answer:1,
+ options:["Bet 100% big","Bet ~80% small, check ~20%","Check 40%","Bet 75%, mix"],
+ explain:"KK9 = paired K. Check slightly more (+10-20%). Small when betting."},
+{board:["7c","5c","3c"],info:"Low, monotone",answer:3,
+ options:["Bet 100% small","Bet 100% big","Bet, SIZE UP","Check ~50%, bet BIG"],
+ explain:"753 mono low = worst texture. Check a lot (~50%), big when betting."},
+
+// === SET 15 ===
+{board:["Ad","Kh","8c"],info:"A-high, rainbow, AK dry",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"AK8 = A-high + K. Bet 100% small."},
+{board:["Ah","7d","5c"],info:"A-high, rainbow, semi-connected low",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet big","Bet 75%"],
+ explain:"A75 = A-high with semi-connected low. Bet 100% small."},
+{board:["Kd","Qc","7h"],info:"K-high, rainbow, KQ",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 30%"],
+ explain:"KQ7 = K-high with Q. Bet 100% small."},
+{board:["Qs","8h","6c"],info:"Q-high, rainbow, semi-connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"Q86 = Q-high semi-connected. Bet 100% small."},
+{board:["Jh","7c","4d"],info:"J-high, rainbow, gapped",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%, bet mix","Bet 100% big"],
+ explain:"J74 = J-high gapped. Bet ~75% small, check ~25%."},
+{board:["Td","9c","8h"],info:"T-high, rainbow, very connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~40%, bet big","Bet 100% big"],
+ explain:"T98 = very connected T-high. Check a lot (~40%), bet big when you do."},
+{board:["7d","5c","3h"],info:"Low, rainbow, gapped",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"753 = low gapped. Check 40%, bet big."},
+{board:["9c","6h","2d"],info:"Low-mid, rainbow, disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"962 = low-mid disconnected. Bet ~75%, lean big."},
+{board:["Ah","As","4c"],info:"Paired Aces + low",answer:1,
+ options:["Bet 100% big","Bet ~85% small, check ~15%","Check 40%","Bet 75%, mix"],
+ explain:"AA4 = paired Aces. Heavily betting small. Tiny check frequency."},
+{board:["Jd","9d","5d"],info:"J-high, monotone",answer:2,
+ options:["Bet 100% small","Check 50%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"J95 monotone = bet but go big. Flush draws must pay."},
+
+// === SET 16 ===
+{board:["Ac","Kd","Qs"],info:"A-high, rainbow, AKQ mega-connected",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet big","Bet 75%"],
+ explain:"AKQ = mega Broadway. Bet 100% small. BTN dominates range."},
+{board:["Ad","8c","6h"],info:"A-high, rainbow, mid-gapped",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"A86 = A-high mid-gapped. Bet 100% small."},
+{board:["Kh","7c","5d"],info:"K-high, rainbow, dry low",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 30%"],
+ explain:"K75 = K-high dry. Bet 100% small."},
+{board:["Qd","Tc","4h"],info:"Q-high, rainbow, gapped",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"QT4 = Q-high gapped. Bet 100% small."},
+{board:["Jc","9d","5h"],info:"J-high, rainbow, semi-connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 30%, bet big","Bet 100% big"],
+ explain:"J95 = J-high semi-connected. Bet ~75% small, check ~25%."},
+{board:["Tc","7d","6h"],info:"T-high, rainbow, connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~35%, bet mix (lean big)","Bet 100% big"],
+ explain:"T76 = T-high connected. Check more (~35%), lean big."},
+{board:["8h","6d","5c"],info:"Low-mid, rainbow, connected",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"865 = connected mid-low. Check 40%, bet big."},
+{board:["7c","3h","2d"],info:"Low, rainbow, disconnected",answer:3,
+ options:["Bet 100% small","Bet 75%, mix","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"732 = low disconnected. Check 40%, bet big."},
+{board:["Td","Tc","5h"],info:"Paired Tens + low",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet small","Bet 100% big"],
+ explain:"TT5 = paired mid. Check more. Small when betting."},
+{board:["Qh","8h","3h"],info:"Q-high, monotone",answer:2,
+ options:["Bet 100% small","Check 50%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"Q83 monotone = bet but size up. Charge flush draws."},
+
+// === SET 17 ===
+{board:["Ah","Kc","5d"],info:"A-high, rainbow, AK low kicker",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75%, check 25%","Check 30%"],
+ explain:"AK5 = A-high + K. Bet 100% small."},
+{board:["Ac","9d","8h"],info:"A-high, rainbow, connected mid",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%, bet big"],
+ explain:"A98 = A-high with connected mids. Bet 100% small."},
+{board:["Kd","Jh","Tc"],info:"K-high, rainbow, very connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Check 30%, bet mix","Bet 75%"],
+ explain:"KJT = K-high very connected. Bet 100% small (K+ always bets)."},
+{board:["Qs","7c","4h"],info:"Q-high, rainbow, dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"Q74 = Q-high dry. Bet 100% small."},
+{board:["Jh","Td","7c"],info:"J-high, rainbow, JT connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet mix sizing","Bet 100% big"],
+ explain:"JT7 = J-high with T. Connected top = some checking, mix sizing."},
+{board:["Td","8h","7c"],info:"T-high, rainbow, very connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~40%, bet big","Bet 100% big"],
+ explain:"T87 = very connected T-high. Check a lot (~40%), bet big."},
+{board:["6h","5c","2d"],info:"Low, rainbow, gapped",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"652 = low semi-connected. Check 40%, bet big."},
+{board:["9d","8c","5h"],info:"Mid, rainbow, semi-connected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"985 = mid semi-connected. Bet ~75%, lean big."},
+{board:["5h","5d","Ac"],info:"Paired Fives + Ace",answer:1,
+ options:["Bet 100% big","Bet ~80% small, check ~20%","Check 40%","Bet 75%, mix"],
+ explain:"55A = low paired + Ace kicker. A-high effect means still bet a lot. Small."},
+{board:["Kc","6c","2c"],info:"K-high, monotone, low",answer:2,
+ options:["Bet 100% small","Check 50%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"K62 mono = bet but size up. Low monotone is rough but K-high still bets."},
+
+// === SET 18 ===
+{board:["Ad","Kc","7h"],info:"A-high, rainbow, AK",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75%, check 25%","Check 30%"],
+ explain:"AK7 = A-high + K. Bet 100% small."},
+{board:["Ah","6c","3d"],info:"A-high, rainbow, dry low",answer:0,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"A63 = A-high dry. Bet 100% big."},
+{board:["Kc","Qh","8d"],info:"K-high, rainbow, KQ",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 30%"],
+ explain:"KQ8 = K-high with Q. Bet 100% small."},
+{board:["Qd","Jc","8h"],info:"Q-high, rainbow, QJ connected",answer:0,
+ options:["Bet 100% small","Bet 100% big","Check 30%, bet mix","Bet 75%"],
+ explain:"QJ8 = Q-high connected. Bet 100% small."},
+{board:["Jc","6h","5d"],info:"J-high, rainbow, low connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%, bet big","Bet 100% big"],
+ explain:"J65 = J-high with connected lows. Bet ~75% small, check ~25%."},
+{board:["Ts","9c","6h"],info:"T-high, rainbow, T9 connected",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%, bet mix","Bet 100% big"],
+ explain:"T96 = T-high with 9. Bet ~75% small, check ~25%."},
+{board:["7h","6d","2c"],info:"Low, rainbow, semi-connected",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"762 = low semi-connected. Check 40%, bet big."},
+{board:["8d","5c","3h"],info:"Low, rainbow, disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"853 = low disconnected. Bet ~75%, lean big."},
+{board:["9h","9c","5d"],info:"Paired Nines + low",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet small","Bet 100% big"],
+ explain:"995 = paired mid. Check more. Small when betting."},
+{board:["Ah","Th","5h"],info:"A-high, monotone, AT",answer:2,
+ options:["Bet 100% small","Check 40%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"AT5 monotone = A-high still bets but size up for flush protection."},
+
+// === SET 19 ===
+{board:["Ac","Qd","Th"],info:"A-high, rainbow, AQT connected",answer:1,
+ options:["Bet 100% big","Bet 100% small","Check 30%, bet big","Bet 75%"],
+ explain:"AQT = connected A-high Broadway. Bet 100% small."},
+{board:["Ad","Jc","4h"],info:"A-high, rainbow, AJ gapped",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"AJ4 = A-high with J. Bet 100% small."},
+{board:["Kh","8c","4d"],info:"K-high, rainbow, dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 30%"],
+ explain:"K84 = K-high dry. Bet 100% small."},
+{board:["Qc","9d","3h"],info:"Q-high, rainbow, dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 35%"],
+ explain:"Q93 = Q-high dry. Bet 100% small."},
+{board:["Jd","8c","7h"],info:"J-high, rainbow, connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~30%, bet mix sizing","Bet 100% big"],
+ explain:"J87 = J-high connected. Check some, mix sizing."},
+{board:["Tc","5d","4h"],info:"T-high, rainbow, connected low",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 40%, bet big","Bet 100% big"],
+ explain:"T54 = T-high with connected lows. Bet ~75% small, check ~25%."},
+{board:["4d","3c","2h"],info:"Low, rainbow, wheel straight",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"432 = lowest possible board. Wheel draws. Check 40%, bet big."},
+{board:["9c","7h","3d"],info:"Low-mid, rainbow, gapped",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"973 = mid gapped. Bet ~75%, lean big."},
+{board:["Qs","Qd","4c"],info:"Paired Queens + low",answer:1,
+ options:["Bet 100% big","Bet ~80% small, check ~20%","Check 40%","Bet 75%, mix"],
+ explain:"QQ4 = paired Q. Check slightly more. Small when betting."},
+{board:["Td","6d","4d"],info:"T-high, monotone",answer:2,
+ options:["Bet 100% small","Check 50%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"T64 monotone = bet but size up. Flush protection needed."},
+
+// === SET 20 ===
+{board:["As","Kd","3c"],info:"A-high, rainbow, AK dry",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75%, check 25%","Check 30%"],
+ explain:"AK3 = A-high + K. Bet 100% small."},
+{board:["Ah","Tc","9d"],info:"A-high, rainbow, AT9 connected",answer:1,
+ options:["Bet 100% big","Bet 100% small","Bet 75% small","Check 30%"],
+ explain:"AT9 = A-high connected mid. Bet 100% small."},
+{board:["Kc","9d","4h"],info:"K-high, rainbow, dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 30%"],
+ explain:"K94 = K-high dry. Bet 100% small."},
+{board:["Qh","7c","2d"],info:"Q-high, rainbow, very dry",answer:0,
+ options:["Bet 100% small","Bet 100% big","Bet 75%, check 25%","Check 40%"],
+ explain:"Q72 = Q-high very dry. Bet 100% small. Pure spot."},
+{board:["Js","Tc","8h"],info:"J-high, rainbow, very connected",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~35%, bet mix sizing","Check 50%"],
+ explain:"JT8 = very connected J-high. Check ~35%, mix sizing when betting."},
+{board:["Tc","9h","2d"],info:"T-high, rainbow, T9 + dry",answer:0,
+ options:["Bet 75% small, check 25%","Bet 100% small","Check 35%, bet mix","Bet 100% big"],
+ explain:"T92 = T-high with 9, dry. Bet ~75% small, check ~25%."},
+{board:["8d","7h","3c"],info:"Low-mid, rainbow, semi-connected",answer:3,
+ options:["Bet 100% small","Bet 75% small","Bet 100% big","Check 40%, bet 60% BIG"],
+ explain:"873 = mid semi-connected. Check 40%, bet big."},
+{board:["9h","4c","2d"],info:"Low, rainbow, very disconnected",answer:1,
+ options:["Check 40%, bet big","Bet 75%, mix sizing (lean big)","Bet 100% small","Bet 100% big"],
+ explain:"942 = low disconnected. Bet ~75%, lean big."},
+{board:["6h","6d","9c"],info:"Paired Sixes + Nine",answer:2,
+ options:["Bet 100% small","Bet 75% small","Check ~35%, bet small","Bet 100% big"],
+ explain:"669 = low paired + mid kicker. Check more. Small when betting."},
+{board:["Ks","Js","3s"],info:"K-high, monotone, KJ",answer:2,
+ options:["Bet 100% small","Check 40%","Bet, SIZE UP (use big sizing)","Check 100%"],
+ explain:"KJ3 monotone = K-high still bets but must size up for flush protection."}
+];
+
+var QUESTIONS_PER_SET = 10;
+var TOTAL_SETS = 20;
+var currentSet = 0;
+var current = 0;
+var score = { correct: 0, wrong: 0 };
+var answered = false;
+var shuffled = [];
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function getSet(setIndex) {
+  var start = setIndex * QUESTIONS_PER_SET;
+  var end = start + QUESTIONS_PER_SET;
+  return shuffle(questions.slice(start, end));
+}
+
+function startQuiz() {
+  shuffled = getSet(currentSet);
+  current = 0;
+  score = { correct: 0, wrong: 0 };
+  answered = false;
+  document.getElementById("results").classList.remove("visible");
+  document.getElementById("quizArea").classList.remove("hidden");
+  document.getElementById("setNum").textContent = currentSet + 1;
+  render();
+}
+
+function render() {
+  var q = shuffled[current];
+  document.getElementById("boardCards").innerHTML = q.board.map(cardHTML).join(" ");
+  document.getElementById("boardInfo").textContent = q.info;
+
+  var optDiv = document.getElementById("options");
+  optDiv.innerHTML = "";
+  for (var i = 0; i < q.options.length; i++) {
+    var btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = q.options[i];
+    btn.setAttribute("data-idx", i);
+    btn.addEventListener("touchend", handleOptionTap, false);
+    btn.addEventListener("click", handleOptionClick, false);
+    optDiv.appendChild(btn);
+  }
+
+  var fb = document.getElementById("feedback");
+  fb.classList.remove("visible", "show-correct", "show-wrong");
+
+  var nextBtn = document.getElementById("nextBtn");
+  nextBtn.classList.add("disabled");
+  answered = false;
+
+  document.getElementById("correctCount").textContent = score.correct;
+  document.getElementById("wrongCount").textContent = score.wrong;
+  document.getElementById("qNum").textContent = current + 1;
+  document.getElementById("progressFill").style.width = ((current) / shuffled.length * 100) + "%";
+}
+
+var touchHandled = false;
+
+function handleOptionTap(e) {
+  e.preventDefault();
+  touchHandled = true;
+  var idx = parseInt(this.getAttribute("data-idx"), 10);
+  selectAnswer(idx);
+}
+
+function handleOptionClick(e) {
+  if (touchHandled) { touchHandled = false; return; }
+  var idx = parseInt(this.getAttribute("data-idx"), 10);
+  selectAnswer(idx);
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+
+  var q = shuffled[current];
+  var btns = document.querySelectorAll(".opt-btn");
+  var fb = document.getElementById("feedback");
+
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.add("disabled");
+  }
+
+  if (idx === q.answer) {
+    btns[idx].classList.add("correct-answer");
+    score.correct++;
+    fb.classList.remove("show-wrong");
+    fb.classList.add("visible", "show-correct");
+    document.getElementById("feedbackText").textContent = "\u2713 Correct!";
+  } else {
+    btns[idx].classList.add("wrong-answer");
+    btns[q.answer].classList.add("correct-answer");
+    score.wrong++;
+    fb.classList.remove("show-correct");
+    fb.classList.add("visible", "show-wrong");
+    document.getElementById("feedbackText").textContent = "\u2717 Wrong";
+  }
+  document.getElementById("feedbackExplain").textContent = q.explain;
+  document.getElementById("nextBtn").classList.remove("disabled");
+
+  document.getElementById("correctCount").textContent = score.correct;
+  document.getElementById("wrongCount").textContent = score.wrong;
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= shuffled.length) {
+    showResults();
+    return;
+  }
+  render();
+  window.scrollTo(0, 0);
+}
+
+function showResults() {
+  document.getElementById("quizArea").classList.add("hidden");
+  document.getElementById("results").classList.add("visible");
+  var pct = Math.round((score.correct / shuffled.length) * 100);
+  document.getElementById("finalScore").textContent = score.correct + "/" + shuffled.length + " (" + pct + "%)";
+  var msg = "";
+  if (pct >= 90) msg = "Excellent! You know this strategy cold.";
+  else if (pct >= 70) msg = "Good! A few spots to review.";
+  else if (pct >= 50) msg = "Decent. Keep studying the cheat sheet.";
+  else msg = "Keep at it! Review the 5 rules and try again.";
+  document.getElementById("finalMsg").textContent = msg;
+  document.getElementById("progressFill").style.width = "100%";
+}
+
+function restart() {
+  currentSet = (currentSet + 1) % TOTAL_SETS;
+  startQuiz();
+}
+
+// Event listeners (iOS-safe: no inline onclick)
+document.getElementById("nextBtn").addEventListener("touchend", function(e) {
+  e.preventDefault();
+  if (!this.classList.contains("disabled")) nextQuestion();
+}, false);
+document.getElementById("nextBtn").addEventListener("click", function(e) {
+  if (!this.classList.contains("disabled")) nextQuestion();
+}, false);
+
+document.getElementById("restartBtn").addEventListener("touchend", function(e) {
+  e.preventDefault();
+  restart();
+}, false);
+document.getElementById("restartBtn").addEventListener("click", function(e) {
+  restart();
+}, false);
+
+// Prevent double-tap zoom on iOS
+document.addEventListener("touchend", function(e) {}, false);
+
+// Init
+startQuiz();
+
+})();
+</script>
+</body>
+</html>
