@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Chart</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e;
+  color: #e6edf3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  padding-top: env(safe-area-inset-top, 12px);
+  -webkit-overflow-scrolling: touch;
+}
+.back-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background: #161b22;
+  color: #8b949e;
+  font-size: 0.85rem;
+  text-decoration: none;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  margin-bottom: 12px;
+  align-self: flex-start;
+}
+.back-btn:active { background: #1c2a3f; color: #58a6ff; }
+.chart-title {
+  font-size: 0.9rem;
+  color: #58a6ff;
+  margin-bottom: 10px;
+  text-align: center;
+  word-break: break-all;
+}
+.chart-container {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+}
+.chart-container img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+}
+.error {
+  color: #f85149;
+  font-size: 1rem;
+  margin-top: 40px;
+}
+</style>
+</head>
+<body>
+<a href="Spins.html" class="back-btn">&larr; Back to Charts</a>
+<div class="chart-title" id="chartTitle"></div>
+<div class="chart-container">
+  <img id="chartImg" src="" alt="Chart">
+</div>
+<div class="error" id="error" style="display:none;">Chart not found</div>
+
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var img = params.get("img");
+  if (!img) {
+    document.getElementById("error").style.display = "block";
+    document.getElementById("chartImg").style.display = "none";
+    return;
+  }
+  // Format title: replace underscores with spaces
+  var title = img.replace(/_/g, " ").replace(/\.(png|jpg)$/i, "");
+  document.getElementById("chartTitle").textContent = title;
+  document.title = title;
+
+  var imgEl = document.getElementById("chartImg");
+  imgEl.src = img + ".png";
+  imgEl.onerror = function() {
+    imgEl.style.display = "none";
+    document.getElementById("error").style.display = "block";
+  };
+})();
+</script>
+</body>
+</html>
