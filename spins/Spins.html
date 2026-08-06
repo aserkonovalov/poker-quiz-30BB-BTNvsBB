@@ -15,24 +15,8 @@ body {
   color: #e6edf3;
   padding: 10px;
   padding-top: env(safe-area-inset-top, 10px);
+  padding-bottom: env(safe-area-inset-bottom, 10px);
   -webkit-overflow-scrolling: touch;
-}
-@media (orientation: portrait) {
-  body::before {
-    content: "Rotate your phone to landscape \21BB";
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    inset: 0;
-    background: #1a1a2e;
-    color: #58a6ff;
-    font-size: 1.2rem;
-    font-weight: 700;
-    z-index: 9999;
-    text-align: center;
-    padding: 20px;
-  }
 }
 .back-btn {
   display: inline-block;
@@ -47,35 +31,94 @@ body {
   margin-bottom: 8px;
 }
 .back-btn:active { background: #1c2a3f; color: #58a6ff; }
-h1 { text-align: center; font-size: 1rem; color: #58a6ff; margin-bottom: 6px; }
+h1 { text-align: center; font-size: 1rem; color: #58a6ff; margin-bottom: 4px; }
 .sub { text-align: center; font-size: 0.65rem; color: #8b949e; margin-bottom: 10px; }
+
+/* === LANDSCAPE: full table === */
+.landscape-view { display: none; }
+@media (orientation: landscape) {
+  .landscape-view { display: block; }
+  .portrait-view { display: none; }
+}
+@media (orientation: portrait) {
+  .landscape-view { display: none; }
+  .portrait-view { display: block; }
+}
+
+/* Landscape table */
 .table-wrap { overflow-x: auto; }
-table {
+.table-wrap table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.65rem;
-  min-width: 700px;
+  font-size: 0.6rem;
+  min-width: 680px;
 }
-th, td {
-  padding: 6px 4px;
+.table-wrap th, .table-wrap td {
+  padding: 5px 3px;
   border: 1px solid #333;
   text-align: center;
   white-space: nowrap;
 }
-th { font-weight: 700; font-size: 0.6rem; }
-td a {
+.table-wrap th { font-weight: 700; font-size: 0.55rem; }
+.table-wrap td a {
   color: #e6edf3;
   text-decoration: none;
   display: block;
-  padding: 4px 2px;
+  padding: 3px 2px;
   border-radius: 4px;
   touch-action: manipulation;
 }
-td a:active { background: #58a6ff33; }
-.empty { color: #333; }
+.table-wrap td a:active { background: #58a6ff33; }
 .sep { background: #1a1a2e; border: none; width: 4px; min-width: 4px; }
 
-/* Column header colors matching original */
+/* === PORTRAIT: card-based layout === */
+.section-group { margin-bottom: 16px; }
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 8px 8px 0 0;
+  color: white;
+}
+.section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 4px;
+  padding: 8px;
+  background: #161b22;
+  border-radius: 0 0 8px 8px;
+  border: 1px solid #30363d;
+  border-top: none;
+}
+.section-grid a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  background: #1c2128;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #e6edf3;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+  touch-action: manipulation;
+  min-height: 38px;
+}
+.section-grid a:active { background: #58a6ff33; border-color: #58a6ff; }
+
+/* Section colors */
+.bg-btn { background: #000080; }
+.bg-sb { background: #AA336A; }
+.bg-sb-bb { background: #023020; }
+.bg-bb-btn { background: #FF4d01; }
+.bg-bb-2pp { background: #a9957b; }
+.bg-bb-sb { background: #cc0000; }
+.bg-hu-sb { background: #023020; }
+.bg-hu-bb { background: #FF4d01; }
+
+/* Column header colors for landscape */
 .col-btn { background: #000080; color: white; }
 .col-sb-mr { background: #AA336A; color: white; }
 .col-sb-limp { background: #AA336A; color: white; }
@@ -96,6 +139,157 @@ td a:active { background: #58a6ff33; }
 <h1>Free Spin & Go Charts</h1>
 <p class="sub">&copy; Team Bas Poker</p>
 
+<!-- ==================== PORTRAIT VIEW ==================== -->
+<div class="portrait-view">
+
+<div class="section-group">
+  <div class="section-title bg-btn">3-Way: BTN Open</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_BU_20BB">16+</a>
+    <a href="chart.html?img=3W_BU_13-16BB">13-16</a>
+    <a href="chart.html?img=3W_BU_10-13BB">10-13</a>
+    <a href="chart.html?img=3W_BU_0-10BB">&lt;10</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-sb">3-Way: SB vs BTN (MR)</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_SBvsBU_MR_16-20BB">16+</a>
+    <a href="chart.html?img=3W_SBvsBU_MR_13-16BB">13-16</a>
+    <a href="chart.html?img=3W_SBvsBU_MR_10-13BB">10-13</a>
+    <a href="chart.html?img=3W_SBvsBU_MR_0-10BB">&lt;10</a>
+    <a href="chart.html?img=3W_SBvsBU_vsAI">vs AI</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-sb">3-Way: SB vs BTN (Limp)</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_SBvsBU_limp_16-20BB">16+</a>
+    <a href="chart.html?img=3W_SBvsBU_limp_13-16BB">13-16</a>
+    <a href="chart.html?img=3W_SBvsBU_limp_10-13BB">10-13</a>
+    <a href="chart.html?img=3W_SBvsBU_limp_0-10BB">&lt;10</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-sb-bb">3-Way: SB vs BB</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_SBvsBB_16-20BB_fish">16+</a>
+    <a href="chart.html?img=3W_SBvsBB_13-16BB_fish">13-16</a>
+    <a href="chart.html?img=3W_SBvsBB_10-13BB_fish">10-13</a>
+    <a href="chart.html?img=3W_SBvsBB_0-10BB_fish">&lt;10</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-bb-btn">3-Way: BB vs BTN (MR)</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_BBvsBU_MR_16-20BB">16+</a>
+    <a href="chart.html?img=3W_BBvsBU_MR_13-16BB">13-16</a>
+    <a href="chart.html?img=3W_BBvsBU_MR_10-13BB">10-13</a>
+    <a href="chart.html?img=3W_BBvsBU_MR_0-10BB">&lt;10</a>
+    <a href="chart.html?img=3W_BBvsBU_vsAI">vs AI</a>
+    <a href="chart.html?img=3W_BBvsBU_3x_16BB">vs3x 16+</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-bb-btn">3-Way: BB vs BTN (Limp)</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_BBvsBU_LIMP_16-20BB">16+</a>
+    <a href="chart.html?img=3W_BBvsBU_LIMP_13-16BB">13-16</a>
+    <a href="chart.html?img=3W_BBvsBU_LIMP_10-13BB">10-13</a>
+    <a href="chart.html?img=3W_BBvsBU_LIMP_0-10BB">&lt;10</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-bb-2pp">3-Way: BB vs 2 players (MR)</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_BBvsBUSB_MR_16-20BB">16+</a>
+    <a href="chart.html?img=3W_BBvsBUSB_MR_13-16BB">13-16</a>
+    <a href="chart.html?img=3W_BBvsBUSB_MR_10-13BB">10-13</a>
+    <a href="chart.html?img=3W_BBvsBUSB_MR_0-10BB">&lt;10</a>
+    <a href="chart.html?img=3W_BBvsBUSB_vsAI">vs AI</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-bb-2pp">3-Way: BB vs 2 players (Limp)</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_BBvs2pp_LIMP_16-20BB">16+</a>
+    <a href="chart.html?img=3W_BBvs2pp_LIMP_13-16BB">13-16</a>
+    <a href="chart.html?img=3W_BBvs2pp_LIMP_10-13BB">10-13</a>
+    <a href="chart.html?img=3W_BBvs2pp_LIMP_0-10BB">&lt;10</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-bb-sb">3-Way: BB vs SB (Raise)</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_BBvsSB_25x_16BB">vs2.5x 16+</a>
+    <a href="chart.html?img=3W_BBvsSB_25x_13-16BB">vs2.5x 13-16</a>
+    <a href="chart.html?img=3W_BBvsSB_2x_16BB">vs2x 16+</a>
+    <a href="chart.html?img=3W_BBvsSB_2x_13-16BB">vs2x 13-16</a>
+    <a href="chart.html?img=3W_BBvsSB_2x_10-13BB">vs2x 10-13</a>
+    <a href="chart.html?img=3W_BBvsSB_3x_16BB">vs3x 16+</a>
+    <a href="chart.html?img=3W_BBvsSB_vsAI">vs AI</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-bb-sb">3-Way: BB vs SB (Limp)</div>
+  <div class="section-grid">
+    <a href="chart.html?img=3W_BBvsSB_LIMP_16-20BB_fish">16+</a>
+    <a href="chart.html?img=3W_BBvsSB_LIMP_13-16BB_fish">13-16</a>
+    <a href="chart.html?img=3W_BBvsSB_LIMP_10-13BB_fish">10-13</a>
+    <a href="chart.html?img=3W_BBvsSB_LIMP_0-10BB_fish">&lt;10</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-hu-sb">Heads-Up: SB</div>
+  <div class="section-grid">
+    <a href="chart.html?img=HU_SB_20BB_fish">20+</a>
+    <a href="chart.html?img=HU_SB_16-20BB_fish">16-20</a>
+    <a href="chart.html?img=HU_SB_13-16BB_fish">13-16</a>
+    <a href="chart.html?img=HU_SB_9-13BB_fish">10-13</a>
+    <a href="chart.html?img=HU_SB_7-9BB_fish">8-10</a>
+    <a href="chart.html?img=HU_SB_5-7BB_fish">5-8</a>
+    <a href="chart.html?img=HU_SB_0-8BB">&lt;5</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-hu-bb">Heads-Up: BB vs MR</div>
+  <div class="section-grid">
+    <a href="chart.html?img=HU_BBvsMR_20BB">20+</a>
+    <a href="chart.html?img=HU_BBvsMR_16-20BB">16-20</a>
+    <a href="chart.html?img=HU_BBvsMR_13-16BB">13-16</a>
+    <a href="chart.html?img=HU_BBvsMR_10-13BB">10-13</a>
+    <a href="chart.html?img=HU_BBvsMR_0-10BB">&lt;10</a>
+    <a href="chart.html?img=HU_BBvsSB_vsAI">vs AI</a>
+    <a href="chart.html?img=HU_BBvsSB_vs3x">vs3x 16+</a>
+  </div>
+</div>
+
+<div class="section-group">
+  <div class="section-title bg-hu-bb">Heads-Up: BB vs Limp</div>
+  <div class="section-grid">
+    <a href="chart.html?img=HU_BBvsLIMP_20BB_fish">20+</a>
+    <a href="chart.html?img=HU_BBvsLIMP_16-20BB_fish">16-20</a>
+    <a href="chart.html?img=HU_BBvsLIMP_13-16BB_fish">13-16</a>
+    <a href="chart.html?img=HU_BBvsLIMP_10-13BB_fish">10-13</a>
+    <a href="chart.html?img=HU_BBvsLIMP_0-10BB_fish">&lt;10</a>
+  </div>
+</div>
+
+</div><!-- end portrait-view -->
+
+<!-- ==================== LANDSCAPE VIEW ==================== -->
+<div class="landscape-view">
 <div class="table-wrap">
 <table>
 <thead>
@@ -118,25 +312,15 @@ td a:active { background: #58a6ff33; }
 </tr>
 </thead>
 <tbody>
-<!-- Row: 20+ / 16+ -->
 <tr>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td class="sep"></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
+  <td></td><td></td><td></td><td></td><td class="sep"></td>
+  <td></td><td></td><td></td><td></td>
   <td><a href="chart.html?img=3W_BBvsSB_25x_16BB">vs2.5x 16+</a></td>
-  <td></td>
-  <td class="sep"></td>
+  <td></td><td class="sep"></td>
   <td><a href="chart.html?img=HU_SB_20BB_fish">20+</a></td>
   <td><a href="chart.html?img=HU_BBvsMR_20BB">20+</a></td>
   <td><a href="chart.html?img=HU_BBvsLIMP_20BB_fish">20+</a></td>
 </tr>
-<!-- Row: 16+ -->
 <tr>
   <td><a href="chart.html?img=3W_BU_20BB">16+</a></td>
   <td><a href="chart.html?img=3W_SBvsBU_MR_16-20BB">16+</a></td>
@@ -154,7 +338,6 @@ td a:active { background: #58a6ff33; }
   <td><a href="chart.html?img=HU_BBvsMR_16-20BB">16-20</a></td>
   <td><a href="chart.html?img=HU_BBvsLIMP_16-20BB_fish">16-20</a></td>
 </tr>
-<!-- Row: 13-16 -->
 <tr>
   <td><a href="chart.html?img=3W_BU_13-16BB">13-16</a></td>
   <td><a href="chart.html?img=3W_SBvsBU_MR_13-16BB">13-16</a></td>
@@ -172,7 +355,6 @@ td a:active { background: #58a6ff33; }
   <td><a href="chart.html?img=HU_BBvsMR_13-16BB">13-16</a></td>
   <td><a href="chart.html?img=HU_BBvsLIMP_13-16BB_fish">13-16</a></td>
 </tr>
-<!-- Row: 10-13 -->
 <tr>
   <td><a href="chart.html?img=3W_BU_10-13BB">10-13</a></td>
   <td><a href="chart.html?img=3W_SBvsBU_MR_10-13BB">10-13</a></td>
@@ -190,7 +372,6 @@ td a:active { background: #58a6ff33; }
   <td><a href="chart.html?img=HU_BBvsMR_10-13BB">10-13</a></td>
   <td><a href="chart.html?img=HU_BBvsLIMP_10-13BB_fish">10-13</a></td>
 </tr>
-<!-- Row: <10 -->
 <tr>
   <td><a href="chart.html?img=3W_BU_0-10BB">&lt;10</a></td>
   <td><a href="chart.html?img=3W_SBvsBU_MR_0-10BB">&lt;10</a></td>
@@ -208,38 +389,26 @@ td a:active { background: #58a6ff33; }
   <td><a href="chart.html?img=HU_BBvsMR_0-10BB">&lt;10</a></td>
   <td><a href="chart.html?img=HU_BBvsLIMP_0-10BB_fish">&lt;10</a></td>
 </tr>
-<!-- Row: vs AI / special -->
 <tr>
   <td></td>
   <td><a href="chart.html?img=3W_SBvsBU_vsAI">vs AI</a></td>
-  <td></td>
-  <td></td>
-  <td class="sep"></td>
+  <td></td><td></td><td class="sep"></td>
   <td><a href="chart.html?img=3W_BBvsBU_vsAI">vs AI</a></td>
   <td></td>
   <td><a href="chart.html?img=3W_BBvsBUSB_vsAI">vs AI</a></td>
   <td></td>
   <td><a href="chart.html?img=3W_BBvsSB_vsAI">vs AI</a></td>
-  <td></td>
-  <td class="sep"></td>
+  <td></td><td class="sep"></td>
   <td><a href="chart.html?img=HU_SB_5-7BB_fish">5-8</a></td>
   <td><a href="chart.html?img=HU_BBvsSB_vsAI">vs AI</a></td>
   <td></td>
 </tr>
-<!-- Row: vs 3x / <5 -->
 <tr>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td class="sep"></td>
+  <td></td><td></td><td></td><td></td><td class="sep"></td>
   <td><a href="chart.html?img=3W_BBvsBU_3x_16BB">vs3x 16+</a></td>
-  <td></td>
-  <td></td>
-  <td></td>
+  <td></td><td></td><td></td>
   <td><a href="chart.html?img=3W_BBvsSB_3x_16BB">vs3x 16+</a></td>
-  <td></td>
-  <td class="sep"></td>
+  <td></td><td class="sep"></td>
   <td><a href="chart.html?img=HU_SB_0-8BB">&lt;5</a></td>
   <td><a href="chart.html?img=HU_BBvsSB_vs3x">vs3x 16+</a></td>
   <td></td>
@@ -247,6 +416,7 @@ td a:active { background: #58a6ff33; }
 </tbody>
 </table>
 </div>
+</div><!-- end landscape-view -->
 
 </body>
 </html>
