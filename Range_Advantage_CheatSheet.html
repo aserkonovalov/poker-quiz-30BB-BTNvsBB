@@ -430,6 +430,70 @@ td { background: #161b22; }
   </div>
 </div>
 
+<div class="section-title">Board Texture Examples: Two-tone vs Monotone</div>
+
+<div class="card blue">
+  <div class="card-title">A&#9824;K&#9829;7&#9824; (AK7 two-tone)</div>
+  <div class="table-wrap"><table>
+    <tr><th>SPR</th><th>Strategy</th><th>Why</th></tr>
+    <tr><td>Shallow</td><td><strong style="color:#58a6ff;">BET 1/3</strong> often</td><td>Strong range advantage, low air. Texture irrelevant (Principle 2).</td></tr>
+    <tr><td>Deep, IP</td><td><strong style="color:#58a6ff;">BET 1/3</strong> (68%)</td><td>Low air + highly polar (AA/AK = value, missed connectors = bluffs).</td></tr>
+  </table></div>
+  <div class="examples">
+    <strong>Range advantage:</strong> You have AA, AK, AQ, AJ, KK, KQ, KJ, A7s, K7s. Villain has few Ax (they'd 3-bet AK/AQ), maybe A9-A2s, K9-K5s, 77.<br><br>
+    <strong>Air level:</strong> Very low. Almost your entire range has top pair+, second pair, or strong overcards with a draw.<br><br>
+    <strong>Two-tone matters?</strong> No. You have range advantage &rarr; board texture is irrelevant (Principle 2). The flush draw exists in both ranges. You still bet small and frequently. If the board were A&#9824;K&#9829;7&#9827; (rainbow) the strategy would be virtually identical.
+  </div>
+</div>
+
+<div class="card blue">
+  <div class="card-title">Q&#9829;J&#9824;T&#9827; (QJT rainbow)</div>
+  <div class="table-wrap"><table>
+    <tr><th>SPR</th><th>Strategy</th><th>Why</th></tr>
+    <tr><td>Shallow</td><td><strong style="color:#a371f7;">MIX</strong></td><td>Range advantage, but villain has real hands (straights, two pairs).</td></tr>
+    <tr><td>Deep, IP</td><td><strong style="color:#58a6ff;">LEAN BET 1/3</strong> (~49%)</td><td>Low air but low polar &mdash; many medium hands (KQ, QJ, JT).</td></tr>
+  </table></div>
+  <div class="examples">
+    <strong>Range advantage:</strong> Yes &mdash; AK (nut straight), KQ, QJ, JT, KT, QQ, JJ, TT, AQ, AJ all connect. You have more nutted combos.<br><br>
+    <strong>Air level:</strong> Very low. Almost nothing in your opening range misses this board completely.<br><br>
+    <strong>But villain fights back:</strong> They have 98s (straight), K9s (gutshot), JTs, T9s, QJ, Q9s. More of villain's range connects here than on AK7. This means you can't just bet freely &mdash; mix bet/check.<br><br>
+    <strong>Low polar:</strong> Many of your hands are medium-strength (KQ = top pair but vulnerable, QJ = two pair but straights exist). Few clear "nuts or air" hands. That's why you mix rather than bet at high frequency.
+  </div>
+</div>
+
+<div class="card blue">
+  <div class="card-title">Q&#9829;J&#9829;T&#9824; (QJT two-tone)</div>
+  <div class="table-wrap"><table>
+    <tr><th>SPR</th><th>Strategy</th><th>Why</th></tr>
+    <tr><td>Shallow</td><td><strong style="color:#a371f7;">MIX</strong> (same as rainbow)</td><td>Flush draw doesn't change logic &mdash; you still have range advantage.</td></tr>
+    <tr><td>Deep, IP</td><td><strong style="color:#58a6ff;">LEAN BET 1/3</strong> (~49%)</td><td>Same reasoning. Two-tone is cosmetic when you have RA.</td></tr>
+  </table></div>
+  <div class="examples">
+    <strong>Key takeaway:</strong> The two-tone version plays almost identically to rainbow. Why? Because you have range advantage, and <strong>board texture only matters at low SPR + range disadvantage</strong> (Principle 2). The flush draw adds draws to both ranges roughly equally &mdash; it doesn't shift who is ahead.
+  </div>
+</div>
+
+<div class="card red">
+  <div class="card-title">Q&#9829;J&#9829;T&#9829; (QJT monotone)</div>
+  <div class="table-wrap"><table>
+    <tr><th>SPR</th><th>Range Adv?</th><th>Strategy</th><th>Why</th></tr>
+    <tr><td>Shallow</td><td>Reduced/lost</td><td><strong style="color:#3fb950;">CHECK</strong> (49%)</td><td>Monotone + range disadvantage &rarr; no fold equity.</td></tr>
+    <tr><td>Deep, IP</td><td>No</td><td><strong style="color:#3fb950;">CHECK-LEAN</strong> (45%)</td><td>Villain has flushes, your "value" is vulnerable.</td></tr>
+  </table></div>
+  <div class="examples">
+    <strong>Everything changes.</strong> The monotone texture fundamentally shifts range advantage:<br><br>
+    <strong>Villain's range explodes:</strong> Any two hearts in their calling range is now a flush or flush draw. BB calls with many suited combos: K&#9829;9&#9829;, 9&#9829;8&#9829;, 8&#9829;7&#9829;, A&#9829;5&#9829;, 6&#9829;5&#9829; etc. They have a massive equity boost.<br><br>
+    <strong>Your "value" is vulnerable:</strong> Your AK (straight), KQ (top pair), QJ (two pair) &mdash; these hands look strong but lose to any flush. They can't bet for value confidently.<br><br>
+    <strong>No fold equity:</strong> You can't bluff because villain won't fold a flush draw (they have direct odds) or a made flush (never folding). Betting accomplishes nothing against the portion of their range that matters.<br><br>
+    <strong style="color:#d29922;">This is why monotone is the ONE texture that matters.</strong> It's the only board texture that can completely flip range advantage and destroy fold equity simultaneously. Two-tone doesn't do this. Rainbow doesn't do this. Only monotone.
+  </div>
+</div>
+
+<div class="default-box">
+  <div class="big">Rainbow &asymp; Two-tone &ne; Monotone</div>
+  <div>Two-tone barely changes your strategy. Monotone changes everything.</div>
+</div>
+
 <div class="footer">
   Born-Again Tree Strategy &bull; Preflop Raiser Decision Framework<br>
   Source: GTO Solver Decision Tree Analysis
