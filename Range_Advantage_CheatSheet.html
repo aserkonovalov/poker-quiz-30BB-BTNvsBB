@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Range Advantage Cheat Sheet</title>
+<title>Post-Flop Strategy Cheat Sheet</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { height: 100%; -webkit-text-size-adjust: 100%; }
@@ -50,7 +50,7 @@ h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; 
   <button class="lang-btn" id="langBtn" onclick="toggleLang()">FR</button>
 </div>
 
-<h1>Range Advantage<br><span class="i18n" data-en="Flop Decision Tree" data-fr="Arbre de d&eacute;cision au Flop">Flop Decision Tree</span></h1>
+<h1>Post-Flop Strategy<br><span class="i18n" data-en="Flop Decision Tree" data-fr="Arbre de d&eacute;cision au Flop">Flop Decision Tree</span></h1>
 <p class="sub"><span class="i18n" data-en="Born-Again Tree &mdash; Preflop Raiser vs Checker" data-fr="Born-Again Tree &mdash; Relanceur pr&eacute;flop vs Checkeur">Born-Again Tree &mdash; Preflop Raiser vs Checker</span></p>
 
 <style>
@@ -341,6 +341,19 @@ td { background: #161b22; }
   <div class="card-title"><span class="i18n" data-en="Principle 2: Board Texture Only Matters in ONE Spot" data-fr="Principe 2 : La texture du board ne compte que dans UN SEUL cas">Principle 2: Board Texture Only Matters in ONE Spot</span></div>
   <div style="font-size:0.9rem;"><span class="i18n" data-en="Low SPR + range disadvantage. That's it. In all other spots, range composition and position drive decisions, not the board." data-fr="SPR bas + d&eacute;savantage de range. C'est tout. Dans tous les autres cas, la composition de range et la position guident les d&eacute;cisions, pas le board.">Low SPR + range disadvantage. That's it.<br>
   In all other spots, range composition and position drive decisions, not the board.</span></div>
+  <div class="table-wrap" style="margin-top:10px;"><table>
+    <tr><th>Board Texture</th><th>Action</th><th>Logic</th></tr>
+    <tr><td>Dry (no flush, no straight)</td><td><strong style="color:#d29922;">BET 2/3</strong> (50%)</td><td>Villain can't realize equity &mdash; pressure them</td></tr>
+    <tr><td>Straight present</td><td><strong style="color:#a371f7;">MIX / CHECK</strong> (44% check)</td><td>Villain has too many made straights/draws</td></tr>
+    <tr><td>Monotone (all one suit)</td><td><strong style="color:#3fb950;">CHECK</strong> (49%)</td><td>No fold equity vs flush draws/made flushes</td></tr>
+  </table></div>
+  <div class="examples" style="margin-top:8px;">
+    <strong>Examples:</strong><br>
+    8&#9824;4&#9829;2&#9827; (dry) &rarr; BET 2/3. They have range advantage but the board gives them no equity realization.<br>
+    7&#9829;6&#9824;5&#9827; (straight) &rarr; MIX/CHECK. Too many nutted combos in their range.<br>
+    6&#9829;5&#9829;3&#9829; (monotone) &rarr; CHECK. Flush combos destroy your fold equity.<br><br>
+    <strong>Remember:</strong> In every OTHER spot (shallow + range advantage, deep + IP, deep + OOP), board texture is irrelevant. Only range composition, position, and air matter.
+  </div>
 </div>
 
 <div class="card purple">
