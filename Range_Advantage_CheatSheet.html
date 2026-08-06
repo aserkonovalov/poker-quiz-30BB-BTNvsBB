@@ -35,13 +35,23 @@ h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; 
   margin-bottom: 12px;
 }
 .back-btn:active { background: #1c2a3f; color: #58a6ff; }
+.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.lang-btn {
+  padding: 6px 12px; border: 1px solid #30363d; border-radius: 8px;
+  background: #161b22; color: #58a6ff; font-size: 0.75rem; font-weight: 700;
+  cursor: pointer; touch-action: manipulation; -webkit-appearance: none;
+}
+.lang-btn:active { background: #1c2a3f; }
 </style>
 </head>
 <body>
-<a href="index.html" class="back-btn">&larr; Back to Menu</a>
+<div class="top-bar">
+  <a href="index.html" class="back-btn">&larr; Back</a>
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()">FR</button>
+</div>
 
-<h1>Range Advantage<br>Flop Decision Tree</h1>
-<p class="sub">Born-Again Tree &mdash; Preflop Raiser vs Checker</p>
+<h1>Range Advantage<br><span class="i18n" data-en="Flop Decision Tree" data-fr="Arbre de d&eacute;cision au Flop">Flop Decision Tree</span></h1>
+<p class="sub"><span class="i18n" data-en="Born-Again Tree &mdash; Preflop Raiser vs Checker" data-fr="Born-Again Tree &mdash; Relanceur pr&eacute;flop vs Checkeur">Born-Again Tree &mdash; Preflop Raiser vs Checker</span></p>
 
 <style>
 .context {
@@ -149,13 +159,13 @@ td { background: #161b22; }
 </style>
 
 <div class="context">
-  <strong>Situation:</strong> You are the preflop raiser. Villain checks to you on the flop.<br>
+  <strong><span class="i18n" data-en="Situation:" data-fr="Situation :">Situation:</span></strong> <span class="i18n" data-en="You are the preflop raiser. Villain checks to you on the flop." data-fr="Vous &ecirc;tes le relanceur pr&eacute;flop. Le vilain vous check au flop.">You are the preflop raiser. Villain checks to you on the flop.</span><br>
   <strong>Actions:</strong> CHECK | BET 1/3 pot | BET 2/3 pot<br>
-  <strong>Baseline avg:</strong> Check 38% | Bet 1/3 31% | Bet 2/3 31%<br>
-  <strong>Key concept:</strong> Range advantage = who has the stronger overall range on this board
+  <strong><span class="i18n" data-en="Baseline avg:" data-fr="Moyenne de base :">Baseline avg:</span></strong> Check 38% | Bet 1/3 31% | Bet 2/3 31%<br>
+  <strong><span class="i18n" data-en="Key concept:" data-fr="Concept cl&eacute; :">Key concept:</span></strong> <span class="i18n" data-en="Range advantage = who has the stronger overall range on this board" data-fr="Avantage de range = qui a la range globalement plus forte sur ce board">Range advantage = who has the stronger overall range on this board</span>
 </div>
 
-<div class="section-title">Step 1: Check SPR</div>
+<div class="section-title"><span class="i18n" data-en="Step 1: Check SPR" data-fr="&Eacute;tape 1 : V&eacute;rifier le SPR">Step 1: Check SPR</span></div>
 
 <div class="flow-box">
   <span class="highlight">SPR &le; 5?</span><br>
@@ -164,15 +174,15 @@ td { background: #161b22; }
 </div>
 
 <div class="default-box">
-  <div class="big">SPR is the root of everything</div>
-  <div>Shallow = fight on range strength. Deep = fight on position.</div>
+  <div class="big"><span class="i18n" data-en="SPR is the root of everything" data-fr="Le SPR est la racine de tout">SPR is the root of everything</span></div>
+  <div><span class="i18n" data-en="Shallow = fight on range strength. Deep = fight on position." data-fr="Peu profond = combattez sur la force de range. Profond = combattez sur la position.">Shallow = fight on range strength. Deep = fight on position.</span></div>
 </div>
 
-<div class="section-title">Step 2A: Shallow Game (SPR &le; 5)</div>
+<div class="section-title"><span class="i18n" data-en="Step 2A: Shallow Game (SPR &le; 5)" data-fr="&Eacute;tape 2A : Jeu peu profond (SPR &le; 5)">Step 2A: Shallow Game (SPR &le; 5)</span></div>
 
 <div class="card blue">
-  <div class="card-title">Key Question: "Do I have range advantage?"</div>
-  <div style="font-size:0.85rem;color:#8b949e;">High cards favor the raiser. Low connected boards favor the caller.</div>
+  <div class="card-title"><span class="i18n" data-en="Key Question: &quot;Do I have range advantage?&quot;" data-fr="Question cl&eacute; : &laquo; Ai-je l'avantage de range ? &raquo;">Key Question: "Do I have range advantage?"</span></div>
+  <div style="font-size:0.85rem;color:#8b949e;"><span class="i18n" data-en="High cards favor the raiser. Low connected boards favor the caller." data-fr="Les cartes hautes favorisent le relanceur. Les boards bas connect&eacute;s favorisent le suiveur.">High cards favor the raiser. Low connected boards favor the caller.</span></div>
 </div>
 
 <div class="card green">
@@ -228,11 +238,11 @@ td { background: #161b22; }
   </div>
 </div>
 
-<div class="section-title">Step 2B: Deep Game (SPR &gt; 5)</div>
+<div class="section-title"><span class="i18n" data-en="Step 2B: Deep Game (SPR &gt; 5)" data-fr="&Eacute;tape 2B : Jeu profond (SPR &gt; 5)">Step 2B: Deep Game (SPR &gt; 5)</span></div>
 
 <div class="card blue">
-  <div class="card-title">Key Question: "Am I in position?"</div>
-  <div style="font-size:0.85rem;color:#8b949e;">Deep stacks = position dominates. Range advantage matters less.</div>
+  <div class="card-title"><span class="i18n" data-en="Key Question: &quot;Am I in position?&quot;" data-fr="Question cl&eacute; : &laquo; Suis-je en position ? &raquo;">Key Question: "Am I in position?"</span></div>
+  <div style="font-size:0.85rem;color:#8b949e;"><span class="i18n" data-en="Deep stacks = position dominates. Range advantage matters less." data-fr="Stacks profonds = la position domine. L'avantage de range compte moins.">Deep stacks = position dominates. Range advantage matters less.</span></div>
 </div>
 
 <div class="card green">
@@ -281,7 +291,7 @@ td { background: #161b22; }
   </div>
 </div>
 
-<div class="section-title">Key Concepts: Air &amp; Polar</div>
+<div class="section-title"><span class="i18n" data-en="Key Concepts: Air &amp; Polar" data-fr="Concepts cl&eacute;s : Air &amp; Polaris&eacute;">Key Concepts: Air &amp; Polar</span></div>
 
 <div class="card orange">
   <div class="card-title">What is "Air"?</div>
@@ -319,27 +329,27 @@ td { background: #161b22; }
   </div>
 </div>
 
-<div class="section-title">3 Universal Principles</div>
+<div class="section-title"><span class="i18n" data-en="3 Universal Principles" data-fr="3 Principes universels">3 Universal Principles</span></div>
 
 <div class="card purple">
-  <div class="card-title">Principle 1: Bet Size Follows Depth</div>
-  <div style="font-size:0.9rem;">Shallow = big bets (2/3 pot). Deep = small bets (1/3 pot).<br>
-  Shallow needs bigger bets to matter. Deep uses small bets to build pots over streets.</div>
+  <div class="card-title"><span class="i18n" data-en="Principle 1: Bet Size Follows Depth" data-fr="Principe 1 : La taille de mise suit la profondeur">Principle 1: Bet Size Follows Depth</span></div>
+  <div style="font-size:0.9rem;"><span class="i18n" data-en="Shallow = big bets (2/3 pot). Deep = small bets (1/3 pot). Shallow needs bigger bets to matter. Deep uses small bets to build pots over streets." data-fr="Peu profond = grosses mises (2/3 pot). Profond = petites mises (1/3 pot). Les stacks courts n&eacute;cessitent de grosses mises pour compter. Les stacks profonds utilisent des petites mises pour construire le pot sur plusieurs streets.">Shallow = big bets (2/3 pot). Deep = small bets (1/3 pot).<br>
+  Shallow needs bigger bets to matter. Deep uses small bets to build pots over streets.</span></div>
 </div>
 
 <div class="card purple">
-  <div class="card-title">Principle 2: Board Texture Only Matters in ONE Spot</div>
-  <div style="font-size:0.9rem;">Low SPR + range disadvantage. That's it.<br>
-  In all other spots, range composition and position drive decisions, not the board.</div>
+  <div class="card-title"><span class="i18n" data-en="Principle 2: Board Texture Only Matters in ONE Spot" data-fr="Principe 2 : La texture du board ne compte que dans UN SEUL cas">Principle 2: Board Texture Only Matters in ONE Spot</span></div>
+  <div style="font-size:0.9rem;"><span class="i18n" data-en="Low SPR + range disadvantage. That's it. In all other spots, range composition and position drive decisions, not the board." data-fr="SPR bas + d&eacute;savantage de range. C'est tout. Dans tous les autres cas, la composition de range et la position guident les d&eacute;cisions, pas le board.">Low SPR + range disadvantage. That's it.<br>
+  In all other spots, range composition and position drive decisions, not the board.</span></div>
 </div>
 
 <div class="card purple">
-  <div class="card-title">Principle 3: Air is the Brake Pedal</div>
-  <div style="font-size:0.9rem;">More air in your range = more checking. Always. Every corner of the tree.<br>
-  Air increases check frequency universally.</div>
+  <div class="card-title"><span class="i18n" data-en="Principle 3: Air is the Brake Pedal" data-fr="Principe 3 : L'Air est la p&eacute;dale de frein">Principle 3: Air is the Brake Pedal</span></div>
+  <div style="font-size:0.9rem;"><span class="i18n" data-en="More air in your range = more checking. Always. Every corner of the tree. Air increases check frequency universally." data-fr="Plus d'air dans votre range = plus de checks. Toujours. Dans chaque coin de l'arbre. L'air augmente la fr&eacute;quence de check universellement.">More air in your range = more checking. Always. Every corner of the tree.<br>
+  Air increases check frequency universally.</span></div>
 </div>
 
-<div class="section-title">Extreme Bookends (Memorize First)</div>
+<div class="section-title"><span class="i18n" data-en="Extreme Bookends (Memorize First)" data-fr="Extr&ecirc;mes &agrave; m&eacute;moriser en premier">Extreme Bookends (Memorize First)</span></div>
 
 <div class="table-wrap"><table>
   <tr><th>Spot</th><th>Strategy</th><th>Freq</th></tr>
@@ -348,7 +358,7 @@ td { background: #161b22; }
   <tr><td>Highest Small Bet: Deep + IP + low air + high polar</td><td style="color:#58a6ff;">BET 1/3</td><td>68%</td></tr>
 </table></div>
 
-<div class="section-title">Quick Flowchart</div>
+<div class="section-title"><span class="i18n" data-en="Quick Flowchart" data-fr="Flowchart rapide">Quick Flowchart</span></div>
 
 <div class="flow-box">
   <span class="highlight">Villain checks to me.</span><br><br>
@@ -367,7 +377,7 @@ td { background: #161b22; }
   <div class="big">4 decisions. 15 outcomes. One tree.</div>
 </div>
 
-<div class="section-title">Raiser Advantage Boards</div>
+<div class="section-title"><span class="i18n" data-en="Raiser Advantage Boards" data-fr="Boards avec avantage du relanceur">Raiser Advantage Boards</span></div>
 
 <div class="card blue">
   <div class="card-title">Boards Where Raiser Has Range Advantage</div>
@@ -401,5 +411,24 @@ td { background: #161b22; }
   Source: GTO Solver Decision Tree Analysis
 </div>
 
+<script>
+(function(){
+var lang = localStorage.getItem("pokerLang") || "en";
+function applyLang(l) {
+  lang = l;
+  localStorage.setItem("pokerLang", l);
+  var els = document.querySelectorAll(".i18n");
+  for (var i = 0; i < els.length; i++) {
+    var t = els[i].getAttribute("data-" + l);
+    if (t) els[i].innerHTML = t;
+  }
+  document.getElementById("langBtn").textContent = l === "en" ? "FR" : "EN";
+}
+window.toggleLang = function() {
+  applyLang(lang === "en" ? "fr" : "en");
+};
+applyLang(lang);
+})();
+</script>
 </body>
 </html>

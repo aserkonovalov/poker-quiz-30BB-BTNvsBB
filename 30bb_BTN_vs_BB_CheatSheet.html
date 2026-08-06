@@ -27,123 +27,92 @@ h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; 
 .card.orange { border-left-color: #d29922; }
 .card.red { border-left-color: #f85149; }
 .card.purple { border-left-color: #a371f7; }
-.card-title {
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 6px;
-}
-.card-action {
-  font-size: 1.1rem;
-  font-weight: 800;
-  margin-bottom: 6px;
-}
+.card-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+.card-action { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
 .action-bet-small { color: #58a6ff; }
 .action-bet-big { color: #d29922; }
 .action-bet-mix { color: #a371f7; }
 .action-check { color: #3fb950; }
 .examples {
-  font-size: 0.8rem;
-  color: #8b949e;
-  margin-top: 6px;
-  padding: 6px 10px;
-  background: #0d1117;
-  border-radius: 6px;
+  font-size: 0.8rem; color: #8b949e; margin-top: 6px;
+  padding: 6px 10px; background: #0d1117; border-radius: 6px;
 }
 .examples strong { color: #c9d1d9; }
 .section-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #58a6ff;
-  margin: 20px 0 10px 0;
-  padding-bottom: 4px;
-  border-bottom: 1px solid #30363d;
+  font-size: 1.05rem; font-weight: 700; color: #58a6ff;
+  margin: 20px 0 10px 0; padding-bottom: 4px; border-bottom: 1px solid #30363d;
 }
 .context {
-  background: #161b22;
-  border: 1px solid #30363d;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 16px;
-  font-size: 0.85rem;
+  background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+  padding: 12px; margin-bottom: 16px; font-size: 0.85rem;
 }
 .context strong { color: #58a6ff; }
 .default-box {
-  text-align: center;
-  background: #1c2128;
-  border: 2px dashed #30363d;
-  border-radius: 10px;
-  padding: 14px;
-  margin: 16px 0;
-  font-size: 0.95rem;
+  text-align: center; background: #1c2128; border: 2px dashed #30363d;
+  border-radius: 10px; padding: 14px; margin: 16px 0; font-size: 0.95rem;
 }
 .default-box .big { font-size: 1.2rem; font-weight: 800; color: #58a6ff; }
-.modifier {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 8px;
-}
+.modifier { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
 .modifier-icon { font-size: 1.2rem; flex-shrink: 0; }
 .modifier-text { font-size: 0.85rem; }
 .modifier-text strong { color: #e6edf3; }
-.footer {
-  text-align: center;
-  margin-top: 24px;
-  font-size: 0.7rem;
-  color: #484f58;
-}
+.footer { text-align: center; margin-top: 24px; font-size: 0.7rem; color: #484f58; }
+.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .back-btn {
-  display: inline-block;
-  padding: 8px 16px;
-  border: 1px solid #30363d;
-  border-radius: 8px;
-  background: #161b22;
-  color: #8b949e;
-  font-size: 0.8rem;
-  text-decoration: none;
-  margin-bottom: 12px;
+  display: inline-block; padding: 8px 16px; border: 1px solid #30363d;
+  border-radius: 8px; background: #161b22; color: #8b949e;
+  font-size: 0.8rem; text-decoration: none;
 }
 .back-btn:active { background: #1c2a3f; color: #58a6ff; }
+.lang-btn {
+  padding: 6px 12px; border: 1px solid #30363d; border-radius: 8px;
+  background: #161b22; color: #58a6ff; font-size: 0.75rem; font-weight: 700;
+  cursor: pointer; touch-action: manipulation; -webkit-appearance: none;
+}
+.lang-btn:active { background: #1c2a3f; }
 </style>
 </head>
 <body>
-<a href="index.html" class="back-btn">&larr; Back to Menu</a>
 
-<h1>30bb BTN vs BB<br>Flop C-Bet Strategy</h1>
-<p class="sub">Simplified GTO &mdash; Villain checks, you decide</p>
+<div class="top-bar">
+  <a href="index.html" class="back-btn">&larr; Back</a>
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()">FR</button>
+</div>
+
+<h1>30bb BTN vs BB<br><span class="i18n" data-en="Flop C-Bet Strategy" data-fr="Strat&eacute;gie de C-Bet au Flop">Flop C-Bet Strategy</span></h1>
+<p class="sub"><span class="i18n" data-en="Simplified GTO &mdash; Villain checks, you decide" data-fr="GTO simplifi&eacute; &mdash; Vilain check, vous d&eacute;cidez">Simplified GTO &mdash; Villain checks, you decide</span></p>
 
 <div class="context">
-  <strong>Situation:</strong> You open BTN 2bb, BB calls. Flop comes. BB checks.<br>
-  <strong>SPR:</strong> ~4.5 (shallow)<br>
-  <strong>Sizings:</strong> Small = 25% pot (~1/4) | Big = 62% pot (~2/3)<br>
-  <strong>Position:</strong> You are IP (last to act)
+  <strong><span class="i18n" data-en="Situation:" data-fr="Situation :">Situation:</span></strong> <span class="i18n" data-en="You open BTN 2bb, BB calls. Flop comes. BB checks." data-fr="Vous ouvrez BTN 2bb, BB suit. Le flop tombe. BB check.">You open BTN 2bb, BB calls. Flop comes. BB checks.</span><br>
+  <strong>SPR:</strong> ~4.5 (<span class="i18n" data-en="shallow" data-fr="peu profond">shallow</span>)<br>
+  <strong><span class="i18n" data-en="Sizings:" data-fr="Tailles :">Sizings:</span></strong> <span class="i18n" data-en="Small = 25% pot (~1/4) | Big = 62% pot (~2/3)" data-fr="Petit = 25% pot (~1/4) | Gros = 62% pot (~2/3)">Small = 25% pot (~1/4) | Big = 62% pot (~2/3)</span><br>
+  <strong>Position:</strong> <span class="i18n" data-en="You are IP (last to act)" data-fr="Vous &ecirc;tes IP (dernier &agrave; parler)">You are IP (last to act)</span>
 </div>
 
 <div class="default-box">
-  <div class="big">Default: Bet 80% small</div>
-  <div>When in doubt, bet small. You can't go far wrong.</div>
+  <div class="big"><span class="i18n" data-en="Default: Bet 80% small" data-fr="Par d&eacute;faut : Mise 80% petit">Default: Bet 80% small</span></div>
+  <div><span class="i18n" data-en="When in doubt, bet small. You can't go far wrong." data-fr="Dans le doute, misez petit. Vous ne pouvez pas vous tromper de beaucoup.">When in doubt, bet small. You can't go far wrong.</span></div>
 </div>
 
-<!-- RULES -->
-<div class="section-title">5 Rules by High Card</div>
+<div class="section-title"><span class="i18n" data-en="5 Rules by High Card" data-fr="5 R&egrave;gles par carte haute">5 Rules by High Card</span></div>
 
 <div class="card blue">
-  <div class="card-title">Rule 1: Ace-High Board</div>
-  <div class="card-action action-bet-mix">BET 100% &mdash; Mix sizing</div>
-  <div>Bet every time. Use big on dry boards, small on connected.</div>
+  <div class="card-title"><span class="i18n" data-en="Rule 1: Ace-High Board" data-fr="R&egrave;gle 1 : Board As-haut">Rule 1: Ace-High Board</span></div>
+  <div class="card-action action-bet-mix"><span class="i18n" data-en="BET 100% &mdash; Mix sizing" data-fr="MISE 100% &mdash; Taille mixte">BET 100% &mdash; Mix sizing</span></div>
+  <div><span class="i18n" data-en="Bet every time. Use big on dry boards, small on connected." data-fr="Misez &agrave; chaque fois. Gros sur board sec, petit sur connect&eacute;.">Bet every time. Use big on dry boards, small on connected.</span></div>
   <div class="examples">
     <strong>Examples:</strong><br>
-    A&#9824;7&#9829;2&#9827; (dry) &rarr; Bet big (62%)<br>
+    A&#9824;7&#9829;2&#9827; (<span class="i18n" data-en="dry" data-fr="sec">dry</span>) &rarr; Bet big (62%)<br>
     A&#9829;K&#9824;9&#9827; (Broadway) &rarr; Bet small (25%)<br>
-    A&#9829;J&#9830;T&#9827; (connected) &rarr; Bet small (25%)<br>
-    A&#9830;5&#9827;3&#9829; (straight-possible) &rarr; Bet small (25%)
+    A&#9829;J&#9830;T&#9827; (<span class="i18n" data-en="connected" data-fr="connect&eacute;">connected</span>) &rarr; Bet small (25%)<br>
+    A&#9830;5&#9827;3&#9829; (<span class="i18n" data-en="straight-possible" data-fr="suite possible">straight-possible</span>) &rarr; Bet small (25%)
   </div>
 </div>
 
 <div class="card blue">
-  <div class="card-title">Rule 2: King or Queen-High Board</div>
-  <div class="card-action action-bet-small">BET 100% SMALL (25% pot)</div>
-  <div>Always bet. Always small. Pure and simple.</div>
+  <div class="card-title"><span class="i18n" data-en="Rule 2: King or Queen-High Board" data-fr="R&egrave;gle 2 : Board Roi ou Dame-haut">Rule 2: King or Queen-High Board</span></div>
+  <div class="card-action action-bet-small"><span class="i18n" data-en="BET 100% SMALL (25% pot)" data-fr="MISE 100% PETIT (25% pot)">BET 100% SMALL (25% pot)</span></div>
+  <div><span class="i18n" data-en="Always bet. Always small. Pure and simple." data-fr="Misez toujours. Toujours petit. Simple et pur.">Always bet. Always small. Pure and simple.</span></div>
   <div class="examples">
     <strong>Examples:</strong><br>
     K&#9829;8&#9830;2&#9827; &rarr; Bet small<br>
@@ -154,99 +123,96 @@ h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; 
 </div>
 
 <div class="card orange">
-  <div class="card-title">Rule 3: Jack or Ten-High Board</div>
-  <div class="card-action">BET 75% small &bull; <span class="action-check">CHECK 25%</span></div>
-  <div>Bet most of the time (small), but mix in some checks. Check more on connected textures.</div>
+  <div class="card-title"><span class="i18n" data-en="Rule 3: Jack or Ten-High Board" data-fr="R&egrave;gle 3 : Board Valet ou Dix-haut">Rule 3: Jack or Ten-High Board</span></div>
+  <div class="card-action"><span class="i18n" data-en="BET 75% small" data-fr="MISE 75% petit">BET 75% small</span> &bull; <span class="action-check">CHECK 25%</span></div>
+  <div><span class="i18n" data-en="Bet most of the time (small), but mix in some checks. Check more on connected textures." data-fr="Misez la plupart du temps (petit), mais ajoutez des checks. Checkez plus sur textures connect&eacute;es.">Bet most of the time (small), but mix in some checks. Check more on connected textures.</span></div>
   <div class="examples">
     <strong>Examples:</strong><br>
-    J&#9829;7&#9830;2&#9827; (dry) &rarr; Bet small (most of the time)<br>
-    T&#9824;8&#9829;3&#9827; (slightly connected) &rarr; Bet small, sometimes check<br>
-    J&#9830;T&#9829;8&#9827; (very connected) &rarr; Check more often<br>
-    T&#9829;9&#9830;7&#9827; (straight board) &rarr; Check ~40%
+    J&#9829;7&#9830;2&#9827; (<span class="i18n" data-en="dry" data-fr="sec">dry</span>) &rarr; Bet small<br>
+    T&#9824;8&#9829;3&#9827; (<span class="i18n" data-en="slightly connected" data-fr="l&eacute;g&egrave;rement connect&eacute;">slightly connected</span>) &rarr; Bet small, <span class="i18n" data-en="sometimes check" data-fr="parfois check">sometimes check</span><br>
+    J&#9830;T&#9829;8&#9827; (<span class="i18n" data-en="very connected" data-fr="tr&egrave;s connect&eacute;">very connected</span>) &rarr; <span class="i18n" data-en="Check more often" data-fr="Check plus souvent">Check more often</span><br>
+    T&#9829;9&#9830;7&#9827; (<span class="i18n" data-en="straight board" data-fr="board suite">straight board</span>) &rarr; Check ~40%
   </div>
 </div>
 
 <div class="card red">
-  <div class="card-title">Rule 4: Low Connected Board (7-high or less, connected)</div>
-  <div class="card-action"><span class="action-check">CHECK 40%</span> &bull; <span class="action-bet-big">Bet 60% BIG (62% pot)</span></div>
-  <div>This is your WORST texture. Check often. When you do bet, go big (polarized).</div>
+  <div class="card-title"><span class="i18n" data-en="Rule 4: Low Connected Board (7-high or less, connected)" data-fr="R&egrave;gle 4 : Board bas connect&eacute; (7-haut ou moins)">Rule 4: Low Connected Board (7-high or less, connected)</span></div>
+  <div class="card-action"><span class="action-check">CHECK 40%</span> &bull; <span class="action-bet-big"><span class="i18n" data-en="Bet 60% BIG (62% pot)" data-fr="Mise 60% GROS (62% pot)">Bet 60% BIG (62% pot)</span></span></div>
+  <div><span class="i18n" data-en="This is your WORST texture. Check often. When you do bet, go big (polarized)." data-fr="C'est votre PIRE texture. Checkez souvent. Quand vous misez, misez gros (polaris&eacute;).">This is your WORST texture. Check often. When you do bet, go big (polarized).</span></div>
   <div class="examples">
     <strong>Examples:</strong><br>
-    6&#9829;5&#9830;4&#9827; (straight) &rarr; Check 40%, bet big 60%<br>
-    7&#9824;6&#9830;5&#9827; (straight) &rarr; Check 40%, bet big 60%<br>
-    5&#9829;4&#9830;3&#9827; (straight) &rarr; Check 40%, bet big 60%<br>
+    6&#9829;5&#9830;4&#9827; (<span class="i18n" data-en="straight" data-fr="suite">straight</span>) &rarr; Check 40%, bet big 60%<br>
+    7&#9824;6&#9830;5&#9827; (<span class="i18n" data-en="straight" data-fr="suite">straight</span>) &rarr; Check 40%, bet big 60%<br>
+    5&#9829;4&#9830;3&#9827; (<span class="i18n" data-en="straight" data-fr="suite">straight</span>) &rarr; Check 40%, bet big 60%<br>
     7&#9829;5&#9824;4&#9830; (OESD) &rarr; Check ~35%, bet big
   </div>
 </div>
 
 <div class="card purple">
-  <div class="card-title">Rule 5: Low Unconnected Board (9-high or less, disconnected)</div>
-  <div class="card-action">BET 75% &bull; <span class="action-bet-mix">Mix sizing</span></div>
-  <div>Still bet most of the time, but mix your sizing between small and big.</div>
+  <div class="card-title"><span class="i18n" data-en="Rule 5: Low Unconnected Board (9-high or less, disconnected)" data-fr="R&egrave;gle 5 : Board bas d&eacute;connect&eacute; (9-haut ou moins)">Rule 5: Low Unconnected Board (9-high or less, disconnected)</span></div>
+  <div class="card-action"><span class="i18n" data-en="BET 75%" data-fr="MISE 75%">BET 75%</span> &bull; <span class="action-bet-mix"><span class="i18n" data-en="Mix sizing" data-fr="Taille mixte">Mix sizing</span></span></div>
+  <div><span class="i18n" data-en="Still bet most of the time, but mix your sizing between small and big." data-fr="Misez quand m&ecirc;me la plupart du temps, mais variez la taille entre petit et gros.">Still bet most of the time, but mix your sizing between small and big.</span></div>
   <div class="examples">
     <strong>Examples:</strong><br>
-    9&#9829;6&#9830;3&#9827; (rainbow dry) &rarr; Bet big more often<br>
-    8&#9824;5&#9829;2&#9827; (disconnected) &rarr; Bet, mix sizing<br>
-    9&#9830;5&#9827;2&#9829; (dry low) &rarr; Bet, lean big<br>
-    8&#9829;4&#9830;2&#9827; (very dry) &rarr; Bet big
+    9&#9829;6&#9830;3&#9827; (rainbow <span class="i18n" data-en="dry" data-fr="sec">dry</span>) &rarr; Bet big <span class="i18n" data-en="more often" data-fr="plus souvent">more often</span><br>
+    8&#9824;5&#9829;2&#9827; (<span class="i18n" data-en="disconnected" data-fr="d&eacute;connect&eacute;">disconnected</span>) &rarr; Bet, mix sizing<br>
+    9&#9830;5&#9827;2&#9829; (<span class="i18n" data-en="dry low" data-fr="bas sec">dry low</span>) &rarr; Bet, <span class="i18n" data-en="lean big" data-fr="tendance gros">lean big</span><br>
+    8&#9829;4&#9830;2&#9827; (<span class="i18n" data-en="very dry" data-fr="tr&egrave;s sec">very dry</span>) &rarr; Bet big
   </div>
 </div>
 
-<!-- MODIFIERS -->
-<div class="section-title">Modifiers (adjust from base rule)</div>
+<div class="section-title"><span class="i18n" data-en="Modifiers (adjust from base rule)" data-fr="Modificateurs (ajustez depuis la r&egrave;gle de base)">Modifiers (adjust from base rule)</span></div>
 
 <div class="card">
   <div class="modifier">
     <div class="modifier-icon">&#x1F3B2;</div>
-    <div class="modifier-text"><strong>Paired board</strong> (e.g., K&#9829;K&#9830;5&#9827;, 9&#9824;9&#9830;3&#9827;)<br>
-    Check a bit more (+10-20% check). When you bet &rarr; small.
+    <div class="modifier-text"><strong><span class="i18n" data-en="Paired board" data-fr="Board pair&eacute;">Paired board</span></strong> (ex: K&#9829;K&#9830;5&#9827;, 9&#9824;9&#9830;3&#9827;)<br>
+    <span class="i18n" data-en="Check a bit more (+10-20% check). When you bet &rarr; small." data-fr="Checkez un peu plus (+10-20% check). Quand vous misez &rarr; petit.">Check a bit more (+10-20% check). When you bet &rarr; small.</span>
     </div>
   </div>
   <div class="modifier">
     <div class="modifier-icon">&#x1F3B0;</div>
-    <div class="modifier-text"><strong>Trips board</strong> (e.g., 2&#9829;2&#9830;2&#9827;, T&#9824;T&#9830;T&#9829;)<br>
-    Always bet. Use big sizing ~50% of the time.
+    <div class="modifier-text"><strong><span class="i18n" data-en="Trips board" data-fr="Board brelan">Trips board</span></strong> (ex: 2&#9829;2&#9830;2&#9827;, T&#9824;T&#9830;T&#9829;)<br>
+    <span class="i18n" data-en="Always bet. Use big sizing ~50% of the time." data-fr="Misez toujours. Utilisez la grosse taille ~50% du temps.">Always bet. Use big sizing ~50% of the time.</span>
     </div>
   </div>
   <div class="modifier">
     <div class="modifier-icon">&#x1F3A8;</div>
-    <div class="modifier-text"><strong>Monotone board</strong> (e.g., A&#9824;8&#9824;5&#9824;, K&#9829;9&#9829;7&#9829;)<br>
-    Still bet (don't slow down!), but shift to BIGGER sizing. Charge the draws.
+    <div class="modifier-text"><strong><span class="i18n" data-en="Monotone board" data-fr="Board unicolore">Monotone board</span></strong> (ex: A&#9824;8&#9824;5&#9824;, K&#9829;9&#9829;7&#9829;)<br>
+    <span class="i18n" data-en="Still bet (don't slow down!), but shift to BIGGER sizing. Charge the draws." data-fr="Continuez &agrave; miser (ne ralentissez pas !), mais passez &agrave; une taille PLUS GROSSE. Faites payer les tirages.">Still bet (don't slow down!), but shift to BIGGER sizing. Charge the draws.</span>
     </div>
   </div>
   <div class="modifier">
     <div class="modifier-icon">&#x1F517;</div>
-    <div class="modifier-text"><strong>Connected texture</strong> (e.g., J&#9829;T&#9830;9&#9827;, 8&#9824;7&#9829;6&#9830;)<br>
-    Check more than default. When you do bet &rarr; prefer big.
+    <div class="modifier-text"><strong><span class="i18n" data-en="Connected texture" data-fr="Texture connect&eacute;e">Connected texture</span></strong> (ex: J&#9829;T&#9830;9&#9827;, 8&#9824;7&#9829;6&#9830;)<br>
+    <span class="i18n" data-en="Check more than default. When you do bet &rarr; prefer big." data-fr="Checkez plus que par d&eacute;faut. Quand vous misez &rarr; pr&eacute;f&eacute;rez gros.">Check more than default. When you do bet &rarr; prefer big.</span>
     </div>
   </div>
 </div>
 
-<!-- AIR CONCEPT -->
-<div class="section-title">Understanding Air (Why You Check)</div>
+<div class="section-title"><span class="i18n" data-en="Understanding Air (Why You Check)" data-fr="Comprendre l'Air (Pourquoi vous checkez)">Understanding Air (Why You Check)</span></div>
 
 <div class="card">
-  <div class="card-title">What is "Air" in your range?</div>
+  <div class="card-title"><span class="i18n" data-en="What is &quot;Air&quot; in your range?" data-fr="Qu'est-ce que l'&laquo; Air &raquo; dans votre range ?">What is "Air" in your range?</span></div>
   <div style="font-size:0.85rem;margin-bottom:8px;">
-    Air = hands that completely missed the board. No pair, no draw, no equity. When too much of your range is air, you must check more often &mdash; otherwise you're bluffing too much and villain can exploit you.
+    <span class="i18n" data-en="Air = hands that completely missed the board. No pair, no draw, no equity. When too much of your range is air, you must check more often &mdash; otherwise you're bluffing too much and villain can exploit you." data-fr="Air = mains qui ont compl&egrave;tement rat&eacute; le board. Pas de paire, pas de tirage, pas d'&eacute;quit&eacute;. Quand trop de votre range est de l'air, vous devez checker plus souvent &mdash; sinon vous bluffez trop et le vilain peut vous exploiter.">Air = hands that completely missed the board. No pair, no draw, no equity. When too much of your range is air, you must check more often &mdash; otherwise you're bluffing too much and villain can exploit you.</span>
   </div>
   <div class="examples">
-    <strong>Where is your air HIGH? (check more)</strong><br>
-    &bull; Low connected boards: 6&#9829;5&#9830;4&#9827;, 7&#9824;6&#9830;5&#9827; &mdash; your AK, AQ, KJ, QJ, KT, JT all missed completely<br>
-    &bull; Low disconnected: 8&#9824;4&#9829;2&#9827; &mdash; only overpairs hit; your suited connectors and broadway are dead<br><br>
-    <strong>Where is your air LOW? (bet freely)</strong><br>
-    &bull; A-high boards: A&#9824;7&#9829;2&#9827; &mdash; your AA, AK, AQ, AJ, AT all connect. Most of your range has something.<br>
-    &bull; K/Q-high: K&#9829;8&#9830;2&#9827; &mdash; KK, AK, KQ, KJ, KT + overpairs all hit.<br>
-    &bull; Broadway: Q&#9829;J&#9824;T&#9827; &mdash; AK, KQ, KT, QJ, JT, AQ, 98 all connect.<br><br>
-    <strong style="color:#d29922;">This is exactly why:</strong> A/K/Q-high = bet 100% (low air). Low connected = check 40% (high air).
+    <strong><span class="i18n" data-en="Where is your air HIGH? (check more)" data-fr="O&ugrave; votre air est-il HAUT ? (checkez plus)">Where is your air HIGH? (check more)</span></strong><br>
+    &bull; <span class="i18n" data-en="Low connected boards:" data-fr="Boards bas connect&eacute;s :">Low connected boards:</span> 6&#9829;5&#9830;4&#9827;, 7&#9824;6&#9830;5&#9827; &mdash; <span class="i18n" data-en="your AK, AQ, KJ, QJ, KT, JT all missed completely" data-fr="vos AK, AQ, KJ, QJ, KT, JT ont tous compl&egrave;tement rat&eacute;">your AK, AQ, KJ, QJ, KT, JT all missed completely</span><br>
+    &bull; <span class="i18n" data-en="Low disconnected:" data-fr="Bas d&eacute;connect&eacute; :">Low disconnected:</span> 8&#9824;4&#9829;2&#9827; &mdash; <span class="i18n" data-en="only overpairs hit; your suited connectors and broadway are dead" data-fr="seules les overpairs touchent ; vos suited connectors et broadway sont morts">only overpairs hit; your suited connectors and broadway are dead</span><br><br>
+    <strong><span class="i18n" data-en="Where is your air LOW? (bet freely)" data-fr="O&ugrave; votre air est-il BAS ? (misez librement)">Where is your air LOW? (bet freely)</span></strong><br>
+    &bull; <span class="i18n" data-en="A-high boards:" data-fr="Boards As-haut :">A-high boards:</span> A&#9824;7&#9829;2&#9827; &mdash; <span class="i18n" data-en="your AA, AK, AQ, AJ, AT all connect. Most of your range has something." data-fr="vos AA, AK, AQ, AJ, AT touchent tous. La plupart de votre range a quelque chose.">your AA, AK, AQ, AJ, AT all connect. Most of your range has something.</span><br>
+    &bull; K/Q-high: K&#9829;8&#9830;2&#9827; &mdash; KK, AK, KQ, KJ, KT + overpairs<br>
+    &bull; Broadway: Q&#9829;J&#9824;T&#9827; &mdash; AK, KQ, KT, QJ, JT, AQ, 98<br><br>
+    <strong style="color:#d29922;"><span class="i18n" data-en="This is exactly why:" data-fr="C'est exactement pourquoi :">This is exactly why:</span></strong> A/K/Q-high = bet 100% (<span class="i18n" data-en="low air" data-fr="peu d'air">low air</span>). Low connected = check 40% (<span class="i18n" data-en="high air" data-fr="beaucoup d'air">high air</span>).
   </div>
 </div>
 
-<!-- SUMMARY -->
-<div class="section-title">One-Line Summary</div>
+<div class="section-title"><span class="i18n" data-en="One-Line Summary" data-fr="R&eacute;sum&eacute; en une phrase">One-Line Summary</span></div>
 <div class="default-box">
-  <div class="big">"Bet everything small on high boards.<br>Check more and size up on low connected boards."</div>
-  <div style="margin-top:8px;">That's 90% of the strategy.</div>
+  <div class="big"><span class="i18n" data-en="&quot;Bet everything small on high boards. Check more and size up on low connected boards.&quot;" data-fr="&laquo; Misez tout petit sur les boards hauts. Checkez plus et augmentez la taille sur les boards bas connect&eacute;s. &raquo;">"Bet everything small on high boards. Check more and size up on low connected boards."</span></div>
+  <div style="margin-top:8px;"><span class="i18n" data-en="That's 90% of the strategy." data-fr="C'est 90% de la strat&eacute;gie.">That's 90% of the strategy.</span></div>
 </div>
 
 <div class="footer">
@@ -254,5 +220,24 @@ h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; 
   Source: RangeConverter Aggregate Report + Solver Data
 </div>
 
+<script>
+(function(){
+var lang = localStorage.getItem("pokerLang") || "en";
+function applyLang(l) {
+  lang = l;
+  localStorage.setItem("pokerLang", l);
+  var els = document.querySelectorAll(".i18n");
+  for (var i = 0; i < els.length; i++) {
+    var t = els[i].getAttribute("data-" + l);
+    if (t) els[i].innerHTML = t;
+  }
+  document.getElementById("langBtn").textContent = l === "en" ? "FR" : "EN";
+}
+window.toggleLang = function() {
+  applyLang(lang === "en" ? "fr" : "en");
+};
+applyLang(lang);
+})();
+</script>
 </body>
 </html>
