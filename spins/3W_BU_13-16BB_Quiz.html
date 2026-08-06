@@ -133,7 +133,7 @@ body {
 
 <script>
 const cornerQuestions = [
-  { hand: "A7s", type: "suited", q: "You hold A7s on BU, 14BB deep, 3-way. What's your action?", options: ["Fold","2x Raise","All-in"], answer: "2x Raise", explain: "A7s is blue — 2x raise, call vs AI, call vs NAI 3b. Boundary: A8s+ are teal (jam vs 3b), A7s drops to blue." },
+  { hand: "A7s", type: "suited", q: "You hold A7s on BU, 14BB deep, 3-way. What's your action?", options: ["Fold","2x Raise","All-in"], answer: "2x Raise", explain: "A7s is blue — 2x raise, call vs AI, call vs NAI 3b. Key boundary: A6s and below are all-in jams (green), A7s is the first suited Ace that raises 2x." },
   { hand: "K9o", type: "offsuit", q: "You hold K9o on BU, 15BB. Open or fold?", options: ["Fold","2x Raise","All-in"], answer: "2x Raise", explain: "K9o is pink — 2x raise, fold vs AI, call vs NAI 3b. Last offsuit King in range (K8o is a fold)." },
   { hand: "K8o", type: "offsuit", q: "You hold K8o on BU, 13BB. Your action?", options: ["Fold","2x Raise","All-in"], answer: "Fold", explain: "K8o is a fold. K9o is the cutoff for offsuit Kings." },
   { hand: "77", type: "pair", q: "You hold 77 on BU, 14BB. Open-raise 2x or jam?", options: ["2x Raise","All-in","Fold"], answer: "All-in", explain: "77 is green (jam). 88+ open to 2x. Boundary: 77=jam, 88=raise." },
@@ -151,7 +151,7 @@ const cornerQuestions = [
 ];
 
 const vsAllinQuestions = [
-  { hand: "A5s", type: "suited", q: "You raised 2x with A5s. Villain jams. Call or fold?", options: ["Call","Fold"], answer: "Call", explain: "A5s is teal — all suited Aces call the jam." },
+  { hand: "A5s", type: "suited", q: "You hold A5s on BU, 14BB. What's your action?", options: ["2x Raise","All-in","Fold"], answer: "All-in", explain: "A5s is green — open jam! A2s-A6s are all all-in. A7s is the first suited Ace that raises 2x." },
   { hand: "A7s", type: "suited", q: "You raised 2x with A7s. Villain shoves. Call?", options: ["Call","Fold"], answer: "Call", explain: "A7s is blue — call vs all-in. Drops from teal only for the 3b response." },
   { hand: "K9s", type: "suited", q: "You raised K9s, villain jams 15BB. Call?", options: ["Call","Fold"], answer: "Call", explain: "K9s is blue — call vs all-in. All suited Kings in range call jams." },
   { hand: "K9o", type: "offsuit", q: "You opened K9o, villain shoves. Call or fold?", options: ["Call","Fold"], answer: "Fold", explain: "K9o is pink — FOLD vs all-in! Offsuit doesn't have the equity." },
