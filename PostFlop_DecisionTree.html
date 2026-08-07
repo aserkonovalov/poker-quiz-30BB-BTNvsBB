@@ -24,34 +24,26 @@ body {
   font-size: 0.8rem; text-decoration: none; touch-action: manipulation;
 }
 .back-btn:active { background: #1c2a3f; color: #58a6ff; }
+.lang-btn {
+  padding: 6px 14px; border: 1px solid #30363d; border-radius: 8px;
+  background: #161b22; color: #58a6ff; font-size: 0.8rem; font-weight: 700;
+  cursor: pointer; touch-action: manipulation; -webkit-appearance: none;
+}
+.lang-btn:active { background: #1c2a3f; }
 h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; }
 .sub { text-align: center; font-size: 0.75rem; color: #8b949e; margin-bottom: 20px; }
-
 .step-container { max-width: 500px; margin: 0 auto; }
-
-.breadcrumb {
-  display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px;
-  font-size: 0.75rem; color: #484f58;
-}
+.breadcrumb { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; font-size: 0.75rem; color: #484f58; }
 .breadcrumb .crumb { color: #8b949e; }
 .breadcrumb .crumb.active { color: #58a6ff; font-weight: 700; }
 .breadcrumb .sep { color: #30363d; }
-
 .question-card {
   background: #161b22; border: 2px solid #30363d; border-radius: 14px;
   padding: 24px 20px; text-align: center; margin-bottom: 16px;
 }
-.question-card .step-num {
-  font-size: 0.7rem; color: #484f58; text-transform: uppercase;
-  letter-spacing: 1px; margin-bottom: 8px;
-}
-.question-card .question {
-  font-size: 1.2rem; font-weight: 700; color: #f0f6fc; margin-bottom: 6px;
-}
-.question-card .hint {
-  font-size: 0.82rem; color: #8b949e; margin-top: 8px;
-}
-
+.question-card .step-num { font-size: 0.7rem; color: #484f58; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.question-card .question { font-size: 1.2rem; font-weight: 700; color: #f0f6fc; margin-bottom: 6px; }
+.question-card .hint { font-size: 0.82rem; color: #8b949e; margin-top: 8px; }
 .choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
 .choice-btn {
   display: block; width: 100%; padding: 18px 16px;
@@ -64,43 +56,19 @@ h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; 
 .choice-btn:active { transform: scale(0.97); border-color: #58a6ff; background: #1c2a3f; }
 .choice-btn:hover { border-color: #58a6ff; background: #1c2a3f; }
 .choice-btn .choice-sub { font-size: 0.8rem; color: #8b949e; font-weight: 400; margin-top: 4px; }
-
-.result-card {
-  background: #161b22; border-radius: 14px; padding: 24px 20px;
-  text-align: center; margin-bottom: 16px;
-}
-.result-card .action {
-  font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;
-}
+.result-card { background: #161b22; border-radius: 14px; padding: 24px 20px; text-align: center; margin-bottom: 16px; }
+.result-card .action { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
 .result-card .action.bet-small { color: #58a6ff; }
 .result-card .action.bet-big { color: #d29922; }
 .result-card .action.check { color: #3fb950; }
 .result-card .action.mix { color: #a371f7; }
 .result-card .freq { font-size: 0.9rem; color: #8b949e; margin-bottom: 12px; }
-.result-card .explanation {
-  font-size: 0.85rem; color: #c9d1d9; text-align: left;
-  background: #0d1117; border-radius: 8px; padding: 12px 14px; margin-top: 12px;
-}
-.result-card .example {
-  font-size: 0.82rem; color: #8b949e; text-align: left;
-  margin-top: 10px; padding: 10px 14px; background: #1c2128;
-  border-radius: 6px; border-left: 3px solid #30363d;
-}
+.result-card .explanation { font-size: 0.85rem; color: #c9d1d9; text-align: left; background: #0d1117; border-radius: 8px; padding: 12px 14px; margin-top: 12px; }
+.result-card .example { font-size: 0.82rem; color: #8b949e; text-align: left; margin-top: 10px; padding: 10px 14px; background: #1c2128; border-radius: 6px; border-left: 3px solid #30363d; }
 .result-card .example strong { color: #e6edf3; }
-
-.reset-btn {
-  display: block; width: 100%; padding: 14px;
-  border: 2px solid #58a6ff; border-radius: 12px;
-  background: transparent; color: #58a6ff; font-size: 0.9rem;
-  font-weight: 700; cursor: pointer; touch-action: manipulation;
-  margin-top: 12px;
-}
+.reset-btn { display: block; width: 100%; padding: 14px; border: 2px solid #58a6ff; border-radius: 12px; background: transparent; color: #58a6ff; font-size: 0.9rem; font-weight: 700; cursor: pointer; touch-action: manipulation; margin-top: 12px; }
 .reset-btn:active { background: rgba(88,166,255,0.1); }
-
-.path-display {
-  margin-top: 16px; padding: 12px; background: #1c2128;
-  border-radius: 8px; font-size: 0.8rem; color: #8b949e;
-}
+.path-display { margin-top: 16px; padding: 12px; background: #1c2128; border-radius: 8px; font-size: 0.8rem; color: #8b949e; }
 .path-display .path-item { margin: 3px 0; }
 .path-display .path-item span { color: #58a6ff; font-weight: 600; }
 </style>
@@ -108,201 +76,228 @@ h1 { text-align: center; font-size: 1.3rem; color: #58a6ff; margin-bottom: 4px; 
 <body>
 <div class="top-bar">
   <a href="index.html" class="back-btn">&larr; Back</a>
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()">FR</button>
 </div>
-<h1>Post-Flop Decision Tree</h1>
-<p class="sub">Step-by-step guide &mdash; Villain checks to you on the flop</p>
-
+<h1 class="i18n" data-en="Post-Flop Decision Tree" data-fr="Arbre de D&eacute;cision Post-Flop">Post-Flop Decision Tree</h1>
+<p class="sub i18n" data-en="Step-by-step guide &mdash; Villain checks to you on the flop" data-fr="Guide &eacute;tape par &eacute;tape &mdash; Le vilain vous check au flop">Step-by-step guide &mdash; Villain checks to you on the flop</p>
 <div class="step-container" id="app"></div>
 
 <script>
+var lang = localStorage.getItem("pokerLang") || "en";
 
-// Decision Tree Data Structure
-var TREE = {
-  start: {
-    step: 1,
-    question: "What is the SPR?",
-    hint: "SPR = Stack / Pot. Count effective stack divided by current pot size.",
-    choices: [
-      { label: "SPR ≤ 5", sub: "Shallow (typical in spins at 10-15BB)", next: "shallow_range" },
-      { label: "SPR > 5", sub: "Deep (early levels, 20BB+)", next: "deep_position" }
-    ]
-  },
+function T(en, fr) { return lang === "fr" ? fr : en; }
 
-  // SHALLOW BRANCH
-  shallow_range: {
-    step: 2,
-    question: "Do you have range advantage?",
-    hint: "High cards (A/K/Q/J) favor raiser. Low connected boards (654, 876) favor caller.",
-    choices: [
-      { label: "YES — Range Advantage", sub: "A-high, K-high, Q-high, Broadway, high paired", next: "shallow_yes_air" },
-      { label: "NO — Caller has advantage", sub: "Low connected, mid connected, low paired, monotone low", next: "shallow_no_texture" }
-    ]
-  },
-
-  shallow_yes_air: {
-    step: 3,
-    question: "How much air is in your range?",
-    hint: "Air = hands that completely missed. Count how many of your opening hands have nothing on this board.",
-    choices: [
-      { label: "Low Air (< 15%)", sub: "Most of your range connects (A/K/Q boards)", next: "shallow_yes_lowair" },
-      { label: "High Air (> 15%)", sub: "Many hands missed (J-high, mid boards)", next: "result_shallow_yes_highair" }
-    ]
-  },
-
-  shallow_yes_lowair: {
-    step: 4,
-    question: "How strong is villain's range here?",
-    hint: "Does villain have top pair+, sets, strong draws on this board?",
-    choices: [
-      { label: "Villain is weak", sub: "Few strong hands in their calling range", next: "result_shallow_yes_weak" },
-      { label: "Villain has some strength", sub: "They connect with this board somewhat", next: "result_shallow_yes_medium" }
-    ]
-  },
-
-  // SHALLOW NO BRANCH
-  shallow_no_texture: {
-    step: 3,
-    question: "What is the board texture?",
-    hint: "This is the ONE spot where board texture drives your decision.",
-    choices: [
-      { label: "DRY", sub: "No flush draw, no straight draw (842r, 952r)", next: "result_shallow_no_dry" },
-      { label: "STRAIGHT possible", sub: "Connected cards, straight draws (765, T98)", next: "result_shallow_no_straight" },
-      { label: "MONOTONE", sub: "All one suit (6♥5♥3♥)", next: "result_shallow_no_mono" }
-    ]
-  },
-
-  // DEEP BRANCH
-  deep_position: {
-    step: 2,
-    question: "Are you in position?",
-    hint: "IP = you act last on every street. OOP = you act first.",
-    choices: [
-      { label: "OUT OF POSITION", sub: "You act first (BB vs BTN, SB vs BTN)", next: "result_deep_oop" },
-      { label: "IN POSITION", sub: "You act last (BTN vs BB, BTN vs SB)", next: "deep_ip_air" }
-    ]
-  },
-
-  deep_ip_air: {
-    step: 3,
-    question: "How much air is in your range?",
-    hint: "On low boards your range has more air. On high boards less air.",
-    choices: [
-      { label: "Low Air", sub: "High-card board, most of your range connects", next: "deep_ip_polar" },
-      { label: "High Air", sub: "Low board, many hands missed completely", next: "deep_ip_highair" }
-    ]
-  },
-
-  deep_ip_polar: {
-    step: 4,
-    question: "How polar is your range?",
-    hint: "Polar = clear value hands + clear bluffs, few medium hands. Low polar = many medium-strength hands.",
-    choices: [
-      { label: "HIGH Polar", sub: "Clear nuts + clear draws/bluffs (A72, K42)", next: "result_deep_ip_polar_high" },
-      { label: "LOW Polar", sub: "Many medium hands (KQ9, JT8)", next: "result_deep_ip_polar_low" }
-    ]
-  },
-
-  deep_ip_highair: {
-    step: 4,
-    question: "Who has more air?",
-    hint: "Compare: does villain also miss this board, or do they connect better than you?",
-    choices: [
-      { label: "Villain is airier too", sub: "Both ranges miss (964, 852 with no suited)", next: "result_deep_ip_both_airy" },
-      { label: "YOU are airier", sub: "Villain connects better (765, 543 — they have suited connectors)", next: "result_deep_ip_you_airy" }
-    ]
+function toggleLang() {
+  lang = lang === "en" ? "fr" : "en";
+  localStorage.setItem("pokerLang", lang);
+  document.getElementById("langBtn").textContent = lang === "en" ? "FR" : "EN";
+  var els = document.querySelectorAll(".i18n");
+  for (var i = 0; i < els.length; i++) {
+    var t = els[i].getAttribute("data-" + lang);
+    if (t) els[i].innerHTML = t;
   }
-};
+  render();
+}
 
-// Results
-var RESULTS = {
-  result_shallow_yes_weak: {
-    action: "BET 1/3 POT",
-    actionClass: "bet-small",
-    freq: "Bet ~45% of the time",
-    explanation: "You have range advantage AND villain is weak. Bet small to extract value from their entire calling range. Big bets fold out the marginal hands you profit from.",
-    example: "You raise BTN, BB calls. Flop A♠7♥2♣. BB has almost no Ax (they'd 3-bet AK/AQ). You have all the Aces. Villain is weak → bet 1/3 with your entire range."
-  },
+function getTree() {
+  return {
+    start: {
+      step: 1,
+      question: T("What is the SPR?", "Quel est le SPR ?"),
+      hint: T("SPR = Stack / Pot. Count effective stack divided by current pot size.",
+              "SPR = Stack / Pot. Divisez le stack effectif par la taille du pot."),
+      choices: [
+        { label: T("SPR \u2264 5", "SPR \u2264 5"), sub: T("Shallow (typical in spins at 10-15BB)", "Peu profond (typique en spins \u00e0 10-15BB)"), next: "shallow_range" },
+        { label: T("SPR > 5", "SPR > 5"), sub: T("Deep (early levels, 20BB+)", "Profond (niveaux initiaux, 20BB+)"), next: "deep_position" }
+      ]
+    },
+    shallow_range: {
+      step: 2,
+      question: T("Do you have range advantage?", "Avez-vous l\u2019avantage de range ?"),
+      hint: T("High cards (A/K/Q/J) favor raiser. Low connected boards (654, 876) favor caller.",
+              "Cartes hautes (A/K/Q/J) favorisent le relanceur. Boards bas connect\u00e9s (654, 876) favorisent le suiveur."),
+      choices: [
+        { label: T("YES \u2014 Range Advantage", "OUI \u2014 Avantage de range"), sub: T("A-high, K-high, Q-high, Broadway, high paired", "A-high, K-high, Q-high, Broadway, pair\u00e9 haut"), next: "shallow_yes_air" },
+        { label: T("NO \u2014 Caller has advantage", "NON \u2014 Le suiveur a l\u2019avantage"), sub: T("Low connected, mid connected, low paired, monotone low", "Bas connect\u00e9, mid connect\u00e9, pair\u00e9 bas, monotone bas"), next: "shallow_no_texture" }
+      ]
+    },
+    shallow_yes_air: {
+      step: 3,
+      question: T("How much air is in your range?", "Combien d\u2019air dans votre range ?"),
+      hint: T("Air = hands that completely missed. Count how many of your opening hands have nothing on this board.",
+              "Air = mains qui ont compl\u00e8tement miss\u00e9. Comptez combien de vos mains d\u2019ouverture n\u2019ont rien sur ce board."),
+      choices: [
+        { label: T("Low Air (< 15%)", "Peu d\u2019air (< 15%)"), sub: T("Most of your range connects (A/K/Q boards)", "La majorit\u00e9 de votre range connecte (boards A/K/Q)"), next: "shallow_yes_lowair" },
+        { label: T("High Air (> 15%)", "Beaucoup d\u2019air (> 15%)"), sub: T("Many hands missed (J-high, mid boards)", "Beaucoup de mains ont miss\u00e9 (J-high, boards moyens)"), next: "result_shallow_yes_highair" }
+      ]
+    },
+    shallow_yes_lowair: {
+      step: 4,
+      question: T("How strong is villain\u2019s range here?", "Quelle est la force de la range du vilain ici ?"),
+      hint: T("Does villain have top pair+, sets, strong draws on this board?",
+              "Le vilain a-t-il top pair+, des sets, des tirages forts sur ce board ?"),
+      choices: [
+        { label: T("Villain is weak", "Vilain est faible"), sub: T("Few strong hands in their calling range", "Peu de mains fortes dans sa range de call"), next: "result_shallow_yes_weak" },
+        { label: T("Villain has some strength", "Vilain a une certaine force"), sub: T("They connect with this board somewhat", "Il connecte un peu avec ce board"), next: "result_shallow_yes_medium" }
+      ]
+    },
+    shallow_no_texture: {
+      step: 3,
+      question: T("What is the board texture?", "Quelle est la texture du board ?"),
+      hint: T("This is the ONE spot where board texture drives your decision.",
+              "C\u2019est LE SEUL cas o\u00f9 la texture du board guide votre d\u00e9cision."),
+      choices: [
+        { label: T("DRY", "SEC"), sub: T("No flush draw, no straight draw (842r, 952r)", "Pas de tirage couleur, pas de tirage quinte (842r, 952r)"), next: "result_shallow_no_dry" },
+        { label: T("STRAIGHT possible", "QUINTE possible"), sub: T("Connected cards, straight draws (765, T98)", "Cartes connect\u00e9es, tirages quinte (765, T98)"), next: "result_shallow_no_straight" },
+        { label: T("MONOTONE", "MONOTONE"), sub: T("All one suit (6\u26655\u26653\u2665)", "Tout une couleur (6\u26655\u26653\u2665)"), next: "result_shallow_no_mono" }
+      ]
+    },
+    deep_position: {
+      step: 2,
+      question: T("Are you in position?", "\u00cates-vous en position ?"),
+      hint: T("IP = you act last on every street. OOP = you act first.",
+              "IP = vous parlez en dernier. OOP = vous parlez en premier."),
+      choices: [
+        { label: T("OUT OF POSITION", "HORS POSITION (OOP)"), sub: T("You act first (BB vs BTN, SB vs BTN)", "Vous parlez en premier (BB vs BTN)"), next: "result_deep_oop" },
+        { label: T("IN POSITION", "EN POSITION (IP)"), sub: T("You act last (BTN vs BB, BTN vs SB)", "Vous parlez en dernier (BTN vs BB)"), next: "deep_ip_air" }
+      ]
+    },
+    deep_ip_air: {
+      step: 3,
+      question: T("How much air is in your range?", "Combien d\u2019air dans votre range ?"),
+      hint: T("On low boards your range has more air. On high boards less air.",
+              "Sur les boards bas votre range a plus d\u2019air. Sur les boards hauts moins d\u2019air."),
+      choices: [
+        { label: T("Low Air", "Peu d\u2019air"), sub: T("High-card board, most of your range connects", "Board avec cartes hautes, la majorit\u00e9 de votre range connecte"), next: "deep_ip_polar" },
+        { label: T("High Air", "Beaucoup d\u2019air"), sub: T("Low board, many hands missed completely", "Board bas, beaucoup de mains ont miss\u00e9"), next: "deep_ip_highair" }
+      ]
+    },
+    deep_ip_polar: {
+      step: 4,
+      question: T("How polar is your range?", "Votre range est-elle polaris\u00e9e ?"),
+      hint: T("Polar = clear value hands + clear bluffs, few medium hands.",
+              "Polaris\u00e9e = mains de valeur claires + bluffs clairs, peu de mains moyennes."),
+      choices: [
+        { label: T("HIGH Polar", "TR\u00c8S Polaris\u00e9e"), sub: T("Clear nuts + clear draws/bluffs (A72, K42)", "Nuts clairs + tirages/bluffs clairs (A72, K42)"), next: "result_deep_ip_polar_high" },
+        { label: T("LOW Polar", "PEU Polaris\u00e9e"), sub: T("Many medium hands (KQ9, JT8)", "Beaucoup de mains moyennes (KQ9, JT8)"), next: "result_deep_ip_polar_low" }
+      ]
+    },
+    deep_ip_highair: {
+      step: 4,
+      question: T("Who has more air?", "Qui a le plus d\u2019air ?"),
+      hint: T("Compare: does villain also miss this board, or do they connect better than you?",
+              "Comparez : le vilain miss-t-il aussi ce board, ou connecte-t-il mieux que vous ?"),
+      choices: [
+        { label: T("Villain is airier too", "Le vilain a aussi beaucoup d\u2019air"), sub: T("Both ranges miss (964, 852)", "Les deux ranges missent (964, 852)"), next: "result_deep_ip_both_airy" },
+        { label: T("YOU are airier", "VOUS avez plus d\u2019air"), sub: T("Villain connects better (765, 543)", "Le vilain connecte mieux (765, 543)"), next: "result_deep_ip_you_airy" }
+      ]
+    }
+  };
+}
 
-  result_shallow_yes_medium: {
-    action: "MIX: Bet 1/3 & Check",
-    actionClass: "mix",
-    freq: "Bet ~41% / Check ~59%",
-    explanation: "You have range advantage but villain can fight back with some strong hands. Spread your strategy: bet value hands and some bluffs, check medium hands.",
-    example: "You raise BTN, BB calls. Flop K♥Q♠9♣. You have KK, AK, KQ (value), but BB also has K9s, Q9s, JTs (straight draw). They can fight back → mix bet/check."
-  },
-
-  result_shallow_yes_highair: {
-    action: "CHECK (lean)",
-    actionClass: "check",
-    freq: "Check ~58% of the time",
-    explanation: "Even though you have range advantage, too much of your range is air (unmade hands). If you bet, too many of your bets are bluffs and villain can exploit by calling/raising. Air is always the brake pedal.",
-    example: "You raise BTN. Flop K♠8♥3♣. You have AK, KQ (strong), BUT also 76s, T9s, 54s that missed completely. >15% air → pump the brakes, check more."
-  },
-
-  result_shallow_no_dry: {
-    action: "BET 2/3 POT",
-    actionClass: "bet-big",
-    freq: "Bet ~50% of the time",
-    explanation: "Villain has range advantage but can't realize their equity on a dry board. No draws to complete. Bet big to deny them the turn card cheaply. They have to fold or pay a premium.",
-    example: "Flop 8♠4♥2♣ (dry, rainbow). Villain connects better (has 87s, 54s, pocket pairs), but there's no draw. They can't improve easily → bet 2/3 to take it away."
-  },
-
-  result_shallow_no_straight: {
-    action: "MIX / CHECK",
-    actionClass: "mix",
-    freq: "Check ~44% of the time",
-    explanation: "Villain has range advantage AND the board has straight possibilities. They have too many made straights and strong draws. Betting has limited fold equity because they're never folding the hands that beat you.",
-    example: "Flop 7♥6♠5♣. Villain's range is loaded with 98s, 43s, 87s, 65s. Too many nutted combos → mix check/bet, leaning toward check."
-  },
-
-  result_shallow_no_mono: {
-    action: "CHECK",
-    actionClass: "check",
-    freq: "Check ~49% of the time",
-    explanation: "Monotone board + range disadvantage = zero fold equity. Villain has flush draws (direct odds to call) and made flushes (never folding). Betting accomplishes nothing against the part of their range that matters.",
-    example: "Flop 6♥5♥3♥. Villain has K♥9♥, 8♥7♥, A♥2♥ etc. You can't bluff them off flush draws, can't get value from flushes. Just check and give up or check with your strong hands."
-  },
-
-  result_deep_oop: {
-    action: "CHECK",
-    actionClass: "check",
-    freq: "Check 76-87% of the time",
-    explanation: "Deep stacks + out of position = almost always check. Position dominates in deep-stacked pots. You'll face raises and multi-street barrels without information. Check everything and play defensively.",
-    example: "You 3-bet from BB, BTN calls. SPR=8. Flop comes anything. You're OOP with deep stacks → check. Let villain act first on the turn. This is the most passive region of the entire tree."
-  },
-
-  result_deep_ip_polar_high: {
-    action: "BET 1/3 POT",
-    actionClass: "bet-small",
-    freq: "Bet ~68% of the time — most aggressive spot in the tree",
-    explanation: "You're in position, deep stacks, low air, AND highly polar (clear value + clear bluffs, few awkward middle hands). This is the ideal betting structure — every hand has a clear plan. Bet small at high frequency to build pots over multiple streets.",
-    example: "You raise BTN, BB calls. SPR=8. Flop A♠7♥2♣. Your range: AA/AK/AQ (value) + 5♠4♠, 9♠8♠ (bluffs). Few medium hands. Very polar → bet 1/3 at 68%."
-  },
-
-  result_deep_ip_polar_low: {
-    action: "LEAN BET 1/3",
-    actionClass: "bet-small",
-    freq: "Bet ~49% of the time",
-    explanation: "You're in position with low air, but your range isn't cleanly polar — you have many medium-strength hands (second pair, weak top pair). You can still bet, but not at the high frequency of a polar range.",
-    example: "You raise BTN, BB calls. SPR=7. Flop K♠8♥5♣. Your range: KK/AK (strong), but also KJ/KT/K9 (medium pairs) and 9T/JT with some equity. Not cleanly polar → lean bet 1/3 at 49%."
-  },
-
-  result_deep_ip_both_airy: {
-    action: "MIX: Bet & Check",
-    actionClass: "mix",
-    freq: "Check ~38% of the time",
-    explanation: "Both you and villain have lots of air. Neither side is strong. You can bet sometimes because villain is weak too and will fold, but you can't go crazy because you also have nothing.",
-    example: "You raise BTN, BB calls. SPR=8. Flop 9♠6♥2♣. You have overcards that missed (AJ, AQ, KQ), but BB also has lots of air (J8, T7, Q4). Both weak → mix. Stab sometimes, give up sometimes."
-  },
-
-  result_deep_ip_you_airy: {
-    action: "CHECK (lean)",
-    actionClass: "check",
-    freq: "Check ~55% of the time",
-    explanation: "You have lots of air AND villain connects better than you. You're the weaker side on this board. Betting would be pure bluffing and villain will catch you too often because they have real hands.",
-    example: "You raise BTN, BB calls. SPR=8. Flop 7♥5♠4♣. Your range: mostly overcards that missed (AK, AQ, KJ = air). But BB has 67s, 86s, 54s, 43s — they connect. You're airier → check-lean."
-  }
-};
+function getResults() {
+  return {
+    result_shallow_yes_weak: {
+      action: T("BET 1/3 POT", "MISER 1/3 POT"),
+      actionClass: "bet-small",
+      freq: T("Bet ~45% of the time", "Miser ~45% du temps"),
+      explanation: T("You have range advantage AND villain is weak. Bet small to extract value from their entire calling range. Big bets fold out the marginal hands you profit from.",
+                     "Vous avez l\u2019avantage de range ET le vilain est faible. Misez petit pour extraire de la valeur de toute sa range de call. Les grosses mises font fold les mains marginales dont vous profitez."),
+      example: T("You raise BTN, BB calls. Flop A\u2660 7\u2665 2\u2663. BB has almost no Ax (they\u2019d 3-bet AK/AQ). You have all the Aces. Villain is weak \u2192 bet 1/3.",
+                 "Vous relancez BTN, BB call. Flop A\u2660 7\u2665 2\u2663. BB n\u2019a presque pas d\u2019Ax (il aurait 3-bet AK/AQ). Vous avez tous les As. Vilain faible \u2192 misez 1/3.")
+    },
+    result_shallow_yes_medium: {
+      action: T("MIX: Bet 1/3 & Check", "MIX : Miser 1/3 & Check"),
+      actionClass: "mix",
+      freq: T("Bet ~41% / Check ~59%", "Miser ~41% / Check ~59%"),
+      explanation: T("You have range advantage but villain can fight back with some strong hands. Spread your strategy: bet value hands and some bluffs, check medium hands.",
+                     "Vous avez l\u2019avantage de range mais le vilain peut se d\u00e9fendre avec quelques mains fortes. Diversifiez : misez les mains de valeur et quelques bluffs, check les mains moyennes."),
+      example: T("Flop K\u2665 Q\u2660 9\u2663. You have KK, AK, KQ (value), but BB also has K9s, Q9s, JTs. They can fight back \u2192 mix.",
+                 "Flop K\u2665 Q\u2660 9\u2663. Vous avez KK, AK, KQ (valeur), mais BB a aussi K9s, Q9s, JTs. Il peut se d\u00e9fendre \u2192 mix.")
+    },
+    result_shallow_yes_highair: {
+      action: T("CHECK (lean)", "CHECK (tendance)"),
+      actionClass: "check",
+      freq: T("Check ~58% of the time", "Check ~58% du temps"),
+      explanation: T("Even though you have range advantage, too much of your range is air. If you bet, too many of your bets are bluffs and villain can exploit. Air is always the brake pedal.",
+                     "M\u00eame si vous avez l\u2019avantage de range, trop de votre range est de l\u2019air. Si vous misez, trop de vos mises sont des bluffs. L\u2019air est toujours la p\u00e9dale de frein."),
+      example: T("Flop K\u2660 8\u2665 3\u2663. You have AK, KQ (strong), BUT also 76s, T9s, 54s that missed. >15% air \u2192 check more.",
+                 "Flop K\u2660 8\u2665 3\u2663. Vous avez AK, KQ (fort), MAIS aussi 76s, T9s, 54s qui ont miss\u00e9. >15% air \u2192 check davantage.")
+    },
+    result_shallow_no_dry: {
+      action: T("BET 2/3 POT", "MISER 2/3 POT"),
+      actionClass: "bet-big",
+      freq: T("Bet ~50% of the time", "Miser ~50% du temps"),
+      explanation: T("Villain has range advantage but can\u2019t realize equity on a dry board. No draws to complete. Bet big to deny them the turn card cheaply.",
+                     "Le vilain a l\u2019avantage de range mais ne peut pas r\u00e9aliser son \u00e9quit\u00e9 sur un board sec. Pas de tirage. Misez gros pour lui refuser une carte gratuite."),
+      example: T("Flop 8\u2660 4\u2665 2\u2663 (dry). Villain connects better but no draws \u2192 bet 2/3 to take it away.",
+                 "Flop 8\u2660 4\u2665 2\u2663 (sec). Le vilain connecte mieux mais pas de tirage \u2192 misez 2/3 pour prendre le pot.")
+    },
+    result_shallow_no_straight: {
+      action: T("MIX / CHECK", "MIX / CHECK"),
+      actionClass: "mix",
+      freq: T("Check ~44% of the time", "Check ~44% du temps"),
+      explanation: T("Villain has range advantage AND straights/draws. They have too many nutted combos. Betting has limited fold equity.",
+                     "Le vilain a l\u2019avantage de range ET des quintes/tirages. Trop de combos nuts dans sa range. Mise limit\u00e9e en fold equity."),
+      example: T("Flop 7\u2665 6\u2660 5\u2663. Villain has 98s, 43s, 87s, 65s. Too many nuts \u2192 mix/check.",
+                 "Flop 7\u2665 6\u2660 5\u2663. Le vilain a 98s, 43s, 87s, 65s. Trop de nuts \u2192 mix/check.")
+    },
+    result_shallow_no_mono: {
+      action: "CHECK",
+      actionClass: "check",
+      freq: T("Check ~49% of the time", "Check ~49% du temps"),
+      explanation: T("Monotone board + range disadvantage = zero fold equity. Villain has flush draws and made flushes. Betting accomplishes nothing.",
+                     "Board monotone + d\u00e9savantage de range = z\u00e9ro fold equity. Le vilain a des tirages couleur et des couleurs faites. Miser ne sert \u00e0 rien."),
+      example: T("Flop 6\u2665 5\u2665 3\u2665. Villain has K\u26659\u2665, 8\u26657\u2665. Can\u2019t bluff flush draws \u2192 check.",
+                 "Flop 6\u2665 5\u2665 3\u2665. Le vilain a K\u26659\u2665, 8\u26657\u2665. Impossible de bluffer les tirages couleur \u2192 check.")
+    },
+    result_deep_oop: {
+      action: "CHECK",
+      actionClass: "check",
+      freq: T("Check 76-87% of the time", "Check 76-87% du temps"),
+      explanation: T("Deep stacks + out of position = almost always check. Position dominates in deep pots. Check everything and play defensively.",
+                     "Stacks profonds + hors position = check presque toujours. La position domine dans les pots profonds. Check tout et jouez d\u00e9fensivement."),
+      example: T("SPR=8, you\u2019re OOP. Flop comes anything \u2192 check. This is the most passive region of the tree.",
+                 "SPR=8, vous \u00eates OOP. Flop quelconque \u2192 check. C\u2019est la zone la plus passive de l\u2019arbre.")
+    },
+    result_deep_ip_polar_high: {
+      action: T("BET 1/3 POT", "MISER 1/3 POT"),
+      actionClass: "bet-small",
+      freq: T("Bet ~68% \u2014 most aggressive spot in the tree", "Miser ~68% \u2014 le spot le plus agressif de l\u2019arbre"),
+      explanation: T("In position, deep, low air, AND highly polar. Every hand has a clear plan: value bets for value, bluffs bet to fold out better. Bet small at high frequency.",
+                     "En position, profond, peu d\u2019air ET tr\u00e8s polaris\u00e9. Chaque main a un plan clair : les mains de valeur misent pour la valeur, les bluffs misent pour faire folder. Misez petit \u00e0 haute fr\u00e9quence."),
+      example: T("SPR=8. Flop A\u2660 7\u2665 2\u2663. Your range: AA/AK/AQ (value) + 5\u26604\u2660 (bluffs). Very polar \u2192 bet 1/3 at 68%.",
+                 "SPR=8. Flop A\u2660 7\u2665 2\u2663. Votre range : AA/AK/AQ (valeur) + 5\u26604\u2660 (bluffs). Tr\u00e8s polaris\u00e9 \u2192 misez 1/3 \u00e0 68%.")
+    },
+    result_deep_ip_polar_low: {
+      action: T("LEAN BET 1/3", "TENDANCE MISER 1/3"),
+      actionClass: "bet-small",
+      freq: T("Bet ~49% of the time", "Miser ~49% du temps"),
+      explanation: T("In position with low air, but not cleanly polar \u2014 many medium-strength hands. You can still bet but not at high frequency.",
+                     "En position avec peu d\u2019air, mais pas nettement polaris\u00e9 \u2014 beaucoup de mains de force moyenne. Vous pouvez miser mais pas \u00e0 haute fr\u00e9quence."),
+      example: T("SPR=7. Flop K\u2660 8\u2665 5\u2663. You have KK/AK (strong) but also KJ/KT (medium). Not cleanly polar \u2192 lean bet 1/3.",
+                 "SPR=7. Flop K\u2660 8\u2665 5\u2663. Vous avez KK/AK (fort) mais aussi KJ/KT (moyen). Pas nettement polaris\u00e9 \u2192 tendance miser 1/3.")
+    },
+    result_deep_ip_both_airy: {
+      action: T("MIX: Bet & Check", "MIX : Miser & Check"),
+      actionClass: "mix",
+      freq: T("Check ~38% of the time", "Check ~38% du temps"),
+      explanation: T("Both you and villain have lots of air. Neither is strong. You can stab sometimes since villain is weak too, but can\u2019t go crazy.",
+                     "Vous et le vilain avez beaucoup d\u2019air. Personne n\u2019est fort. Vous pouvez stab parfois car le vilain est faible aussi, mais sans exc\u00e8s."),
+      example: T("SPR=8. Flop 9\u2660 6\u2665 2\u2663. You have AJ/AQ/KQ (air), BB also has J8/T7 (air). Both weak \u2192 mix.",
+                 "SPR=8. Flop 9\u2660 6\u2665 2\u2663. Vous avez AJ/AQ/KQ (air), BB a aussi J8/T7 (air). Les deux faibles \u2192 mix.")
+    },
+    result_deep_ip_you_airy: {
+      action: T("CHECK (lean)", "CHECK (tendance)"),
+      actionClass: "check",
+      freq: T("Check ~55% of the time", "Check ~55% du temps"),
+      explanation: T("You have lots of air AND villain connects better. You\u2019re the weaker side. Betting is pure bluffing and villain catches you too often.",
+                     "Vous avez beaucoup d\u2019air ET le vilain connecte mieux. Vous \u00eates le c\u00f4t\u00e9 faible. Miser est du pur bluff et le vilain vous attrape trop souvent."),
+      example: T("SPR=8. Flop 7\u2665 5\u2660 4\u2663. Your range: AK/AQ/KJ (air). BB has 67s/86s/54s \u2014 they connect. You\u2019re airier \u2192 check.",
+                 "SPR=8. Flop 7\u2665 5\u2660 4\u2663. Votre range : AK/AQ/KJ (air). BB a 67s/86s/54s \u2014 il connecte. Vous avez plus d\u2019air \u2192 check.")
+    }
+  };
+}
 
 // App State
 var currentNode = "start";
@@ -310,91 +305,75 @@ var path = [];
 
 function render() {
   var app = document.getElementById("app");
-  var node = TREE[currentNode];
+  var TREE = getTree();
+  var RESULTS = getResults();
 
-  // Check if it's a result
   if (currentNode.startsWith("result_")) {
-    renderResult();
+    renderResult(RESULTS);
     return;
   }
 
+  var node = TREE[currentNode];
   var html = "";
 
-  // Breadcrumb
   if (path.length > 0) {
     html += '<div class="breadcrumb">';
     for (var i = 0; i < path.length; i++) {
-      html += '<span class="crumb">' + path[i].label + '</span>';
-      html += '<span class="sep"> → </span>';
+      html += '<span class="crumb">' + path[i].label + '</span><span class="sep"> \u2192 </span>';
     }
-    html += '<span class="crumb active">?</span>';
-    html += '</div>';
+    html += '<span class="crumb active">?</span></div>';
   }
 
-  // Question card
   html += '<div class="question-card">';
-  html += '<div class="step-num">Step ' + node.step + '</div>';
+  html += '<div class="step-num">' + T("Step", "\u00c9tape") + ' ' + node.step + '</div>';
   html += '<div class="question">' + node.question + '</div>';
-  if (node.hint) {
-    html += '<div class="hint">' + node.hint + '</div>';
-  }
+  if (node.hint) html += '<div class="hint">' + node.hint + '</div>';
   html += '</div>';
 
-  // Choices
   html += '<div class="choices">';
   for (var j = 0; j < node.choices.length; j++) {
     var c = node.choices[j];
-    html += '<button class="choice-btn" onclick="choose(\'' + c.next + '\', \'' + escapeHtml(c.label) + '\')">';
+    html += '<button class="choice-btn" onclick="choose(\'' + c.next + '\',\'' + c.label.replace(/'/g, "\\'") + '\')">';
     html += c.label;
-    if (c.sub) {
-      html += '<div class="choice-sub">' + c.sub + '</div>';
-    }
+    if (c.sub) html += '<div class="choice-sub">' + c.sub + '</div>';
     html += '</button>';
   }
   html += '</div>';
 
-  // Back button
   if (path.length > 0) {
-    html += '<button class="reset-btn" onclick="goBack()">← Go Back</button>';
+    html += '<button class="reset-btn" style="border-color:#30363d;color:#8b949e;" onclick="goBack()">\u2190 ' + T("Go Back", "Retour") + '</button>';
   }
 
   app.innerHTML = html;
 }
 
-function renderResult() {
+function renderResult(RESULTS) {
   var app = document.getElementById("app");
   var r = RESULTS[currentNode];
-
   var html = "";
 
-  // Breadcrumb
   html += '<div class="breadcrumb">';
   for (var i = 0; i < path.length; i++) {
-    html += '<span class="crumb">' + path[i].label + '</span>';
-    html += '<span class="sep"> → </span>';
+    html += '<span class="crumb">' + path[i].label + '</span><span class="sep"> \u2192 </span>';
   }
-  html += '<span class="crumb active">✓</span>';
-  html += '</div>';
+  html += '<span class="crumb active">\u2713</span></div>';
 
-  // Result card
   html += '<div class="result-card">';
   html += '<div class="action ' + r.actionClass + '">' + r.action + '</div>';
   html += '<div class="freq">' + r.freq + '</div>';
   html += '<div class="explanation">' + r.explanation + '</div>';
-  html += '<div class="example"><strong>Example:</strong> ' + r.example + '</div>';
+  html += '<div class="example"><strong>' + T("Example:", "Exemple :") + '</strong> ' + r.example + '</div>';
   html += '</div>';
 
-  // Path summary
   html += '<div class="path-display">';
-  html += '<div style="font-weight:700;color:#58a6ff;margin-bottom:6px;">Your path:</div>';
+  html += '<div style="font-weight:700;color:#58a6ff;margin-bottom:6px;">' + T("Your path:", "Votre chemin :") + '</div>';
   for (var j = 0; j < path.length; j++) {
-    html += '<div class="path-item">Step ' + (j+1) + ': <span>' + path[j].label + '</span></div>';
+    html += '<div class="path-item">' + T("Step", "\u00c9tape") + ' ' + (j+1) + ': <span>' + path[j].label + '</span></div>';
   }
   html += '</div>';
 
-  // Reset
-  html += '<button class="reset-btn" onclick="reset()">↺ Start Over</button>';
-  html += '<button class="reset-btn" style="margin-top:8px;border-color:#30363d;color:#8b949e;" onclick="goBack()">← Go Back One Step</button>';
+  html += '<button class="reset-btn" onclick="reset()">\u21ba ' + T("Start Over", "Recommencer") + '</button>';
+  html += '<button class="reset-btn" style="margin-top:8px;border-color:#30363d;color:#8b949e;" onclick="goBack()">\u2190 ' + T("Go Back One Step", "Retour d\u2019une \u00e9tape") + '</button>';
 
   app.innerHTML = html;
 }
@@ -421,12 +400,16 @@ function reset() {
   window.scrollTo(0, 0);
 }
 
-function escapeHtml(str) {
-  return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-}
-
-// Initial render
-render();
+// Init
+(function(){
+  document.getElementById("langBtn").textContent = lang === "en" ? "FR" : "EN";
+  var els = document.querySelectorAll(".i18n");
+  for (var i = 0; i < els.length; i++) {
+    var t = els[i].getAttribute("data-" + lang);
+    if (t) els[i].innerHTML = t;
+  }
+  render();
+})();
 </script>
 </body>
 </html>

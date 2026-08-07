@@ -27,6 +27,13 @@ body {
   max-width: 400px;
   width: 100%;
 }
+.lang-toggle {
+  position: fixed; top: 12px; right: 12px;
+  padding: 6px 14px; border: 1px solid #30363d; border-radius: 8px;
+  background: #161b22; color: #58a6ff; font-size: 0.8rem; font-weight: 700;
+  cursor: pointer; touch-action: manipulation; -webkit-appearance: none; z-index: 10;
+}
+.lang-toggle:active { background: #1c2a3f; }
 h1 {
   font-size: 1.5rem;
   color: #58a6ff;
@@ -37,6 +44,11 @@ h1 {
   color: #8b949e;
   margin-bottom: 40px;
 }
+.section-label {
+  font-size: 0.8rem; color: #58a6ff; text-transform: uppercase; letter-spacing: 1px;
+  margin: 20px 0 8px;
+}
+.section-label:first-of-type { margin-top: 0; }
 .card-link {
   display: block;
   padding: 24px 20px;
@@ -51,82 +63,84 @@ h1 {
   -webkit-user-select: none;
   user-select: none;
 }
-.card-link:active {
-  transform: scale(0.97);
-  border-color: #58a6ff;
-  background: #1c2a3f;
-}
-.card-link:hover {
-  border-color: #58a6ff;
-  background: #1c2a3f;
-}
-.card-icon {
-  font-size: 2rem;
-  margin-bottom: 10px;
-}
-.card-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-.card-desc {
-  font-size: 0.85rem;
-  color: #8b949e;
-}
+.card-link:active { transform: scale(0.97); border-color: #58a6ff; background: #1c2a3f; }
+.card-link:hover { border-color: #58a6ff; background: #1c2a3f; }
+.card-icon { font-size: 2rem; margin-bottom: 10px; }
+.card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+.card-desc { font-size: 0.85rem; color: #8b949e; }
 </style>
 </head>
 <body>
+<button class="lang-toggle" id="langBtn" onclick="toggleLang()">FR</button>
 <div class="container">
-  <h1>Poker Strategy Tools</h1>
-  <div class="subtitle">Study &amp; Quiz</div>
+  <h1 class="i18n" data-en="Poker Strategy Tools" data-fr="Outils Strat&eacute;gie Poker">Poker Strategy Tools</h1>
+  <div class="subtitle i18n" data-en="Study &amp; Quiz" data-fr="&Eacute;tude &amp; Quiz">Study &amp; Quiz</div>
 
-  <div style="font-size:0.8rem;color:#58a6ff;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">30bb BTN vs BB C-Bet</div>
+  <div class="section-label i18n" data-en="30bb BTN vs BB C-Bet" data-fr="30bb BTN vs BB C-Bet">30bb BTN vs BB C-Bet</div>
 
   <a href="30bb_BTN_vs_BB_CheatSheet.html" class="card-link">
     <div class="card-icon">📋</div>
-    <div class="card-title">C-Bet Cheat Sheet</div>
-    <div class="card-desc">Board textures, sizing, and frequency rules</div>
+    <div class="card-title i18n" data-en="C-Bet Cheat Sheet" data-fr="C-Bet Aide-m&eacute;moire">C-Bet Cheat Sheet</div>
+    <div class="card-desc i18n" data-en="Board textures, sizing, and frequency rules" data-fr="Textures de board, sizing et r&egrave;gles de fr&eacute;quence">Board textures, sizing, and frequency rules</div>
   </a>
 
   <a href="30bb_BTN_vs_BB_Quiz.html" class="card-link">
     <div class="card-icon">🧠</div>
-    <div class="card-title">C-Bet Quiz</div>
-    <div class="card-desc">20 sets of 10 questions &mdash; test your board reading</div>
+    <div class="card-title i18n" data-en="C-Bet Quiz" data-fr="Quiz C-Bet">C-Bet Quiz</div>
+    <div class="card-desc i18n" data-en="20 sets of 10 questions &mdash; test your board reading" data-fr="20 s&eacute;ries de 10 questions &mdash; testez votre lecture de board">20 sets of 10 questions &mdash; test your board reading</div>
   </a>
 
-  <div style="font-size:0.8rem;color:#58a6ff;margin:20px 0 8px;text-transform:uppercase;letter-spacing:1px;">Post-Flop Strategy</div>
+  <div class="section-label i18n" data-en="Post-Flop Strategy" data-fr="Strat&eacute;gie Post-Flop">Post-Flop Strategy</div>
 
   <a href="Range_Advantage_CheatSheet.html" class="card-link">
     <div class="card-icon">🌳</div>
-    <div class="card-title">Post-Flop Strategy Cheat Sheet</div>
-    <div class="card-desc">Decision tree: SPR, position, polarization, air</div>
+    <div class="card-title i18n" data-en="Post-Flop Strategy Cheat Sheet" data-fr="Aide-m&eacute;moire Strat&eacute;gie Post-Flop">Post-Flop Strategy Cheat Sheet</div>
+    <div class="card-desc i18n" data-en="Decision tree: SPR, position, polarization, air" data-fr="Arbre de d&eacute;cision : SPR, position, polarisation, air">Decision tree: SPR, position, polarization, air</div>
   </a>
 
   <a href="Range_Advantage_Quiz.html" class="card-link">
     <div class="card-icon">🎯</div>
-    <div class="card-title">Post-Flop Strategy Quiz</div>
-    <div class="card-desc">20 sets of 10 questions &mdash; master the flowchart</div>
+    <div class="card-title i18n" data-en="Post-Flop Strategy Quiz" data-fr="Quiz Strat&eacute;gie Post-Flop">Post-Flop Strategy Quiz</div>
+    <div class="card-desc i18n" data-en="20 sets of 10 questions &mdash; master the flowchart" data-fr="20 s&eacute;ries de 10 questions &mdash; ma&icirc;trisez le flowchart">20 sets of 10 questions &mdash; master the flowchart</div>
   </a>
 
   <a href="PostFlop_DecisionTree.html" class="card-link">
     <div class="card-icon">🧭</div>
-    <div class="card-title">Decision Tree (Interactive)</div>
-    <div class="card-desc">Step-by-step guide &mdash; tap through SPR, range, air, position</div>
+    <div class="card-title i18n" data-en="Decision Tree (Interactive)" data-fr="Arbre de D&eacute;cision (Interactif)">Decision Tree (Interactive)</div>
+    <div class="card-desc i18n" data-en="Step-by-step guide &mdash; tap through SPR, range, air, position" data-fr="Guide &eacute;tape par &eacute;tape &mdash; naviguez par SPR, range, air, position">Step-by-step guide &mdash; tap through SPR, range, air, position</div>
   </a>
 
-  <div style="font-size:0.8rem;color:#58a6ff;margin:20px 0 8px;text-transform:uppercase;letter-spacing:1px;">Spin &amp; Go</div>
+  <div class="section-label i18n" data-en="Spin &amp; Go" data-fr="Spin &amp; Go">Spin &amp; Go</div>
 
   <a href="spins/Spins.html" class="card-link">
     <div class="card-icon">🎰</div>
-    <div class="card-title">Spin &amp; Go Push/Fold Charts</div>
-    <div class="card-desc">Interactive charts by Team Bas Poker &mdash; HU &amp; 3-way</div>
+    <div class="card-title i18n" data-en="Spin &amp; Go Push/Fold Charts" data-fr="Charts Push/Fold Spin &amp; Go">Spin &amp; Go Push/Fold Charts</div>
+    <div class="card-desc i18n" data-en="Interactive charts by Team Bas Poker &mdash; HU &amp; 3-way" data-fr="Charts interactifs par Team Bas Poker &mdash; HU &amp; 3-way">Interactive charts by Team Bas Poker &mdash; HU &amp; 3-way</div>
   </a>
 
   <a href="spins/3W_BU_13-16BB_Quiz.html" class="card-link">
     <div class="card-icon">🎯</div>
-    <div class="card-title">3W BU 13-16BB Quiz</div>
-    <div class="card-desc">Corner cases &amp; vs All-in decisions &mdash; 30 questions</div>
+    <div class="card-title i18n" data-en="3W BU 13-16BB Quiz" data-fr="Quiz 3W BU 13-16BB">3W BU 13-16BB Quiz</div>
+    <div class="card-desc i18n" data-en="Corner cases &amp; vs All-in decisions &mdash; 30 questions" data-fr="Cas limites &amp; d&eacute;cisions vs All-in &mdash; 30 questions">Corner cases &amp; vs All-in decisions &mdash; 30 questions</div>
   </a>
 </div>
+
+<script>
+(function(){
+  var lang = localStorage.getItem("pokerLang") || "en";
+  function applyLang(l) {
+    lang = l;
+    localStorage.setItem("pokerLang", l);
+    var els = document.querySelectorAll(".i18n");
+    for (var i = 0; i < els.length; i++) {
+      var t = els[i].getAttribute("data-" + l);
+      if (t) els[i].innerHTML = t;
+    }
+    document.getElementById("langBtn").textContent = l === "en" ? "FR" : "EN";
+  }
+  window.toggleLang = function() { applyLang(lang === "en" ? "fr" : "en"); };
+  applyLang(lang);
+})();
+</script>
 </body>
 </html>
