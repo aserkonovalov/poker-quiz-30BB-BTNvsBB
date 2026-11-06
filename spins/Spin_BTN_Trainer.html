@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1115">
+<title>Spin &amp; Go BTN Trainer</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#191c22; --panel2:#21252e; --ink:#e8eaed; --muted:#9aa3ad;
+    --fold:#8fd3f6; --open:#f6a178; --push:#ef6a2d; --call:#f2d53c; --na:#4a4f59; --line:#2c313b;
+    --good:#2ecc71; --bad:#e74c3c; --accent:#ffd34d;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+  header{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:10;padding-top:calc(14px + env(safe-area-inset-top))}
+  h1{font-size:16px;margin:0;font-weight:600}
+  .wrap{max-width:900px;margin:0 auto;padding:16px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:9px 13px;border-radius:9px;cursor:pointer;font-weight:600;font-size:14px;touch-action:manipulation}
+  .tab.active{background:var(--accent);color:#1a1a1a;border-color:var(--accent)}
+  .posbar{display:flex;gap:8px;margin-bottom:16px}
+  .postab{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:13px 8px;border-radius:11px;cursor:pointer;font-weight:800;font-size:16px;letter-spacing:.5px;touch-action:manipulation}
+  .postab.active{background:var(--accent);color:#1a1a1a;border-color:var(--accent)}
+  .placeholder{text-align:center;padding:34px 20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+  .stat{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+  .stat b{color:var(--ink)}
+  .hand{font-size:clamp(48px,16vw,66px);font-weight:800;letter-spacing:2px;text-align:center;margin:4px 0 2px;line-height:1.1}
+  .depthline{text-align:center;color:var(--muted);margin-bottom:16px;font-size:14px}
+  .depthline b{color:var(--accent)}
+  .qtitle{text-align:center;font-weight:700;margin:2px 0 12px;font-size:15px}
+  .qtitle .tagwho{color:var(--accent)}
+  .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .ab{flex:1 1 0;min-width:96px;max-width:200px;padding:16px 10px;border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--ink);font-size:17px;font-weight:700;cursor:pointer;transition:.1s;touch-action:manipulation}
+  .ab:active{transform:scale(.97)}
+  .ab .sub{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:3px}
+  .ab.fold{border-left:6px solid var(--fold)}
+  .ab.open{border-left:6px solid var(--open)}
+  .ab.push{border-left:6px solid var(--push)}
+  .ab.call{border-left:6px solid var(--call)}
+  .feedback{margin-top:16px;text-align:center;font-weight:700;min-height:24px;font-size:15px}
+  .feedback.good{color:var(--good)} .feedback.bad{color:var(--bad)}
+  .pcts{text-align:center;color:var(--muted);font-size:13px;margin-top:4px}
+  .next{display:block;margin:14px auto 0;background:var(--accent);color:#1a1a1a;border:none;padding:14px 26px;border-radius:11px;font-weight:700;font-size:15px;cursor:pointer;width:100%;max-width:280px;touch-action:manipulation}
+  .matrixWrap{margin-top:16px;display:none}
+  .matrixWrap.show{display:block}
+  .matrix{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;width:100%;max-width:560px;margin:10px auto}
+  .cell{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:clamp(6px,1.9vw,10px);font-weight:700;color:#10131a;border-radius:3px;overflow:hidden}
+  .cell.na{color:#8a8f99}
+  .cell.hl{outline:3px solid var(--accent);outline-offset:-1px;z-index:2}
+  .legend{display:flex;gap:14px;justify-content:center;margin-top:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+  .sw{display:inline-block;width:13px;height:13px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+  details{margin-top:10px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:2px 14px}
+  summary{cursor:pointer;font-weight:700;padding:10px 0}
+  .tips h3{color:var(--accent);margin:16px 0 6px;font-size:15px}
+  .tips ul{margin:0 0 10px;padding-left:20px}
+  .tips li{margin:5px 0;color:#cdd3da;font-size:14px}
+  .tips code{background:#000;padding:1px 6px;border-radius:5px;color:var(--open);font-size:13px}
+  .modeRow{display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+  .modeRow .lbl{color:var(--muted);font-size:13px;width:100%;text-align:center;margin-bottom:2px}
+  .mini{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
+  .emptyMiss{color:var(--muted);text-align:center;padding:30px 10px}
+  .settingsRow{margin-bottom:6px}
+  .switch{display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none;font-size:14px;color:var(--muted)}
+  .switch input{position:absolute;opacity:0;width:0;height:0}
+  .track{width:44px;height:26px;background:var(--panel2);border:1px solid var(--line);border-radius:999px;position:relative;transition:.15s;flex:none}
+  .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:.15s}
+  .switch input:checked + .track{background:var(--accent);border-color:var(--accent)}
+  .switch input:checked + .track .knob{left:20px;background:#1a1a1a}
+  footer{color:var(--muted);font-size:12px;text-align:center;padding:20px}
+  @media (max-width:480px){
+    .wrap{padding:12px}.card{padding:14px;border-radius:12px}
+    .ab .sub{display:none}.ab{font-size:16px;padding:15px 6px}
+    .stat{font-size:12px;gap:10px;width:100%;justify-content:space-between}
+    header{flex-direction:column;align-items:stretch;gap:8px}h1{text-align:center}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9824; Spin &amp; Go &mdash; BTN Trainer</h1>
+  <div class="stat"><span>Score <b id="score">0</b>/<b id="total">0</b></span><span>Streak <b id="streak">0</b></span><span>Acc <b id="acc">&mdash;</b></span><span>Misses <b id="missN">0</b></span></div>
+</header>
+<div class="wrap">
+
+  <div class="posbar">
+    <button class="postab active" data-pos="BTN">BTN</button>
+    <button class="postab" data-pos="SB">SB</button>
+    <button class="postab" data-pos="BB">BB</button>
+  </div>
+
+  <div id="pos-BTN">
+  <div class="card">
+    <div class="modeRow">
+      <span class="lbl">Stack depth</span>
+      <div class="tabs" id="depthTabs">
+        <button class="tab" data-d="25">25 BB</button>
+        <button class="tab" data-d="15">15 BB</button>
+        <button class="tab" data-d="10">10 BB</button>
+        <button class="tab active" data-d="mix">Mixed</button>
+      </div>
+    </div>
+    <div class="modeRow">
+      <span class="lbl">Drill mode</span>
+      <div class="tabs" id="modeTabs">
+        <button class="tab active" data-m="all">All hands</button>
+        <button class="tab" data-m="mixed">Mixed cells only</button>
+        <button class="tab" data-m="miss">Repeat my misses</button>
+      </div>
+    </div>
+    <div class="modeRow settingsRow">
+      <label class="switch"><input type="checkbox" id="autoAdvance"><span class="track"><span class="knob"></span></span><span>Auto-advance on correct</span></label>
+    </div>
+
+    <div class="hand" id="handLabel">&mdash;&mdash;</div>
+    <div class="depthline">Effective stack: <b id="depthLabel">?</b> BB &middot; On the <b>Button</b>, first in</div>
+    <div class="qtitle" id="qtitle">What&rsquo;s your action?</div>
+
+    <div class="btns" id="answerBtns"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="pcts" id="pcts"></div>
+    <div class="emptyMiss" id="emptyMiss" style="display:none">No misses yet &mdash; play some hands and the ones you get wrong show up here.</div>
+    <button class="next" id="nextBtn" style="display:none">Next hand &rarr;</button>
+
+    <div class="matrixWrap" id="matrixWrap">
+      <div class="mini" id="mxCaption"></div>
+      <div class="matrix" id="matrix"></div>
+      <div class="legend" id="mxLegend"></div>
+    </div>
+  </div>
+
+  <div class="card tips">
+    <h2 style="margin:0 0 4px;font-size:16px">How to memorize these ranges</h2>
+    <p style="color:var(--muted);margin:4px 0 0;font-size:14px">Mental hooks &mdash; the quiz data is the ground truth.</p>
+    <h3>Open: big picture</h3>
+    <ul>
+      <li><b>25BB = raise or fold</b> (no jam). <b>15BB = raise mostly, jam a little</b> (tightest open). <b>10BB = jam dominates.</b></li>
+    </ul>
+    <h3>Suited vs offsuit (#1 rule)</h3>
+    <ul>
+      <li>Suited goes <b>much</b> deeper than its offsuit twin. Unsure? <b>Suited leans play, offsuit leans fold.</b></li>
+    </ul>
+    <h3>Aces &amp; pairs</h3>
+    <ul>
+      <li>Every suited ace plays at every depth; low ones (<code>A2s&ndash;A5s</code>) love to <b>jam</b> short.</li>
+      <li>25BB: pairs <code>33+</code> open. 15/10BB: small pairs <b>jam</b>, big pairs min-raise to trap.</li>
+    </ul>
+    <h3>15BB: after you min-raise and face a jam (call/fold)</h3>
+    <ul>
+      <li>You only reach this with hands you <b>min-raised</b> (grey = you&rsquo;d have jammed or folded pre, so N/A).</li>
+      <li><b>Call with your value</b>: big pairs (<code>66+</code>), strong aces (<code>A7s+</code>, <code>AJo+</code>/<code>AQo</code>), <code>KQs+</code>, broadway suited. Fold the speculative min-raises (suited gappers, weak offsuit broadways).</li>
+      <li><b>Call slightly wider vs the SB jam than vs the BB jam</b> (e.g. <code>KQo</code> calls vs SB, folds vs BB) &mdash; the SB jams a bit wider, so you defend a touch more.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <details>
+      <summary>Show a full range chart</summary>
+      <div class="modeRow" style="margin-top:12px">
+        <div class="tabs" id="viewTabs">
+          <button class="tab active" data-v="open25">Open 25</button>
+          <button class="tab" data-v="open15">Open 15</button>
+          <button class="tab" data-v="open10">Open 10</button>
+          <button class="tab" data-v="callBB">Call vs BB jam (15)</button>
+          <button class="tab" data-v="callSB">Call vs SB jam (15)</button>
+        </div>
+      </div>
+      <div class="matrix" id="viewMatrix"></div>
+      <div class="legend" id="viewLegend"></div>
+    </details>
+  </div>
+  </div><!-- /pos-BTN -->
+
+  <div id="pos-SB" style="display:none">
+    <div class="card placeholder">
+      <h2 style="margin:0 0 8px;font-size:17px">SB play &mdash; coming soon</h2>
+      <p style="color:var(--muted);margin:0">The Small Blind ranges aren&rsquo;t loaded yet. Add the SB range screenshots and I&rsquo;ll wire this tab up the same way as BTN (open/limp/jam, and the responses vs BTN &amp; BB).</p>
+    </div>
+  </div>
+
+  <div id="pos-BB" style="display:none">
+    <div class="card placeholder">
+      <h2 style="margin:0 0 8px;font-size:17px">BB play &mdash; coming soon</h2>
+      <p style="color:var(--muted);margin:0">The Big Blind ranges aren&rsquo;t loaded yet. Add the BB range screenshots and I&rsquo;ll wire this tab up (defend vs BTN/SB opens and jams).</p>
+    </div>
+  </div>
+
+</div>
+<footer>Data sampled from Lucid Spin &amp; Go ranges. Majority-colour rule. Local, no network.</footer>
+
+<script>
+const ALL = {"open":{"25":{"AA":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"AKs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"AQs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"AJs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"ATs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"A9s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"A8s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"A7s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"A6s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"A5s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"A4s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"A3s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"A2s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"AKo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"KK":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"KQs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"KJs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"KTs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K9s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K8s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K7s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K6s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K5s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K4s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K3s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K2s":{"a":"Fold","p":{"Fold":71.6,"Open":28.4}},"AQo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"KQo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"QQ":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"QJs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"QTs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"Q9s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"Q8s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"Q7s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"Q6s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"Q5s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"Q4s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"Q3s":{"a":"Fold","p":{"Fold":98.7,"Open":1.3}},"Q2s":{"a":"Fold","p":{"Fold":98.7,"Open":1.3}},"AJo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"KJo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"QJo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"JJ":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"JTs":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"J9s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"J8s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"J7s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"J6s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"J5s":{"a":"Open","p":{"Fold":40.2,"Open":59.8}},"J4s":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}},"J3s":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"J2s":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"ATo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"KTo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"QTo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"JTo":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"TT":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"T9s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"T8s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"T7s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"T6s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"T5s":{"a":"Fold","p":{"Fold":99.3,"Open":0.7}},"T4s":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"T3s":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}},"T2s":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}},"A9o":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K9o":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"Q9o":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"J9o":{"a":"Open","p":{"Fold":9.8,"Open":90.2}},"T9o":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"99":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"98s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"97s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"96s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"95s":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"94s":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"93s":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"92s":{"a":"Fold","p":{"Fold":98.6,"Open":1.4}},"A8o":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K8o":{"a":"Fold","p":{"Fold":65.4,"Open":34.6}},"Q8o":{"a":"Fold","p":{"Fold":98.6,"Open":1.4}},"J8o":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"T8o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"98o":{"a":"Fold","p":{"Fold":98.6,"Open":1.4}},"88":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"87s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"86s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"85s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"84s":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"83s":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"82s":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}},"A7o":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K7o":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"Q7o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"J7o":{"a":"Fold","p":{"Fold":99.3,"Open":0.7}},"T7o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"97o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"87o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"77":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"76s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"75s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"74s":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}},"73s":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"72s":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"A6o":{"a":"Open","p":{"Fold":9.1,"Open":90.9}},"K6o":{"a":"Fold","p":{"Fold":98.7,"Open":1.3}},"Q6o":{"a":"Fold","p":{"Fold":98.6,"Open":1.4}},"J6o":{"a":"Fold","p":{"Fold":98.7,"Open":1.3}},"T6o":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"96o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"86o":{"a":"Fold","p":{"Fold":98.6,"Open":1.4}},"76o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"66":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"65s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"64s":{"a":"Open","p":{"Fold":39.0,"Open":61.0}},"63s":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"62s":{"a":"Fold","p":{"Fold":98.6,"Open":1.4}},"A5o":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"K5o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"Q5o":{"a":"Fold","p":{"Fold":98.7,"Open":1.3}},"J5o":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"T5o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"95o":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"85o":{"a":"Fold","p":{"Fold":98.6,"Open":1.4}},"75o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"65o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"55":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"54s":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"53s":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"52s":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"A4o":{"a":"Fold","p":{"Fold":81.0,"Open":19.0}},"K4o":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"Q4o":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"J4o":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}},"T4o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"94o":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"84o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"74o":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}},"64o":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"54o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"44":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"43s":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"42s":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"A3o":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"K3o":{"a":"Fold","p":{"Fold":98.7,"Open":1.3}},"Q3o":{"a":"Fold","p":{"Fold":98.7,"Open":1.3}},"J3o":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"T3o":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}},"93o":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"83o":{"a":"Fold","p":{"Fold":98.5,"Open":1.5}},"73o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"63o":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"53o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"43o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"33":{"a":"Open","p":{"Fold":0.0,"Open":100.0}},"32s":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"A2o":{"a":"Fold","p":{"Fold":99.1,"Open":0.9}},"K2o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"Q2o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"J2o":{"a":"Fold","p":{"Fold":98.9,"Open":1.1}},"T2o":{"a":"Fold","p":{"Fold":99.3,"Open":0.7}},"92o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"82o":{"a":"Fold","p":{"Fold":98.5,"Open":1.5}},"72o":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}},"62o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"52o":{"a":"Fold","p":{"Fold":99.0,"Open":1.0}},"42o":{"a":"Fold","p":{"Fold":98.8,"Open":1.2}},"32o":{"a":"Fold","p":{"Fold":98.7,"Open":1.3}},"22":{"a":"Fold","p":{"Fold":99.2,"Open":0.8}}},"15":{"AA":{"a":"Open","p":{"Fold":0.0,"Open":96.7,"Push":3.3}},"AKs":{"a":"Open","p":{"Fold":0.0,"Open":96.7,"Push":3.3}},"AQs":{"a":"Open","p":{"Fold":0.0,"Open":95.9,"Push":4.1}},"AJs":{"a":"Open","p":{"Fold":0.0,"Open":96.5,"Push":3.5}},"ATs":{"a":"Open","p":{"Fold":0.0,"Open":95.8,"Push":4.2}},"A9s":{"a":"Open","p":{"Fold":0.0,"Open":95.9,"Push":4.1}},"A8s":{"a":"Open","p":{"Fold":0.0,"Open":95.7,"Push":4.3}},"A7s":{"a":"Open","p":{"Fold":0.0,"Open":96.2,"Push":3.8}},"A6s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"A5s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"A4s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"A3s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"A2s":{"a":"Push","p":{"Fold":0.0,"Open":24.5,"Push":75.5}},"AKo":{"a":"Open","p":{"Fold":0.0,"Open":96.7,"Push":3.3}},"KK":{"a":"Open","p":{"Fold":0.0,"Open":96.7,"Push":3.3}},"KQs":{"a":"Open","p":{"Fold":0.0,"Open":95.7,"Push":4.3}},"KJs":{"a":"Open","p":{"Fold":0.0,"Open":96.2,"Push":3.8}},"KTs":{"a":"Open","p":{"Fold":0.0,"Open":95.2,"Push":4.8}},"K9s":{"a":"Open","p":{"Fold":0.0,"Open":95.3,"Push":4.7}},"K8s":{"a":"Open","p":{"Fold":0.0,"Open":96.0,"Push":4.0}},"K7s":{"a":"Open","p":{"Fold":0.0,"Open":95.5,"Push":4.5}},"K6s":{"a":"Open","p":{"Fold":0.0,"Open":96.1,"Push":3.9}},"K5s":{"a":"Open","p":{"Fold":0.0,"Open":95.9,"Push":4.1}},"K4s":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"K3s":{"a":"Fold","p":{"Fold":98.4,"Open":0.0,"Push":1.6}},"K2s":{"a":"Fold","p":{"Fold":99.4,"Open":0.0,"Push":0.6}},"AQo":{"a":"Open","p":{"Fold":0.0,"Open":83.1,"Push":16.9}},"KQo":{"a":"Open","p":{"Fold":0.0,"Open":58.3,"Push":41.7}},"QQ":{"a":"Open","p":{"Fold":0.0,"Open":95.3,"Push":4.7}},"QJs":{"a":"Open","p":{"Fold":0.0,"Open":75.0,"Push":25.0}},"QTs":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"Q9s":{"a":"Open","p":{"Fold":0.0,"Open":95.2,"Push":4.8}},"Q8s":{"a":"Open","p":{"Fold":0.0,"Open":95.3,"Push":4.7}},"Q7s":{"a":"Open","p":{"Fold":0.0,"Open":95.4,"Push":4.6}},"Q6s":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"Q5s":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"Q4s":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"Q3s":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"Q2s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"AJo":{"a":"Open","p":{"Fold":0.0,"Open":96.0,"Push":4.0}},"KJo":{"a":"Push","p":{"Fold":0.0,"Open":46.5,"Push":53.5}},"QJo":{"a":"Open","p":{"Fold":0.0,"Open":96.0,"Push":4.0}},"JJ":{"a":"Open","p":{"Fold":0.0,"Open":97.5,"Push":2.5}},"JTs":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"J9s":{"a":"Open","p":{"Fold":0.0,"Open":89.0,"Push":11.0}},"J8s":{"a":"Open","p":{"Fold":0.0,"Open":95.4,"Push":4.6}},"J7s":{"a":"Fold","p":{"Fold":90.6,"Open":8.6,"Push":0.8}},"J6s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"J5s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"J4s":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"J3s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"J2s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"ATo":{"a":"Push","p":{"Fold":0.0,"Open":16.6,"Push":83.4}},"KTo":{"a":"Open","p":{"Fold":0.0,"Open":95.1,"Push":4.9}},"QTo":{"a":"Open","p":{"Fold":0.0,"Open":95.8,"Push":4.2}},"JTo":{"a":"Open","p":{"Fold":0.0,"Open":96.4,"Push":3.6}},"TT":{"a":"Open","p":{"Fold":0.0,"Open":97.8,"Push":2.2}},"T9s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"T8s":{"a":"Open","p":{"Fold":0.0,"Open":95.4,"Push":4.6}},"T7s":{"a":"Fold","p":{"Fold":58.6,"Open":39.2,"Push":2.2}},"T6s":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"T5s":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"T4s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"T3s":{"a":"Fold","p":{"Fold":99.3,"Open":0.0,"Push":0.7}},"T2s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"A9o":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K9o":{"a":"Open","p":{"Fold":0.0,"Open":96.1,"Push":3.9}},"Q9o":{"a":"Fold","p":{"Fold":76.9,"Open":21.3,"Push":1.8}},"J9o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"T9o":{"a":"Open","p":{"Fold":37.0,"Open":59.8,"Push":3.2}},"99":{"a":"Open","p":{"Fold":0.0,"Open":96.5,"Push":3.5}},"98s":{"a":"Open","p":{"Fold":0.0,"Open":95.5,"Push":4.5}},"97s":{"a":"Open","p":{"Fold":0.0,"Open":95.6,"Push":4.4}},"96s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"95s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"94s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"93s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"92s":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"A8o":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K8o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"Q8o":{"a":"Fold","p":{"Fold":98.5,"Open":0.0,"Push":1.5}},"J8o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"T8o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"98o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"88":{"a":"Open","p":{"Fold":0.0,"Open":96.3,"Push":3.7}},"87s":{"a":"Open","p":{"Fold":0.0,"Open":95.4,"Push":4.6}},"86s":{"a":"Open","p":{"Fold":30.4,"Open":66.0,"Push":3.6}},"85s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"84s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"83s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"82s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"A7o":{"a":"Open","p":{"Fold":0.0,"Open":96.0,"Push":4.0}},"K7o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"Q7o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"J7o":{"a":"Fold","p":{"Fold":99.3,"Open":0.0,"Push":0.7}},"T7o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"97o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"87o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"77":{"a":"Open","p":{"Fold":0.0,"Open":97.6,"Push":2.4}},"76s":{"a":"Fold","p":{"Fold":67.4,"Open":30.6,"Push":1.9}},"75s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"74s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"73s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"72s":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"A6o":{"a":"Open","p":{"Fold":0.0,"Open":95.9,"Push":4.1}},"K6o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"Q6o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"J6o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"T6o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"96o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"86o":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"76o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"66":{"a":"Open","p":{"Fold":0.0,"Open":96.4,"Push":3.6}},"65s":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"64s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"63s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"62s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"A5o":{"a":"Open","p":{"Fold":0.0,"Open":95.9,"Push":4.1}},"K5o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"Q5o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"J5o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"T5o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"95o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"85o":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"75o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"65o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"55":{"a":"Push","p":{"Fold":0.0,"Open":43.7,"Push":56.3}},"54s":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"53s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"52s":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"A4o":{"a":"Open","p":{"Fold":7.7,"Open":88.5,"Push":3.9}},"K4o":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"Q4o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"J4o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"T4o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"94o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"84o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"74o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"64o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"54o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"44":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"43s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"42s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"A3o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"K3o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"Q3o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"J3o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"T3o":{"a":"Fold","p":{"Fold":99.3,"Open":0.0,"Push":0.7}},"93o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"83o":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"73o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"63o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"53o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"43o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"33":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"32s":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"A2o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"K2o":{"a":"Fold","p":{"Fold":99.3,"Open":0.0,"Push":0.7}},"Q2o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"J2o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"T2o":{"a":"Fold","p":{"Fold":99.4,"Open":0.0,"Push":0.6}},"92o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"82o":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"72o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"62o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"52o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"42o":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"32o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"22":{"a":"Push","p":{"Fold":0.0,"Open":0.1,"Push":99.9}}},"10":{"AA":{"a":"Open","p":{"Fold":0.0,"Open":96.7,"Push":3.3}},"AKs":{"a":"Open","p":{"Fold":0.0,"Open":96.7,"Push":3.3}},"AQs":{"a":"Open","p":{"Fold":0.0,"Open":95.9,"Push":4.1}},"AJs":{"a":"Open","p":{"Fold":0.0,"Open":62.9,"Push":37.1}},"ATs":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"A9s":{"a":"Push","p":{"Fold":0.0,"Open":6.8,"Push":93.2}},"A8s":{"a":"Open","p":{"Fold":0.0,"Open":58.5,"Push":41.5}},"A7s":{"a":"Push","p":{"Fold":0.0,"Open":14.8,"Push":85.2}},"A6s":{"a":"Open","p":{"Fold":0.0,"Open":61.8,"Push":38.2}},"A5s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"A4s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"A3s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"A2s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"AKo":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"KK":{"a":"Open","p":{"Fold":0.0,"Open":96.7,"Push":3.3}},"KQs":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"KJs":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"KTs":{"a":"Push","p":{"Fold":0.0,"Open":18.0,"Push":82.0}},"K9s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K8s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K7s":{"a":"Push","p":{"Fold":0.0,"Open":33.5,"Push":66.5}},"K6s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K5s":{"a":"Open","p":{"Fold":0.0,"Open":95.9,"Push":4.1}},"K4s":{"a":"Open","p":{"Fold":0.0,"Open":96.1,"Push":3.9}},"K3s":{"a":"Fold","p":{"Fold":75.7,"Open":21.9,"Push":2.4}},"K2s":{"a":"Fold","p":{"Fold":99.4,"Open":0.0,"Push":0.6}},"AQo":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"KQo":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"QQ":{"a":"Open","p":{"Fold":0.0,"Open":95.3,"Push":4.7}},"QJs":{"a":"Push","p":{"Fold":0.0,"Open":31.5,"Push":68.5}},"QTs":{"a":"Push","p":{"Fold":0.0,"Open":12.8,"Push":87.2}},"Q9s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"Q8s":{"a":"Open","p":{"Fold":0.0,"Open":95.3,"Push":4.7}},"Q7s":{"a":"Open","p":{"Fold":11.9,"Open":83.9,"Push":4.1}},"Q6s":{"a":"Open","p":{"Fold":40.1,"Open":56.4,"Push":3.4}},"Q5s":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"Q4s":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"Q3s":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"Q2s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"AJo":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"KJo":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"QJo":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"JJ":{"a":"Open","p":{"Fold":0.0,"Open":97.5,"Push":2.5}},"JTs":{"a":"Push","p":{"Fold":0.0,"Open":11.4,"Push":88.6}},"J9s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"J8s":{"a":"Push","p":{"Fold":0.0,"Open":15.1,"Push":84.9}},"J7s":{"a":"Open","p":{"Fold":0.0,"Open":95.8,"Push":4.2}},"J6s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"J5s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"J4s":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"J3s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"J2s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"ATo":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"KTo":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"QTo":{"a":"Push","p":{"Fold":0.0,"Open":33.4,"Push":66.6}},"JTo":{"a":"Push","p":{"Fold":0.0,"Open":13.8,"Push":86.2}},"TT":{"a":"Open","p":{"Fold":0.0,"Open":97.8,"Push":2.2}},"T9s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"T8s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"T7s":{"a":"Fold","p":{"Fold":94.6,"Open":4.3,"Push":1.0}},"T6s":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"T5s":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"T4s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"T3s":{"a":"Fold","p":{"Fold":99.3,"Open":0.0,"Push":0.7}},"T2s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"A9o":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K9o":{"a":"Open","p":{"Fold":0.0,"Open":96.1,"Push":3.9}},"Q9o":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"J9o":{"a":"Fold","p":{"Fold":85.4,"Open":13.2,"Push":1.4}},"T9o":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"99":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"98s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"97s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"96s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"95s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"94s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"93s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"92s":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"A8o":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K8o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"Q8o":{"a":"Fold","p":{"Fold":98.5,"Open":0.0,"Push":1.5}},"J8o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"T8o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"98o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"88":{"a":"Push","p":{"Fold":0.0,"Open":7.8,"Push":92.2}},"87s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"86s":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"85s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"84s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"83s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"82s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"A7o":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K7o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"Q7o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"J7o":{"a":"Fold","p":{"Fold":99.3,"Open":0.0,"Push":0.7}},"T7o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"97o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"87o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"77":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"76s":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"75s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"74s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"73s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"72s":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"A6o":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K6o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"Q6o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"J6o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"T6o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"96o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"86o":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"76o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"66":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"65s":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"64s":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"63s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"62s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"A5o":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K5o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"Q5o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"J5o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"T5o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"95o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"85o":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"75o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"65o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"55":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"54s":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"53s":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"52s":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"A4o":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K4o":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"Q4o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"J4o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"T4o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"94o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"84o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"74o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"64o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"54o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"44":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"43s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"42s":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"A3o":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"K3o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"Q3o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"J3o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"T3o":{"a":"Fold","p":{"Fold":99.3,"Open":0.0,"Push":0.7}},"93o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"83o":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"73o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"63o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"53o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"43o":{"a":"Fold","p":{"Fold":98.8,"Open":0.0,"Push":1.2}},"33":{"a":"Push","p":{"Fold":0.0,"Open":0.0,"Push":100.0}},"32s":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"A2o":{"a":"Push","p":{"Fold":0.0,"Open":45.8,"Push":54.2}},"K2o":{"a":"Fold","p":{"Fold":99.3,"Open":0.0,"Push":0.7}},"Q2o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"J2o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"T2o":{"a":"Fold","p":{"Fold":99.4,"Open":0.0,"Push":0.6}},"92o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"82o":{"a":"Fold","p":{"Fold":98.6,"Open":0.0,"Push":1.4}},"72o":{"a":"Fold","p":{"Fold":99.2,"Open":0.0,"Push":0.8}},"62o":{"a":"Fold","p":{"Fold":99.0,"Open":0.0,"Push":1.0}},"52o":{"a":"Fold","p":{"Fold":99.1,"Open":0.0,"Push":0.9}},"42o":{"a":"Fold","p":{"Fold":98.7,"Open":0.0,"Push":1.3}},"32o":{"a":"Fold","p":{"Fold":98.9,"Open":0.0,"Push":1.1}},"22":{"a":"Push","p":{"Fold":0.0,"Open":0.1,"Push":99.9}}}},"call15":{"BB":{"AA":{"a":"Call","p":{"Call":98.0,"Fold":0.0,"NA":2.0}},"AKs":{"a":"Call","p":{"Call":98.2,"Fold":0.0,"NA":1.8}},"AQs":{"a":"Call","p":{"Call":97.5,"Fold":0.0,"NA":2.5}},"AJs":{"a":"Call","p":{"Call":98.3,"Fold":0.0,"NA":1.7}},"ATs":{"a":"Call","p":{"Call":98.1,"Fold":0.0,"NA":1.9}},"A9s":{"a":"Call","p":{"Call":97.7,"Fold":0.0,"NA":2.3}},"A8s":{"a":"Call","p":{"Call":97.7,"Fold":0.0,"NA":2.3}},"A7s":{"a":"Call","p":{"Call":98.1,"Fold":0.0,"NA":1.9}},"A6s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A5s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A2s":{"a":"NA","p":{"Call":0.0,"Fold":28.3,"NA":71.7}},"AKo":{"a":"Call","p":{"Call":98.4,"Fold":0.0,"NA":1.6}},"KK":{"a":"Call","p":{"Call":97.8,"Fold":0.0,"NA":2.2}},"KQs":{"a":"Call","p":{"Call":97.4,"Fold":0.0,"NA":2.6}},"KJs":{"a":"Call","p":{"Call":98.2,"Fold":0.0,"NA":1.8}},"KTs":{"a":"Call","p":{"Call":97.6,"Fold":0.0,"NA":2.4}},"K9s":{"a":"Fold","p":{"Call":0.0,"Fold":95.7,"NA":4.3}},"K8s":{"a":"Fold","p":{"Call":0.0,"Fold":96.3,"NA":3.7}},"K7s":{"a":"Fold","p":{"Call":0.0,"Fold":95.9,"NA":4.1}},"K6s":{"a":"Fold","p":{"Call":0.0,"Fold":96.6,"NA":3.4}},"K5s":{"a":"Fold","p":{"Call":0.0,"Fold":96.7,"NA":3.3}},"K4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K2s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"AQo":{"a":"Call","p":{"Call":81.8,"Fold":0.0,"NA":18.2}},"KQo":{"a":"Fold","p":{"Call":26.6,"Fold":28.0,"NA":45.4}},"QQ":{"a":"Call","p":{"Call":97.1,"Fold":0.0,"NA":2.9}},"QJs":{"a":"Call","p":{"Call":72.5,"Fold":0.0,"NA":27.5}},"QTs":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q9s":{"a":"Fold","p":{"Call":0.0,"Fold":95.7,"NA":4.3}},"Q8s":{"a":"Fold","p":{"Call":0.0,"Fold":95.7,"NA":4.3}},"Q7s":{"a":"Fold","p":{"Call":0.0,"Fold":96.0,"NA":4.0}},"Q6s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q5s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q2s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"AJo":{"a":"Call","p":{"Call":98.0,"Fold":0.0,"NA":2.0}},"KJo":{"a":"NA","p":{"Call":0.0,"Fold":44.6,"NA":55.4}},"QJo":{"a":"Fold","p":{"Call":0.0,"Fold":96.6,"NA":3.4}},"JJ":{"a":"Call","p":{"Call":99.2,"Fold":0.0,"NA":0.8}},"JTs":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J9s":{"a":"Fold","p":{"Call":0.0,"Fold":86.3,"NA":13.7}},"J8s":{"a":"Fold","p":{"Call":0.0,"Fold":96.1,"NA":3.9}},"J7s":{"a":"NA","p":{"Call":0.0,"Fold":9.0,"NA":91.0}},"J6s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J5s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J2s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"ATo":{"a":"NA","p":{"Call":11.7,"Fold":0.0,"NA":88.3}},"KTo":{"a":"Fold","p":{"Call":0.0,"Fold":95.6,"NA":4.4}},"QTo":{"a":"Fold","p":{"Call":0.0,"Fold":96.5,"NA":3.5}},"JTo":{"a":"Fold","p":{"Call":0.0,"Fold":97.2,"NA":2.8}},"TT":{"a":"Call","p":{"Call":99.4,"Fold":0.0,"NA":0.6}},"T9s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T8s":{"a":"Fold","p":{"Call":0.0,"Fold":96.1,"NA":3.9}},"T7s":{"a":"NA","p":{"Call":0.0,"Fold":41.7,"NA":58.3}},"T6s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T5s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T2s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A9o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K9o":{"a":"Fold","p":{"Call":0.0,"Fold":96.5,"NA":3.5}},"Q9o":{"a":"NA","p":{"Call":0.0,"Fold":24.1,"NA":75.9}},"J9o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T9o":{"a":"Fold","p":{"Call":0.0,"Fold":59.4,"NA":40.6}},"99":{"a":"Call","p":{"Call":98.1,"Fold":0.0,"NA":1.9}},"98s":{"a":"Fold","p":{"Call":0.0,"Fold":95.9,"NA":4.1}},"97s":{"a":"Fold","p":{"Call":0.0,"Fold":96.3,"NA":3.7}},"96s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"95s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"94s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"93s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"92s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"98o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"88":{"a":"Call","p":{"Call":97.5,"Fold":0.0,"NA":2.5}},"87s":{"a":"Fold","p":{"Call":0.0,"Fold":96.0,"NA":4.0}},"86s":{"a":"Fold","p":{"Call":0.0,"Fold":61.6,"NA":38.4}},"85s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"84s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"83s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"82s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A7o":{"a":"Fold","p":{"Call":0.0,"Fold":96.6,"NA":3.4}},"K7o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q7o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J7o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T7o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"97o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"87o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"77":{"a":"Call","p":{"Call":99.1,"Fold":0.0,"NA":0.9}},"76s":{"a":"NA","p":{"Call":0.0,"Fold":34.0,"NA":66.0}},"75s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"74s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"73s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"72s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A6o":{"a":"Fold","p":{"Call":0.0,"Fold":96.2,"NA":3.8}},"K6o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q6o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J6o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T6o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"96o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"86o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"76o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"66":{"a":"Call","p":{"Call":97.8,"Fold":0.0,"NA":2.2}},"65s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"64s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"63s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"62s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A5o":{"a":"Fold","p":{"Call":0.0,"Fold":96.4,"NA":3.6}},"K5o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q5o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J5o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T5o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"95o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"85o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"75o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"65o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"55":{"a":"NA","p":{"Call":43.9,"Fold":0.0,"NA":56.1}},"54s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"53s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"52s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A4o":{"a":"Fold","p":{"Call":0.0,"Fold":94.2,"NA":5.8}},"K4o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q4o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J4o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T4o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"94o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"84o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"74o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"64o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"54o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"44":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"43s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"42s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"93o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"83o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"73o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"63o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"53o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"43o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"33":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"32s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"92o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"82o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"72o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"62o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"52o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"42o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"32o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"22":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}}},"SB":{"AA":{"a":"Call","p":{"Call":98.0,"Fold":0.0,"NA":2.0}},"AKs":{"a":"Call","p":{"Call":98.2,"Fold":0.0,"NA":1.8}},"AQs":{"a":"Call","p":{"Call":97.5,"Fold":0.0,"NA":2.5}},"AJs":{"a":"Call","p":{"Call":98.3,"Fold":0.0,"NA":1.7}},"ATs":{"a":"Call","p":{"Call":98.1,"Fold":0.0,"NA":1.9}},"A9s":{"a":"Call","p":{"Call":97.7,"Fold":0.0,"NA":2.3}},"A8s":{"a":"Call","p":{"Call":97.7,"Fold":0.0,"NA":2.3}},"A7s":{"a":"Call","p":{"Call":98.1,"Fold":0.0,"NA":1.9}},"A6s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A5s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A2s":{"a":"NA","p":{"Call":0.0,"Fold":28.3,"NA":71.7}},"AKo":{"a":"Call","p":{"Call":98.4,"Fold":0.0,"NA":1.6}},"KK":{"a":"Call","p":{"Call":97.8,"Fold":0.0,"NA":2.2}},"KQs":{"a":"Call","p":{"Call":97.4,"Fold":0.0,"NA":2.6}},"KJs":{"a":"Call","p":{"Call":98.2,"Fold":0.0,"NA":1.8}},"KTs":{"a":"Call","p":{"Call":97.6,"Fold":0.0,"NA":2.4}},"K9s":{"a":"Fold","p":{"Call":0.0,"Fold":95.7,"NA":4.3}},"K8s":{"a":"Fold","p":{"Call":0.0,"Fold":96.3,"NA":3.7}},"K7s":{"a":"Fold","p":{"Call":0.0,"Fold":95.9,"NA":4.1}},"K6s":{"a":"Fold","p":{"Call":0.0,"Fold":96.6,"NA":3.4}},"K5s":{"a":"Fold","p":{"Call":0.0,"Fold":96.7,"NA":3.3}},"K4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K2s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"AQo":{"a":"Call","p":{"Call":81.8,"Fold":0.0,"NA":18.2}},"KQo":{"a":"Call","p":{"Call":54.9,"Fold":0.0,"NA":45.1}},"QQ":{"a":"Call","p":{"Call":97.1,"Fold":0.0,"NA":2.9}},"QJs":{"a":"Call","p":{"Call":72.5,"Fold":0.0,"NA":27.5}},"QTs":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q9s":{"a":"Fold","p":{"Call":0.0,"Fold":95.7,"NA":4.3}},"Q8s":{"a":"Fold","p":{"Call":0.0,"Fold":95.7,"NA":4.3}},"Q7s":{"a":"Fold","p":{"Call":0.0,"Fold":96.0,"NA":4.0}},"Q6s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q5s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q2s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"AJo":{"a":"Call","p":{"Call":98.0,"Fold":0.0,"NA":2.0}},"KJo":{"a":"NA","p":{"Call":0.0,"Fold":44.6,"NA":55.4}},"QJo":{"a":"Fold","p":{"Call":0.0,"Fold":96.6,"NA":3.4}},"JJ":{"a":"Call","p":{"Call":99.2,"Fold":0.0,"NA":0.8}},"JTs":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J9s":{"a":"Fold","p":{"Call":0.0,"Fold":86.3,"NA":13.7}},"J8s":{"a":"Fold","p":{"Call":0.0,"Fold":96.1,"NA":3.9}},"J7s":{"a":"NA","p":{"Call":0.0,"Fold":9.0,"NA":91.0}},"J6s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J5s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J2s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"ATo":{"a":"NA","p":{"Call":11.7,"Fold":0.0,"NA":88.3}},"KTo":{"a":"Fold","p":{"Call":0.0,"Fold":95.6,"NA":4.4}},"QTo":{"a":"Fold","p":{"Call":0.0,"Fold":96.5,"NA":3.5}},"JTo":{"a":"Fold","p":{"Call":0.0,"Fold":97.2,"NA":2.8}},"TT":{"a":"Call","p":{"Call":99.4,"Fold":0.0,"NA":0.6}},"T9s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T8s":{"a":"Fold","p":{"Call":0.0,"Fold":96.1,"NA":3.9}},"T7s":{"a":"NA","p":{"Call":0.0,"Fold":41.7,"NA":58.3}},"T6s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T5s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T4s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T3s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T2s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A9o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K9o":{"a":"Fold","p":{"Call":0.0,"Fold":96.5,"NA":3.5}},"Q9o":{"a":"NA","p":{"Call":0.0,"Fold":24.1,"NA":75.9}},"J9o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T9o":{"a":"Fold","p":{"Call":0.0,"Fold":59.4,"NA":40.6}},"99":{"a":"Call","p":{"Call":98.1,"Fold":0.0,"NA":1.9}},"98s":{"a":"Fold","p":{"Call":0.0,"Fold":95.9,"NA":4.1}},"97s":{"a":"Fold","p":{"Call":0.0,"Fold":96.3,"NA":3.7}},"96s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"95s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"94s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"93s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"92s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T8o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"98o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"88":{"a":"Call","p":{"Call":97.5,"Fold":0.0,"NA":2.5}},"87s":{"a":"Fold","p":{"Call":0.0,"Fold":96.0,"NA":4.0}},"86s":{"a":"Fold","p":{"Call":0.0,"Fold":61.6,"NA":38.4}},"85s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"84s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"83s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"82s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A7o":{"a":"Fold","p":{"Call":0.0,"Fold":96.6,"NA":3.4}},"K7o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q7o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J7o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T7o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"97o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"87o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"77":{"a":"Call","p":{"Call":99.1,"Fold":0.0,"NA":0.9}},"76s":{"a":"NA","p":{"Call":0.0,"Fold":34.0,"NA":66.0}},"75s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"74s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"73s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"72s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A6o":{"a":"Fold","p":{"Call":0.0,"Fold":96.2,"NA":3.8}},"K6o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q6o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J6o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T6o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"96o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"86o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"76o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"66":{"a":"Call","p":{"Call":97.8,"Fold":0.0,"NA":2.2}},"65s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"64s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"63s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"62s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A5o":{"a":"Fold","p":{"Call":0.0,"Fold":96.4,"NA":3.6}},"K5o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q5o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J5o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T5o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"95o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"85o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"75o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"65o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"55":{"a":"NA","p":{"Call":43.9,"Fold":0.0,"NA":56.1}},"54s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"53s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"52s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A4o":{"a":"Fold","p":{"Call":0.0,"Fold":94.2,"NA":5.8}},"K4o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q4o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J4o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T4o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"94o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"84o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"74o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"64o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"54o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"44":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"43s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"42s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T3o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"93o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"83o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"73o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"63o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"53o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"43o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"33":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"32s":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"A2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"K2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"Q2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"J2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"T2o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"92o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"82o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"72o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"62o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"52o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"42o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"32o":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}},"22":{"a":"NA","p":{"Call":0.0,"Fold":0.0,"NA":100.0}}}}};
+const OPEN = ALL.open, CALL = ALL.call15;
+const RANKS="AKQJT98765432".split("");
+const C_OPEN={Fold:"var(--fold)",Open:"var(--open)",Push:"var(--push)"};
+const C_CALL={Call:"var(--call)",Fold:"var(--fold)",NA:"var(--na)"};
+const MIX_HI=85;
+
+function handAt(r,c){const a=RANKS[r],b=RANKS[c];if(r===c)return a+b;return c>r?a+b+"s":b+a+"o";}
+function allHands(){const o=[];for(let r=0;r<13;r++)for(let c=0;c<13;c++)o.push(handAt(r,c));return o;}
+function isMixedOpen(d,h){const p=OPEN[d][h].p;return Math.max(...Object.values(p))<MIX_HI;}
+
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+
+let depthMode="mix",drillMode="all";
+let cur=null,curDepth=null,answered=false;
+let phase="main";               // "main" | "call"
+let score=0,total=0,streak=0;
+let misses=[];
+let autoAdvance=(lsGet("autoAdvance")==="1");
+let advanceTimer=null;
+
+function depthsInPlay(){return depthMode==="mix"?["25","15","10"]:[depthMode];}
+function mixedPool(){const p=[];depthsInPlay().forEach(d=>allHands().forEach(h=>{if(isMixedOpen(d,h))p.push({depth:d,hand:h});}));return p;}
+function pickQuestion(){
+  if(drillMode==="miss"){return misses.length?misses[Math.floor(Math.random()*misses.length)]:null;}
+  if(drillMode==="mixed"){const p=mixedPool();return p.length?p[Math.floor(Math.random()*p.length)]:null;}
+  const d=depthsInPlay()[Math.floor(Math.random()*depthsInPlay().length)];
+  return {depth:d,hand:allHands()[Math.floor(Math.random()*169)]};
+}
+
+function openActions(d){return d==="25"?["Fold","Open"]:["Fold","Open","Push"];}
+const SUB={Fold:"give up",Open:"Raise 2",Push:"jam all-in",Call:"call the jam"};
+
+function setButtons(actions,onPick){
+  const box=document.getElementById("answerBtns");box.innerHTML="";
+  actions.forEach(act=>{
+    const b=document.createElement("button");
+    b.className="ab "+act.toLowerCase();
+    b.innerHTML=act+'<span class="sub">'+(SUB[act]||"")+'</span>';
+    b.onclick=()=>onPick(act);
+    box.appendChild(b);
+  });
+}
+
+function newQuestion(){
+  if(advanceTimer){clearTimeout(advanceTimer);advanceTimer=null;}
+  answered=false;phase="main";
+  const q=pickQuestion();
+  const empty=document.getElementById("emptyMiss");
+  if(!q){
+    document.getElementById("handLabel").textContent="\u2014\u2014";
+    document.getElementById("answerBtns").innerHTML="";
+    document.getElementById("feedback").textContent="";
+    document.getElementById("pcts").textContent="";
+    document.getElementById("qtitle").textContent="";
+    document.getElementById("nextBtn").style.display="none";
+    document.getElementById("matrixWrap").classList.remove("show");
+    empty.style.display=drillMode==="miss"?"block":"none";
+    if(drillMode==="mixed")empty.textContent="No mixed cells at this depth selection.";
+    return;
+  }
+  empty.style.display="none";
+  curDepth=q.depth;cur=q.hand;
+  document.getElementById("handLabel").textContent=cur;
+  document.getElementById("depthLabel").textContent=curDepth;
+  document.getElementById("feedback").textContent="";document.getElementById("feedback").className="feedback";
+  document.getElementById("pcts").textContent="";
+  document.getElementById("nextBtn").style.display="none";
+  document.getElementById("matrixWrap").classList.remove("show");
+  document.getElementById("qtitle").innerHTML="What&rsquo;s your action?";
+  setButtons(openActions(curDepth),answerMain);
+}
+
+function flash(msg,good){
+  const fb=document.getElementById("feedback");
+  fb.textContent=msg;fb.className="feedback "+(good?"good":"bad");
+}
+function showPcts(p){
+  document.getElementById("pcts").textContent=Object.entries(p).filter(([k,v])=>v>0).map(([k,v])=>k+" "+v+"%").join("  \u00b7  ");
+}
+function recordMiss(){ if(!misses.some(m=>m.depth===curDepth&&m.hand===cur))misses.push({depth:curDepth,hand:cur}); }
+
+// follow-up applies only at 15BB when the open answer was Open, and only for
+// hands that are live (not NA) in the call chart.
+function liveCall(who){ const e=CALL[who][cur]; return e && e.a!=="NA"; }
+
+function answerMain(choice){
+  if(answered)return;answered=true;
+  const correct=OPEN[curDepth][cur].a;
+  total++;
+  if(choice===correct){
+    score++;streak++;flash("\u2713 Correct \u2014 "+correct,true);
+    if(drillMode==="miss")misses=misses.filter(m=>!(m.depth===curDepth&&m.hand===cur));
+    showPcts(OPEN[curDepth][cur].p);
+    updateStats();
+    // follow-up: single "facing a jam, call?" question for 15BB opens
+    if(curDepth==="15" && correct==="Open" && (liveCall("BB")||liveCall("SB"))){
+      document.getElementById("nextBtn").style.display="none";
+      setTimeout(()=>askCall(),450);
+    }else{
+      afterResolved(true);
+    }
+  }else{
+    streak=0;flash("\u2717 "+cur+" @ "+curDepth+"BB is "+correct+" (you picked "+choice+")",false);
+    showMatrixOpen(curDepth,cur);recordMiss();showPcts(OPEN[curDepth][cur].p);updateStats();
+    afterResolved(false);
+  }
+}
+
+// Single combined "facing a jam, call?" question. BB and SB agree on every hand
+// except KQo (Fold vs BB, Call vs SB), which gets a special explanatory note and
+// is counted correct for either answer.
+function askCall(){
+  phase="call";answered=false;
+  document.getElementById("feedback").textContent="";document.getElementById("feedback").className="feedback";
+  document.getElementById("pcts").textContent="";
+  document.getElementById("matrixWrap").classList.remove("show");
+  document.getElementById("qtitle").innerHTML="You min-raised &mdash; opponent <b>jams</b>. Call?";
+  const bb=CALL.BB[cur].a, sb=CALL.SB[cur].a;
+  const split = (bb!==sb);  // only KQo
+  setButtons(["Call","Fold"],(choice)=>{
+    if(answered)return;answered=true;
+    total++;
+    if(split){
+      // either answer is "correct" but explain the dependency
+      score++;streak++;
+      flash("\u2139 Depends on who jams \u2014 counted correct",true);
+      document.getElementById("pcts").innerHTML=
+        "<b>"+cur+"</b>: Call vs <b>SB</b> jam ("+CALL.SB[cur].p.Call+"% Call) &nbsp;&middot;&nbsp; Fold vs <b>BB</b> jam";
+      updateStats();
+      afterResolved(true);
+      return;
+    }
+    const correct=bb; // == sb
+    if(choice===correct){
+      score++;streak++;flash("\u2713 Correct \u2014 "+correct+" vs a jam",true);
+      showPcts(CALL.BB[cur].p);updateStats();afterResolved(true);
+    }else{
+      streak=0;flash("\u2717 "+cur+" vs a jam is "+correct+" (you picked "+choice+")",false);
+      showMatrixCall("BB",cur);recordMiss();showPcts(CALL.BB[cur].p);updateStats();afterResolved(false);
+    }
+  });
+}
+
+function afterResolved(wasCorrect){
+  const btn=document.getElementById("nextBtn");
+  btn.textContent="Next hand \u2192";btn.onclick=newQuestion;
+  if(wasCorrect && autoAdvance){ btn.style.display="none"; advanceTimer=setTimeout(newQuestion,450); }
+  else{ btn.style.display="block"; }
+}
+
+function updateStats(){
+  document.getElementById("score").textContent=score;
+  document.getElementById("total").textContent=total;
+  document.getElementById("streak").textContent=streak;
+  document.getElementById("acc").textContent=total?Math.round(100*score/total)+"%":"\u2014";
+  document.getElementById("missN").textContent=misses.length;
+}
+
+function legendHTML(kind){
+  if(kind==="call") return '<span><i class="sw" style="background:var(--call)"></i>Call</span><span><i class="sw" style="background:var(--fold)"></i>Fold</span><span><i class="sw" style="background:var(--na)"></i>N/A (not opened)</span>';
+  return '<span><i class="sw" style="background:var(--fold)"></i>Fold</span><span><i class="sw" style="background:var(--open)"></i>Open</span><span><i class="sw" style="background:var(--push)"></i>Push</span>';
+}
+function buildMatrix(container,getAct,colorMap,isNA,highlight){
+  container.innerHTML="";
+  for(let r=0;r<13;r++)for(let c=0;c<13;c++){
+    const h=handAt(r,c),act=getAct(h);
+    const cell=document.createElement("div");
+    cell.className="cell"+(isNA&&isNA(act)?" na":"")+(h===highlight?" hl":"");
+    cell.style.background=colorMap[act];
+    cell.textContent=h;
+    container.appendChild(cell);
+  }
+}
+function showMatrixOpen(depth,hand){
+  document.getElementById("mxCaption").innerHTML="Open strategy &mdash; "+depth+"BB (your hand highlighted)";
+  document.getElementById("mxLegend").innerHTML=legendHTML("open");
+  buildMatrix(document.getElementById("matrix"),h=>OPEN[depth][h].a,C_OPEN,null,hand);
+  document.getElementById("matrixWrap").classList.add("show");
+}
+function showMatrixCall(who,hand){
+  document.getElementById("mxCaption").innerHTML="Call vs "+who+" jam &mdash; 15BB (grey = not opened)";
+  document.getElementById("mxLegend").innerHTML=legendHTML("call");
+  buildMatrix(document.getElementById("matrix"),h=>CALL[who][h].a,C_CALL,a=>a==="NA",hand);
+  document.getElementById("matrixWrap").classList.add("show");
+}
+
+document.querySelectorAll("#depthTabs .tab").forEach(t=>{t.onclick=()=>{document.querySelectorAll("#depthTabs .tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");depthMode=t.dataset.d;newQuestion();};});
+document.querySelectorAll("#modeTabs .tab").forEach(t=>{t.onclick=()=>{document.querySelectorAll("#modeTabs .tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");drillMode=t.dataset.m;newQuestion();};});
+
+const autoCb=document.getElementById("autoAdvance");
+autoCb.checked=autoAdvance;
+autoCb.onchange=()=>{autoAdvance=autoCb.checked;lsSet("autoAdvance",autoAdvance?"1":"0");};
+
+function renderView(v){
+  const vm=document.getElementById("viewMatrix"),vl=document.getElementById("viewLegend");
+  if(v==="callBB"){vl.innerHTML=legendHTML("call");buildMatrix(vm,h=>CALL.BB[h].a,C_CALL,a=>a==="NA",null);}
+  else if(v==="callSB"){vl.innerHTML=legendHTML("call");buildMatrix(vm,h=>CALL.SB[h].a,C_CALL,a=>a==="NA",null);}
+  else{const d=v.replace("open","");vl.innerHTML=legendHTML("open");buildMatrix(vm,h=>OPEN[d][h].a,C_OPEN,null,null);}
+}
+document.querySelectorAll("#viewTabs .tab").forEach(t=>{t.onclick=()=>{document.querySelectorAll("#viewTabs .tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");renderView(t.dataset.v);};});
+
+document.addEventListener("keydown",e=>{
+  if(!answered){
+    const k=e.key.toLowerCase();
+    if(phase==="main"){ if(k==="f")answerMain("Fold");else if(k==="r")answerMain("Open");else if(k==="p"&&curDepth!=="25")answerMain("Push"); }
+    else{ const b=document.querySelectorAll("#answerBtns .ab"); if(k==="c")b[0]&&b[0].click();else if(k==="f")b[1]&&b[1].click(); }
+  }else if(e.key===" "||e.key==="Enter"){e.preventDefault();const n=document.getElementById("nextBtn");if(n.style.display!=="none")n.onclick();}
+});
+
+document.querySelectorAll(".posbar .postab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll(".posbar .postab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    const pos=t.dataset.pos;
+    document.getElementById("pos-BTN").style.display = pos==="BTN"?"block":"none";
+    document.getElementById("pos-SB").style.display  = pos==="SB"?"block":"none";
+    document.getElementById("pos-BB").style.display  = pos==="BB"?"block":"none";
+    if(pos==="BTN" && advanceTimer){clearTimeout(advanceTimer);advanceTimer=null;}
+  };
+});
+
+newQuestion();renderView("open25");updateStats();
+</script>
+</body>
+</html>
