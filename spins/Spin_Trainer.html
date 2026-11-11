@@ -171,10 +171,12 @@ function bbData(d){return DATA.BB.play[d];}
 const BB_SIZING={"25":{rs:"Raise 3",rm:"Raise 25",rj:null},"15":{rs:"Raise 3",rm:"Raise 5",rj:"Raise 15"},"10":{rs:"Raise 3",rm:"Raise 10",rj:null}};
 function bbActions(d){
   const s=BB_SIZING[d],dd=bbData(d),acts=["Check",s.rs];
-  /* only include RaiseMid if it actually appears (>0.5% of hands use it) */
-  const ah=allHands();const hasMid=ah.some(h=>dd[h]&&dd[h].p.RaiseMid&&dd[h].p.RaiseMid>2);
-  if(hasMid)acts.push(s.rm);
-  if(s.rj){const hasJam=ah.some(h=>dd[h]&&dd[h].p.RaiseJam&&dd[h].p.RaiseJam>2);if(hasJam)acts.push(s.rj);}
+  /* only show a raise button if some hand's CHOSEN action is that key
+     (a trace % that is never the majority is a dead button) */
+  const ah=allHands();
+  const used=k=>ah.some(h=>dd[h]&&dd[h].a===k);
+  if(used("RaiseMid"))acts.push(s.rm);
+  if(s.rj&&used("RaiseJam"))acts.push(s.rj);
   return acts;
 }
 function bbActionKey(label,d){const s=BB_SIZING[d];if(label==="Check")return"Check";if(label===s.rs)return"RaiseSmall";if(label===s.rm)return"RaiseMid";if(s.rj&&label===s.rj)return"RaiseJam";return label;}
