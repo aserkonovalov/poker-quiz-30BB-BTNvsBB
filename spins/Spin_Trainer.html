@@ -376,7 +376,7 @@ function viewTabsFor(pos){
   ["25","15","10"].forEach(d=>{if(getRangeData(pos,d))tabs.push({label:d+"BB",pos,d});});
   /* BTN also shows a single call-vs-jam chart (uses the vs-BB 15BB chart) */
   if(pos==="BTN"&&DATA.BTN.call&&DATA.BTN.call["15"]&&DATA.BTN.call["15"].BB){
-    tabs.push({label:"call vs jam",pos:"BTNcall",d:"15",who:"BB"});
+    tabs.push({label:"call vs jam 15BB",pos:"BTNcall",d:"15",who:"BB"});
   }
   return tabs;
 }
