@@ -187,7 +187,7 @@ function bbBtnClass(label,d){const k=bbActionKey(label,d);return{Check:"check",R
 let posMode="BTN",depthMode="mix",drillMode="all";
 let cur=null,curDepth=null,curPos=null,answered=false,phase="main";
 let score=0,total=0,streak=0,misses=[];
-let autoAdvance=(lsGet("autoAdvance")==="1"),advanceTimer=null;
+let autoAdvance=(lsGet("autoAdvance")==="1"),advanceTimer=null,callTimer=null;
 
 function depthsInPlay(){return depthMode==="mix"?["25","15","10"]:[depthMode];}
 function positionsInPlay(){return posMode==="MIX"?["BTN","SB","BB"]:[posMode];}
@@ -314,7 +314,7 @@ function answerBTN(choice){
     showPcts(btnOpenData(curDepth)[cur].p);updateStats();
     if(correct==="Open"&&hasCall(curDepth)&&(liveCall(curDepth,"BB")||liveCall(curDepth,"SB"))){
       document.getElementById("nextBtn").style.display="none";
-      setTimeout(()=>askCall(),450);
+      callTimer=setTimeout(()=>{callTimer=null;askCall();},450);
     }else{afterResolved(true);}
   }else{
     streak=0;flash("\u2717 "+cur+" @ "+curDepth+"BB is "+correct+" (you picked "+choice+")",false);
@@ -353,6 +353,7 @@ function answerBB(choice){
 /* ---- Question generation ---- */
 function newQuestion(){
   if(advanceTimer){clearTimeout(advanceTimer);advanceTimer=null;}
+  if(callTimer){clearTimeout(callTimer);callTimer=null;}
   answered=false;phase="main";
   const q=pickQuestion();const empty=document.getElementById("emptyMiss");
   if(!q){
@@ -424,6 +425,7 @@ document.querySelectorAll(".posbar .postab").forEach(t=>{
     document.querySelectorAll(".posbar .postab").forEach(x=>x.classList.remove("active"));t.classList.add("active");
     posMode=t.dataset.pos;
     if(advanceTimer){clearTimeout(advanceTimer);advanceTimer=null;}
+    if(callTimer){clearTimeout(callTimer);callTimer=null;}
     newQuestion();
   };
 });
