@@ -133,7 +133,12 @@
     </div>
     <div class="modeRow settingsRow">
       <label class="switch"><input type="checkbox" id="autoAdvance"><span class="track"><span class="knob"></span></span><span>Auto-advance on correct</span></label>
-      <label class="switch"><input type="checkbox" id="speedToggle"><span class="track"><span class="knob"></span></span><span>Speed mode (3s)</span></label>
+      <label class="switch"><input type="checkbox" id="speedToggle"><span class="track"><span class="knob"></span></span><span>Speed mode</span></label>
+      <div class="tabs" id="speedTabs">
+        <button class="tab" data-ms="3000">3s</button>
+        <button class="tab" data-ms="5000">5s</button>
+        <button class="tab" data-ms="10000">10s</button>
+      </div>
     </div>
 
     <div class="speedWrap"><div class="speedBar" id="speedBar"></div></div>
@@ -304,7 +309,7 @@ let cur=null,curDepth=null,curPos=null,answered=false,phase="main";
 let score=0,total=0,streak=0;
 let autoAdvance=(lsGet("autoAdvance")==="1"),advanceTimer=null,callTimer=null;
 let speedMode=(lsGet("speedMode")==="1"),speedTimer=null,qStartTime=0;
-const SPEED_MS=3000;
+let SPEED_MS=parseInt(lsGet("speedMs")||"3000",10);
 
 /* ---- Persistent per-hand stats (survive reloads & mode switches) ----
    stats[key] = {seen, correct, wrong, streak, lastMs} where key = pos|depth|hand.
@@ -716,9 +721,15 @@ document.querySelectorAll("#drillPosBar .postab").forEach(t=>{
   };
 });
 
-/* speed-mode toggle */
+/* speed-mode toggle + duration selector */
 const speedCb=document.getElementById("speedToggle");speedCb.checked=speedMode;
+function markSpeedTab(){document.querySelectorAll("#speedTabs .tab").forEach(t=>t.classList.toggle("active",parseInt(t.dataset.ms,10)===SPEED_MS));}
 speedCb.onchange=()=>{speedMode=speedCb.checked;lsSet("speedMode",speedMode?"1":"0");stopSpeedTimer();if(!answered)startSpeedTimer();};
+document.querySelectorAll("#speedTabs .tab").forEach(t=>{t.onclick=()=>{
+  SPEED_MS=parseInt(t.dataset.ms,10);lsSet("speedMs",""+SPEED_MS);markSpeedTab();
+  stopSpeedTimer();if(speedMode&&!answered)startSpeedTimer();
+};});
+markSpeedTab();
 
 /* ---- Range builder ---- */
 let rbPos="BTN",rbDepth="25",rbAction=null,rbSel={};
@@ -864,6 +875,7 @@ function reloadProfile(){
   try{STATS=JSON.parse(lsGet("stats")||"{}");}catch(e){STATS={};}
   autoAdvance=(lsGet("autoAdvance")==="1");document.getElementById("autoAdvance").checked=autoAdvance;
   speedMode=(lsGet("speedMode")==="1");document.getElementById("speedToggle").checked=speedMode;
+  SPEED_MS=parseInt(lsGet("speedMs")||"3000",10);markSpeedTab();
   score=0;total=0;streak=0;
   newQuestion();updateStats();
   if(document.getElementById("hmDetails").open)hmRender();
