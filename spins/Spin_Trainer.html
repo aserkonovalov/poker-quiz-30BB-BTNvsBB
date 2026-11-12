@@ -155,14 +155,19 @@ function allHands(){const o=[];for(let r=0;r<13;r++)for(let c=0;c<13;c++)o.push(
 function handCombos(h){return h.length===2?6:(h[2]==="s"?4:12);}
 /* combo-weighted % of the 1326 combos taken per action; getAct(h) may return
    null/NA which is counted as not-dealt (excluded from the 1326 base when NA). */
-function comboSummary(getAct,order){
+function comboSummary(getAct,order,passive){
   const tally={},TOTAL=1326;let na=0;
   allHands().forEach(h=>{const a=getAct(h);if(a==null||a==="NA"){na+=handCombos(h);return;}tally[a]=(tally[a]||0)+handCombos(h);});
   const base=TOTAL; /* always % of the full 1326 so numbers sum with NA */
   const keys=order?order.filter(k=>tally[k]):Object.keys(tally);
   const parts=keys.map(k=>k+" "+(100*tally[k]/base).toFixed(1)+"%");
   if(na>0)parts.push("N/A "+(100*na/base).toFixed(1)+"%");
-  return parts.join("  ·  ");
+  /* "played" = non-passive combos (passive is Fold for open/SB, Check for BB,
+     Fold for call charts; N/A is excluded from the base there). */
+  let played=0,pbase=base-na;
+  Object.keys(tally).forEach(k=>{if(k!==passive)played+=tally[k];});
+  const pct=pbase?(100*played/pbase).toFixed(1):"0.0";
+  return {line:parts.join("  ·  "), played:pct, passive:passive};
 }
 function lsGet(k){try{return localStorage.getItem("spinT_"+k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem("spinT_"+k,v);}catch(e){}}
@@ -421,12 +426,16 @@ function renderViewTab(t){
     const cd=DATA.BTN.call[t.d][t.who];
     vl.innerHTML=Object.entries(C_BTN_CALL).map(([k,v])=>'<span><i class="sw" style="background:'+v+'"></i>'+k+'</span>').join("");
     buildMatrix(vm,h=>cd[h]?cd[h].a:"NA",C_BTN_CALL,a=>a==="NA",null);
-    vs.innerHTML="<b>Combo weight</b> (of 1326): "+comboSummary(h=>cd[h]?cd[h].a:"NA",["Call","Fold"]);
+    {const s=comboSummary(h=>cd[h]?cd[h].a:"NA",["Call","Fold"],"Fold");
+     vs.innerHTML="<b>Combo weight</b> (of 1326): "+s.line+"<br><b>Calling "+s.played+"%</b> of opened combos";}
   }else{
     const dd=getRangeData(t.pos,t.d);const cm=getColorMap(t.pos);
     vl.innerHTML=Object.entries(cm).map(([k,v])=>'<span><i class="sw" style="background:'+v+'"></i>'+k+'</span>').join("");
     buildMatrix(vm,h=>dd[h]?dd[h].a:"Fold",cm,null,null);
-    vs.innerHTML="<b>Combo weight</b> (of 1326): "+comboSummary(h=>dd[h]?dd[h].a:"Fold",Object.keys(cm));
+    {const passive=(t.pos==="BB")?"Check":"Fold";
+     const label=(t.pos==="BB")?"Raising":"Playing";
+     const s=comboSummary(h=>dd[h]?dd[h].a:"Fold",Object.keys(cm),passive);
+     vs.innerHTML="<b>Combo weight</b> (of 1326): "+s.line+"<br><b>"+label+" "+s.played+"%</b> of combos";}
   }
 }
 
