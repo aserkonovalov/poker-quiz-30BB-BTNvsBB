@@ -430,7 +430,7 @@ function mnemonic(pos,d,h){
   const a=getAction(pos,d,h);if(!a)return "";
   const c=handClass(h);
   /* generic depth principle */
-  const depthRule={"25":"25BB: raise-or-fold, almost no jamming.","15":"15BB: raise your value, jam the awkward middling hands.","10":"10BB: jam-heavy \u2014 most playable hands shove."}[d];
+  const depthRule={"25":"25BB: raise-or-fold, never jam.","15":"15BB: raise your value, jam the awkward middling hands.","10":"10BB: jam-heavy \u2014 most playable hands shove."}[d];
   if(pos==="BTN"){
     if(a==="Open")return "BTN "+d+"BB open. "+depthRule+" Suited runs deeper than its offsuit twin.";
     if(a==="Push")return "BTN "+d+"BB jam. Short-stack value & blockers shove rather than min-raise.";
