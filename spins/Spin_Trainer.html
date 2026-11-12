@@ -161,28 +161,19 @@
   </div>
 
   <div class="card">
-    <details id="rbDetails">
-      <summary>Range builder &mdash; tap the whole range from memory</summary>
-      <div class="modeRow" style="margin-top:12px">
-        <span class="lbl">Pick a spot, then tap every hand you'd play that action</span>
-        <div class="posbar" id="rbPosBar">
-          <button class="postab active" data-rbpos="BTN">BTN</button>
-          <button class="postab" data-rbpos="SB">SB</button>
-          <button class="postab" data-rbpos="BB">BB</button>
-        </div>
-        <div class="tabs" id="rbDepthTabs">
-          <button class="tab active" data-rbd="25">25 BB</button>
-          <button class="tab" data-rbd="15">15 BB</button>
-          <button class="tab" data-rbd="10">10 BB</button>
-        </div>
-        <div class="tabs" id="rbActionTabs"></div>
+    <details>
+      <summary>Show a full range chart</summary>
+      <div class="posbar" style="margin-top:12px" id="viewPosBar">
+        <button class="postab active" data-vpos="BTN">BTN</button>
+        <button class="postab" data-vpos="SB">SB</button>
+        <button class="postab" data-vpos="BB">BB</button>
       </div>
-      <div class="qtitle" id="rbPrompt"></div>
-      <div class="rbGrid" id="rbGrid"></div>
-      <button class="next" id="rbCheck">Check my range</button>
-      <div class="feedback" id="rbFeedback"></div>
-      <div class="mini" id="rbResult"></div>
-      <div class="legend" id="rbLegend" style="margin-top:8px"></div>
+      <div class="modeRow">
+        <div class="tabs" id="viewTabs"></div>
+      </div>
+      <div class="matrix" id="viewMatrix"></div>
+      <div class="legend" id="viewLegend"></div>
+      <div class="mini" id="viewSummary"></div>
     </details>
   </div>
 
@@ -209,19 +200,28 @@
   </div>
 
   <div class="card">
-    <details>
-      <summary>Show a full range chart</summary>
-      <div class="posbar" style="margin-top:12px" id="viewPosBar">
-        <button class="postab active" data-vpos="BTN">BTN</button>
-        <button class="postab" data-vpos="SB">SB</button>
-        <button class="postab" data-vpos="BB">BB</button>
+    <details id="rbDetails">
+      <summary>Range builder &mdash; tap the whole range from memory</summary>
+      <div class="modeRow" style="margin-top:12px">
+        <span class="lbl">Pick a spot, then tap every hand you'd play that action</span>
+        <div class="posbar" id="rbPosBar">
+          <button class="postab active" data-rbpos="BTN">BTN</button>
+          <button class="postab" data-rbpos="SB">SB</button>
+          <button class="postab" data-rbpos="BB">BB</button>
+        </div>
+        <div class="tabs" id="rbDepthTabs">
+          <button class="tab active" data-rbd="25">25 BB</button>
+          <button class="tab" data-rbd="15">15 BB</button>
+          <button class="tab" data-rbd="10">10 BB</button>
+        </div>
+        <div class="tabs" id="rbActionTabs"></div>
       </div>
-      <div class="modeRow">
-        <div class="tabs" id="viewTabs"></div>
-      </div>
-      <div class="matrix" id="viewMatrix"></div>
-      <div class="legend" id="viewLegend"></div>
-      <div class="mini" id="viewSummary"></div>
+      <div class="qtitle" id="rbPrompt"></div>
+      <div class="rbGrid" id="rbGrid"></div>
+      <button class="next" id="rbCheck">Check my range</button>
+      <div class="feedback" id="rbFeedback"></div>
+      <div class="mini" id="rbResult"></div>
+      <div class="legend" id="rbLegend" style="margin-top:8px"></div>
     </details>
   </div>
 
