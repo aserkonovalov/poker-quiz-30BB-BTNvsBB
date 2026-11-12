@@ -59,6 +59,14 @@
   .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:.15s}
   .switch input:checked + .track{background:var(--accent);border-color:var(--accent)}
   .switch input:checked + .track .knob{left:20px;background:#1a1a1a}
+  .speedWrap{height:6px;background:var(--panel2);border-radius:4px;overflow:hidden;margin:2px 0 10px}
+  .speedBar{height:100%;width:0%;background:var(--accent);transition:width .05s linear}
+  .why{margin-top:10px;text-align:center;font-size:13px;color:#cdd3da;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;line-height:1.4}
+  .rbGrid{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;width:100%;max-width:560px;margin:10px auto}
+  .rbCell{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:clamp(6px,1.9vw,10px);font-weight:700;color:#10131a;border-radius:3px;background:var(--panel2);cursor:pointer;user-select:none;color:#8a8f99;border:1px solid var(--line)}
+  .rbCell.sel{background:var(--accent);color:#1a1a1a;border-color:var(--accent)}
+  .rbCell.ok{outline:2px solid var(--good);outline-offset:-2px}
+  .rbCell.miss{outline:2px solid var(--bad);outline-offset:-2px}
   footer{color:var(--muted);font-size:12px;text-align:center;padding:20px}
   @media (max-width:480px){.wrap{padding:12px}.card{padding:14px;border-radius:12px}.ab .sub{display:none}.ab{font-size:15px;padding:14px 4px;min-width:70px}.stat{font-size:12px;gap:10px;width:100%;justify-content:space-between}header{flex-direction:column;align-items:stretch;gap:8px}h1{text-align:center}}
 </style>
@@ -70,7 +78,7 @@
 </header>
 <div class="wrap">
 
-  <div class="posbar">
+  <div class="posbar" id="drillPosBar">
     <button class="postab active" data-pos="BTN">BTN</button>
     <button class="postab" data-pos="SB">SB</button>
     <button class="postab" data-pos="BB">BB</button>
@@ -97,14 +105,17 @@
     </div>
     <div class="modeRow settingsRow">
       <label class="switch"><input type="checkbox" id="autoAdvance"><span class="track"><span class="knob"></span></span><span>Auto-advance on correct</span></label>
+      <label class="switch"><input type="checkbox" id="speedToggle"><span class="track"><span class="knob"></span></span><span>Speed mode (3s)</span></label>
     </div>
 
+    <div class="speedWrap"><div class="speedBar" id="speedBar"></div></div>
     <div class="hand" id="handLabel">&mdash;&mdash;</div>
     <div class="depthline" id="depthLine">Effective stack: <b id="depthLabel">?</b> BB</div>
     <div class="qtitle" id="qtitle">What&rsquo;s your action?</div>
 
     <div class="btns" id="answerBtns"></div>
     <div class="feedback" id="feedback"></div>
+    <div class="why" id="whyLine" style="display:none"></div>
     <div class="pcts" id="pcts"></div>
     <div class="emptyMiss" id="emptyMiss" style="display:none">No misses yet &mdash; play some hands first.</div>
     <button class="next" id="nextBtn" style="display:none">Next hand &rarr;</button>
@@ -114,6 +125,32 @@
       <div class="matrix" id="matrix"></div>
       <div class="legend" id="mxLegend"></div>
     </div>
+  </div>
+
+  <div class="card">
+    <details id="rbDetails">
+      <summary>Range builder &mdash; tap the whole range from memory</summary>
+      <div class="modeRow" style="margin-top:12px">
+        <span class="lbl">Pick a spot, then tap every hand you'd play that action</span>
+        <div class="posbar" id="rbPosBar">
+          <button class="postab active" data-rbpos="BTN">BTN</button>
+          <button class="postab" data-rbpos="SB">SB</button>
+          <button class="postab" data-rbpos="BB">BB</button>
+        </div>
+        <div class="tabs" id="rbDepthTabs">
+          <button class="tab active" data-rbd="25">25 BB</button>
+          <button class="tab" data-rbd="15">15 BB</button>
+          <button class="tab" data-rbd="10">10 BB</button>
+        </div>
+        <div class="tabs" id="rbActionTabs"></div>
+      </div>
+      <div class="qtitle" id="rbPrompt"></div>
+      <div class="rbGrid" id="rbGrid"></div>
+      <button class="next" id="rbCheck">Check my range</button>
+      <div class="feedback" id="rbFeedback"></div>
+      <div class="mini" id="rbResult"></div>
+      <div class="legend" id="rbLegend" style="margin-top:8px"></div>
+    </details>
   </div>
 
   <div class="card">
@@ -205,8 +242,30 @@ function bbBtnClass(label,d){const k=bbActionKey(label,d);return{Check:"check",R
 /* ---- State ---- */
 let posMode="BTN",depthMode="mix",drillMode="all";
 let cur=null,curDepth=null,curPos=null,answered=false,phase="main";
-let score=0,total=0,streak=0,misses=[];
+let score=0,total=0,streak=0;
 let autoAdvance=(lsGet("autoAdvance")==="1"),advanceTimer=null,callTimer=null;
+let speedMode=(lsGet("speedMode")==="1"),speedTimer=null,qStartTime=0;
+const SPEED_MS=3000;
+
+/* ---- Persistent per-hand stats (survive reloads & mode switches) ----
+   stats[key] = {seen, correct, wrong, streak, lastMs} where key = pos|depth|hand.
+   misses = derived set of keys currently "due" (last answer wrong or never mastered). */
+let STATS={};
+try{STATS=JSON.parse(lsGet("stats")||"{}");}catch(e){STATS={};}
+function statKey(pos,d,h){return pos+"|"+d+"|"+h;}
+function getStat(pos,d,h){const k=statKey(pos,d,h);return STATS[k]||(STATS[k]={seen:0,correct:0,wrong:0,streak:0,lastMs:0});}
+function saveStats(){lsSet("stats",JSON.stringify(STATS));}
+function recordResult(pos,d,h,wasCorrect,ms){
+  const s=getStat(pos,d,h);s.seen++;
+  if(wasCorrect){s.correct++;s.streak++;}else{s.wrong++;s.streak=0;}
+  if(ms)s.lastMs=ms;
+  saveStats();
+}
+/* a hand is "missed/due" if its most recent answer was wrong, i.e. streak===0 && wrong>0 */
+function missKeys(){return Object.keys(STATS).filter(k=>STATS[k].wrong>0&&STATS[k].streak===0);}
+function parseKey(k){const [pos,depth,hand]=k.split("|");return {pos,depth,hand};}
+/* mastery: answered correctly 3+ times in a row */
+function isMastered(pos,d,h){const s=STATS[statKey(pos,d,h)];return s&&s.streak>=3;}
 
 function depthsInPlay(){return depthMode==="mix"?["25","15","10"]:[depthMode];}
 function positionsInPlay(){return posMode==="MIX"?["BTN","SB","BB"]:[posMode];}
@@ -227,20 +286,91 @@ function mixedPool(){
   positionsInPlay().forEach(pos=>depthsInPlay().forEach(d=>allHands().forEach(h=>{if(isMixed(pos,d,h))p.push({pos,depth:d,hand:h});})));
   return p;
 }
+/* weight for a candidate: higher = drilled more often.
+   base 1, boundary/mixed cell +3, previously missed +6, not-yet-mastered +1. */
+function handWeight(pos,d,h){
+  let w=1;
+  if(isMixed(pos,d,h))w+=3;
+  const s=STATS[statKey(pos,d,h)];
+  if(s){ if(s.wrong>0&&s.streak===0)w+=6; if(!(s.streak>=3))w+=1; }
+  else w+=1; /* unseen hands get a small boost so new material surfaces */
+  return w;
+}
+function weightedPick(pool){
+  if(!pool.length)return null;
+  let tot=0;const ws=pool.map(q=>{const w=handWeight(q.pos,q.depth,q.hand);tot+=w;return w;});
+  let r=Math.random()*tot;
+  for(let i=0;i<pool.length;i++){r-=ws[i];if(r<=0)return pool[i];}
+  return pool[pool.length-1];
+}
+function fullPool(){
+  const p=[];
+  positionsInPlay().forEach(pos=>depthsInPlay().forEach(d=>{if(getRangeData(pos,d))allHands().forEach(h=>p.push({pos,depth:d,hand:h}));}));
+  return p;
+}
 function pickQuestion(){
-  if(drillMode==="miss")return misses.length?misses[Math.floor(Math.random()*misses.length)]:null;
-  if(drillMode==="mixed"){const p=mixedPool();return p.length?p[Math.floor(Math.random()*p.length)]:null;}
-  const poss=positionsInPlay(),pos=poss[Math.floor(Math.random()*poss.length)];
-  const ds=depthsInPlay(),d=ds[Math.floor(Math.random()*ds.length)];
-  return {pos,depth:d,hand:allHands()[Math.floor(Math.random()*169)]};
+  if(drillMode==="miss"){
+    const inScope=new Set(fullPool().map(q=>statKey(q.pos,q.depth,q.hand)));
+    const mk=missKeys().filter(k=>inScope.has(k));
+    if(!mk.length)return null;
+    return parseKey(mk[Math.floor(Math.random()*mk.length)]);
+  }
+  if(drillMode==="mixed"){const p=mixedPool();return weightedPick(p);}
+  return weightedPick(fullPool());
 }
 
 /* ---- UI ---- */
 function flash(msg,good){const fb=document.getElementById("feedback");fb.textContent=msg;fb.className="feedback "+(good?"good":"bad");}
 function showPcts(p){document.getElementById("pcts").textContent=Object.entries(p).filter(([k,v])=>v>0).map(([k,v])=>k+" "+v+"%").join("  \u00b7  ");}
-function recordMiss(){if(!misses.some(m=>m.pos===curPos&&m.depth===curDepth&&m.hand===cur))misses.push({pos:curPos,depth:curDepth,hand:cur});}
+/* record a main-question result into persistent stats; returns elapsed ms */
+function markResult(wasCorrect){
+  const ms=qStartTime?(Date.now()-qStartTime):0;
+  recordResult(curPos,curDepth,cur,wasCorrect,ms);
+  return ms;
+}
+function showWhy(){
+  const w=mnemonic(curPos,curDepth,cur);
+  const el=document.getElementById("whyLine");
+  if(w){el.innerHTML="\ud83d\udca1 "+w;el.style.display="block";}else{el.style.display="none";}
+}
 
 const SPOT_DESC={BTN:"On the <b>Button</b>, first in",SB:"In the <b>SB</b>, BTN folds",BB:"In the <b>BB</b>, SB limps"};
+
+/* ---- Mnemonics: a one-line "why" rule per hand, derived from hand class + depth + correct action ---- */
+const RANKVAL={A:14,K:13,Q:12,J:11,T:10,9:9,8:8,7:7,6:6,5:5,4:4,3:3,2:2};
+function handClass(h){
+  if(h.length===2)return {type:"pair",hi:RANKVAL[h[0]]};
+  const a=RANKVAL[h[0]],b=RANKVAL[h[1]],suited=h[2]==="s";
+  return {type:suited?"suited":"offsuit",hi:a,lo:b,gap:a-b,suited:suited,ace:h[0]==="A",broadway:a>=10&&b>=10};
+}
+function mnemonic(pos,d,h){
+  const a=getAction(pos,d,h);if(!a)return "";
+  const c=handClass(h);
+  /* generic depth principle */
+  const depthRule={"25":"25BB: raise-or-fold, almost no jamming.","15":"15BB: raise your value, jam the awkward middling hands.","10":"10BB: jam-heavy \u2014 most playable hands shove."}[d];
+  if(pos==="BTN"){
+    if(a==="Open")return "BTN "+d+"BB open. "+depthRule+" Suited runs deeper than its offsuit twin.";
+    if(a==="Push")return "BTN "+d+"BB jam. Short-stack value & blockers shove rather than min-raise.";
+    if(a==="Fold")return "BTN "+d+"BB fold. Below the opening threshold \u2014 offsuit junk & weak suited gaps.";
+  }
+  if(pos==="SB"){
+    if(a==="Call")return "SB vs BB (BTN folded). Call to keep BB's weak range in & realize equity cheaply.";
+    if(a==="RaiseSmall")return "SB raise ("+SB_SIZING[d].rs+"). Value & semi-bluffs that want a bigger pot vs BB.";
+    if(a==="RaiseJam")return "SB jam. Too strong/awkward to min-raise \u2014 shove for value + fold equity.";
+    if(a==="Fold")return "SB fold. Bottom of range \u2014 not worth playing out of position.";
+  }
+  if(pos==="BB"){
+    if(a==="Check")return "BB vs SB limp. Check back and see a flop \u2014 BB closes the action.";
+    if(a==="RaiseSmall")return "BB raise ("+BB_SIZING[d].rs+"). Punish the limp with value & the better semi-bluffs.";
+    if(a==="RaiseMid")return "BB big raise/jam ("+BB_SIZING[d].rm+"). Strongest hands build the pot now.";
+  }
+  return "";
+}
+function jamMnemonic(h){
+  const c=handClass(h);
+  if(c.type==="pair"||c.ace&&c.hi===14||c.broadway)return "Call a jam with your value: big pairs, strong aces, broadways.";
+  return "Vs a jam, fold the thin part of your raising range \u2014 you need real equity to call off.";
+}
 
 function setButtons(actions,onPick,clsFn){
   const box=document.getElementById("answerBtns");box.innerHTML="";
@@ -253,7 +383,27 @@ function setButtons(actions,onPick,clsFn){
   });
 }
 
+function stopSpeedTimer(){if(speedTimer){clearInterval(speedTimer);speedTimer=null;}const b=document.getElementById("speedBar");if(b)b.style.width="0%";}
+function startSpeedTimer(){
+  stopSpeedTimer();
+  const bar=document.getElementById("speedBar");if(!bar)return;
+  if(!speedMode){bar.style.width="0%";return;}
+  const t0=Date.now();bar.style.width="100%";
+  speedTimer=setInterval(function(){
+    const el=Date.now()-t0,frac=Math.max(0,1-el/SPEED_MS);
+    bar.style.width=(frac*100).toFixed(1)+"%";
+    if(el>=SPEED_MS){stopSpeedTimer();if(!answered&&phase==="main")timeExpired();}
+  },50);
+}
+function timeExpired(){
+  /* treat as a wrong answer: reveal correct action, record a miss */
+  if(answered)return;answered=true;
+  const a=getAction(curPos,curDepth,cur);total++;streak=0;markResult(false);
+  flash("\u23f1 Time! "+cur+" @ "+curDepth+"BB is "+a,false);
+  showMatrixForPos(curPos,curDepth,cur);showWhy();updateStats();afterResolved(false);
+}
 function afterResolved(wasCorrect){
+  stopSpeedTimer();
   const btn=document.getElementById("nextBtn");btn.textContent="Next hand \u2192";btn.onclick=newQuestion;
   if(wasCorrect&&autoAdvance){btn.style.display="none";advanceTimer=setTimeout(newQuestion,450);}else{btn.style.display="block";}
 }
@@ -261,7 +411,7 @@ function updateStats(){
   document.getElementById("score").textContent=score;document.getElementById("total").textContent=total;
   document.getElementById("streak").textContent=streak;
   document.getElementById("acc").textContent=total?Math.round(100*score/total)+"%":"\u2014";
-  document.getElementById("missN").textContent=misses.length;
+  document.getElementById("missN").textContent=missKeys().length;
 }
 
 /* ---- Matrix rendering ---- */
@@ -318,8 +468,8 @@ function askCall(){
       updateStats();afterResolved(true);return;
     }
     const correct=live;
-    if(choice===correct){score++;streak++;flash("\u2713 Correct \u2014 "+correct+" vs a jam",true);showPcts(liveP);updateStats();afterResolved(true);}
-    else{streak=0;flash("\u2717 "+cur+" vs a jam is "+correct+" (you picked "+choice+")",false);recordMiss();showPcts(liveP);updateStats();afterResolved(false);}
+    if(choice===correct){score++;streak++;flash("\u2713 Correct \u2014 "+correct+" vs a jam",true);showPcts(liveP);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(true);}
+    else{streak=0;flash("\u2717 "+cur+" vs a jam is "+correct+" (you picked "+choice+")",false);recordResult(curPos,curDepth+"j",cur,false,0);showPcts(liveP);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(false);}
   },function(a){return a.toLowerCase();});
 }
 
@@ -336,64 +486,59 @@ function askRaiseCall(src,who){
   const correct=e?e.a:"NA";
   setButtons(["Call","Fold"],function(choice){
     if(answered)return;answered=true;total++;
-    if(choice===correct){score++;streak++;flash("\u2713 Correct \u2014 "+correct+" vs a jam",true);showPcts(e.p);updateStats();afterResolved(true);}
-    else{streak=0;flash("\u2717 "+cur+" vs a jam is "+correct+" (you picked "+choice+")",false);recordMiss();showPcts(e?e.p:{});updateStats();afterResolved(false);}
+    if(choice===correct){score++;streak++;flash("\u2713 Correct \u2014 "+correct+" vs a jam",true);showPcts(e.p);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(true);}
+    else{streak=0;flash("\u2717 "+cur+" vs a jam is "+correct+" (you picked "+choice+")",false);recordResult(curPos,curDepth+"j",cur,false,0);showPcts(e?e.p:{});document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(false);}
   },function(a){return a.toLowerCase();});
 }
 
 /* ---- Main answer handlers per position ---- */
 function answerBTN(choice){
-  if(answered)return;answered=true;
+  if(answered)return;answered=true;stopSpeedTimer();
   const correct=btnOpenData(curDepth)[cur].a;total++;
   if(choice===correct){
-    score++;streak++;flash("\u2713 Correct \u2014 "+correct,true);
-    if(drillMode==="miss")misses=misses.filter(m=>!(m.pos===curPos&&m.depth===curDepth&&m.hand===cur));
-    showPcts(btnOpenData(curDepth)[cur].p);updateStats();
+    score++;streak++;markResult(true);flash("\u2713 Correct \u2014 "+correct,true);
+    showPcts(btnOpenData(curDepth)[cur].p);showWhy();updateStats();
     if(correct==="Open"&&hasCall(curDepth)&&(liveCall(curDepth,"BB")||liveCall(curDepth,"SB"))){
       document.getElementById("nextBtn").style.display="none";
-      callTimer=setTimeout(()=>{callTimer=null;askCall();},450);
+      callTimer=setTimeout(()=>{callTimer=null;askCall();},600);
     }else{afterResolved(true);}
   }else{
-    streak=0;flash("\u2717 "+cur+" @ "+curDepth+"BB is "+correct+" (you picked "+choice+")",false);
-    showMatrixForPos("BTN",curDepth,cur);recordMiss();showPcts(btnOpenData(curDepth)[cur].p);updateStats();afterResolved(false);
+    streak=0;markResult(false);flash("\u2717 "+cur+" @ "+curDepth+"BB is "+correct+" (you picked "+choice+")",false);
+    showMatrixForPos("BTN",curDepth,cur);showPcts(btnOpenData(curDepth)[cur].p);showWhy();updateStats();afterResolved(false);
   }
 }
 
 function answerSB(choice){
-  if(answered)return;answered=true;
+  if(answered)return;answered=true;stopSpeedTimer();
   const key=sbActionKey(choice,curDepth);
   const correct=sbData(curDepth)[cur].a;total++;
   if(key===correct){
-    score++;streak++;flash("\u2713 Correct \u2014 "+sbKeyToLabel(correct,curDepth),true);
-    if(drillMode==="miss")misses=misses.filter(m=>!(m.pos===curPos&&m.depth===curDepth&&m.hand===cur));
-    showPcts(sbData(curDepth)[cur].p);updateStats();
-    /* follow-up: SB min-raised, now faces a BB jam -> call/fold */
+    score++;streak++;markResult(true);flash("\u2713 Correct \u2014 "+sbKeyToLabel(correct,curDepth),true);
+    showPcts(sbData(curDepth)[cur].p);showWhy();updateStats();
     if(correct==="RaiseSmall"&&liveRaiseCall(DATA.SB.call,curDepth,"BB")){
       document.getElementById("nextBtn").style.display="none";
-      callTimer=setTimeout(()=>{callTimer=null;askRaiseCall(DATA.SB.call,"BB");},450);
+      callTimer=setTimeout(()=>{callTimer=null;askRaiseCall(DATA.SB.call,"BB");},600);
     }else{afterResolved(true);}
   }else{
-    streak=0;flash("\u2717 "+cur+" @ "+curDepth+"BB is "+sbKeyToLabel(correct,curDepth)+" (you picked "+choice+")",false);
-    showMatrixForPos("SB",curDepth,cur);recordMiss();showPcts(sbData(curDepth)[cur].p);updateStats();afterResolved(false);
+    streak=0;markResult(false);flash("\u2717 "+cur+" @ "+curDepth+"BB is "+sbKeyToLabel(correct,curDepth)+" (you picked "+choice+")",false);
+    showMatrixForPos("SB",curDepth,cur);showPcts(sbData(curDepth)[cur].p);showWhy();updateStats();afterResolved(false);
   }
 }
 
 function answerBB(choice){
-  if(answered)return;answered=true;
+  if(answered)return;answered=true;stopSpeedTimer();
   const key=bbActionKey(choice,curDepth);
   const correct=bbData(curDepth)[cur].a;total++;
   if(key===correct){
-    score++;streak++;flash("\u2713 Correct \u2014 "+bbKeyToLabel(correct,curDepth),true);
-    if(drillMode==="miss")misses=misses.filter(m=>!(m.pos===curPos&&m.depth===curDepth&&m.hand===cur));
-    showPcts(bbData(curDepth)[cur].p);updateStats();
-    /* follow-up: BB min-raised, now faces an SB jam -> call/fold */
+    score++;streak++;markResult(true);flash("\u2713 Correct \u2014 "+bbKeyToLabel(correct,curDepth),true);
+    showPcts(bbData(curDepth)[cur].p);showWhy();updateStats();
     if(correct==="RaiseSmall"&&liveRaiseCall(DATA.BB.call,curDepth,"SB")){
       document.getElementById("nextBtn").style.display="none";
-      callTimer=setTimeout(()=>{callTimer=null;askRaiseCall(DATA.BB.call,"SB");},450);
+      callTimer=setTimeout(()=>{callTimer=null;askRaiseCall(DATA.BB.call,"SB");},600);
     }else{afterResolved(true);}
   }else{
-    streak=0;flash("\u2717 "+cur+" @ "+curDepth+"BB is "+bbKeyToLabel(correct,curDepth)+" (you picked "+choice+")",false);
-    showMatrixForPos("BB",curDepth,cur);recordMiss();showPcts(bbData(curDepth)[cur].p);updateStats();afterResolved(false);
+    streak=0;markResult(false);flash("\u2717 "+cur+" @ "+curDepth+"BB is "+bbKeyToLabel(correct,curDepth)+" (you picked "+choice+")",false);
+    showMatrixForPos("BB",curDepth,cur);showPcts(bbData(curDepth)[cur].p);showWhy();updateStats();afterResolved(false);
   }
 }
 
@@ -409,7 +554,9 @@ function newQuestion(){
     document.getElementById("qtitle").textContent="";document.getElementById("nextBtn").style.display="none";
     document.getElementById("matrixWrap").classList.remove("show");
     empty.style.display=drillMode==="miss"?"block":"none";
+    if(drillMode==="miss")empty.textContent="No misses yet \u2014 play some hands first.";
     if(drillMode==="mixed"){empty.style.display="block";empty.textContent="No mixed cells at this selection.";}
+    stopSpeedTimer();
     return;
   }
   empty.style.display="none";curPos=q.pos;curDepth=q.depth;cur=q.hand;
@@ -417,11 +564,13 @@ function newQuestion(){
   document.getElementById("depthLine").innerHTML="Effective stack: <b>"+curDepth+"</b> BB \u00b7 "+(SPOT_DESC[curPos]||curPos);
   document.getElementById("feedback").textContent="";document.getElementById("feedback").className="feedback";
   document.getElementById("pcts").textContent="";document.getElementById("nextBtn").style.display="none";
+  document.getElementById("whyLine").style.display="none";
   document.getElementById("matrixWrap").classList.remove("show");
   document.getElementById("qtitle").innerHTML="What\u2019s your action?";
   if(curPos==="BTN"){setButtons(btnOpenActions(curDepth),answerBTN,a=>({Fold:"fold",Open:"open",Push:"push"}[a]||""));}
   else if(curPos==="SB"){setButtons(sbActions(curDepth),answerSB,a=>sbBtnClass(a,curDepth));}
   else if(curPos==="BB"){setButtons(bbActions(curDepth),answerBB,a=>bbBtnClass(a,curDepth));}
+  qStartTime=Date.now();startSpeedTimer();
 }
 
 /* ---- View charts ---- */
@@ -478,15 +627,76 @@ document.querySelectorAll("#modeTabs .tab").forEach(t=>{t.onclick=()=>{document.
 const autoCb=document.getElementById("autoAdvance");autoCb.checked=autoAdvance;
 autoCb.onchange=()=>{autoAdvance=autoCb.checked;lsSet("autoAdvance",autoAdvance?"1":"0");};
 
-document.querySelectorAll(".posbar .postab").forEach(t=>{
+document.querySelectorAll("#drillPosBar .postab").forEach(t=>{
   t.onclick=()=>{
-    document.querySelectorAll(".posbar .postab").forEach(x=>x.classList.remove("active"));t.classList.add("active");
+    document.querySelectorAll("#drillPosBar .postab").forEach(x=>x.classList.remove("active"));t.classList.add("active");
     posMode=t.dataset.pos;
     if(advanceTimer){clearTimeout(advanceTimer);advanceTimer=null;}
     if(callTimer){clearTimeout(callTimer);callTimer=null;}
     newQuestion();
   };
 });
+
+/* speed-mode toggle */
+const speedCb=document.getElementById("speedToggle");speedCb.checked=speedMode;
+speedCb.onchange=()=>{speedMode=speedCb.checked;lsSet("speedMode",speedMode?"1":"0");stopSpeedTimer();if(!answered)startSpeedTimer();};
+
+/* ---- Range builder ---- */
+let rbPos="BTN",rbDepth="25",rbAction=null,rbSel={};
+function rbActionsFor(pos,d){
+  if(pos==="BTN")return btnOpenActions(d).filter(a=>a!=="Fold").map(a=>({key:a,label:a==="Open"?"Open":(a==="Push"?"Push":a)}));
+  if(pos==="SB")return sbActions(d).filter(a=>sbActionKey(a,d)!=="Fold").map(a=>({key:sbActionKey(a,d),label:a}));
+  if(pos==="BB")return bbActions(d).filter(a=>a!=="Check").map(a=>({key:bbActionKey(a,d),label:a}));
+  return [];
+}
+function rbBuildActionTabs(){
+  const box=document.getElementById("rbActionTabs");box.innerHTML="";
+  const acts=rbActionsFor(rbPos,rbDepth);
+  if(!acts.some(a=>a.key===rbAction))rbAction=acts.length?acts[0].key:null;
+  acts.forEach(a=>{
+    const b=document.createElement("button");b.className="tab"+(a.key===rbAction?" active":"");b.textContent=a.label;
+    b.onclick=()=>{rbAction=a.key;rbBuildActionTabs();rbRender();};
+    box.appendChild(b);
+  });
+}
+function rbRender(){
+  rbSel={};
+  const g=document.getElementById("rbGrid");g.innerHTML="";
+  const acts=rbActionsFor(rbPos,rbDepth);
+  const lbl=(acts.find(a=>a.key===rbAction)||{}).label||rbAction||"\u2014";
+  document.getElementById("rbPrompt").innerHTML="Tap every hand you'd <b>"+lbl+"</b> \u2014 "+rbPos+" "+rbDepth+"BB";
+  document.getElementById("rbFeedback").textContent="";document.getElementById("rbResult").textContent="";
+  document.getElementById("rbLegend").innerHTML="";
+  for(let r=0;r<13;r++)for(let c=0;c<13;c++){
+    const h=handAt(r,c);const cell=document.createElement("div");cell.className="rbCell";cell.textContent=h;
+    cell.onclick=()=>{if(rbSel[h]){delete rbSel[h];cell.classList.remove("sel");}else{rbSel[h]=1;cell.classList.add("sel");}};
+    cell.dataset.h=h;g.appendChild(cell);
+  }
+}
+function rbCheck(){
+  if(!rbAction)return;
+  const dd=getRangeData(rbPos,rbDepth);
+  let tp=0,fp=0,fn=0,correctCount=0,total=0;
+  document.querySelectorAll("#rbGrid .rbCell").forEach(cell=>{
+    const h=cell.dataset.h;const truth=dd[h]&&dd[h].a===rbAction;const picked=!!rbSel[h];
+    cell.classList.remove("ok","miss");
+    if(truth)total++;
+    if(truth&&picked){tp++;cell.classList.add("ok");}
+    else if(!truth&&picked){fp++;cell.classList.add("miss");}
+    else if(truth&&!picked){fn++;cell.classList.add("miss");}
+  });
+  const acc=total?Math.round(100*tp/total):0;
+  const fb=document.getElementById("rbFeedback");
+  const perfect=(fp===0&&fn===0);
+  fb.textContent=perfect?"\u2713 Perfect range!":(tp+"/"+total+" correct");
+  fb.className="feedback "+(perfect?"good":"bad");
+  document.getElementById("rbResult").innerHTML="Hit <b>"+tp+"</b> of "+total+" ("+acc+"%) \u00b7 missed "+fn+" \u00b7 "+fp+" extra. Green=right, red=mistake.";
+  document.getElementById("rbLegend").innerHTML='<span><i class="sw" style="background:var(--good)"></i>correct</span><span><i class="sw" style="background:var(--bad)"></i>missed / extra</span>';
+}
+document.querySelectorAll("#rbPosBar .postab").forEach(t=>{t.onclick=()=>{document.querySelectorAll("#rbPosBar .postab").forEach(x=>x.classList.remove("active"));t.classList.add("active");rbPos=t.dataset.rbpos;rbBuildActionTabs();rbRender();};});
+document.querySelectorAll("#rbDepthTabs .tab").forEach(t=>{t.onclick=()=>{document.querySelectorAll("#rbDepthTabs .tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");rbDepth=t.dataset.rbd;rbBuildActionTabs();rbRender();};});
+document.getElementById("rbCheck").onclick=rbCheck;
+document.getElementById("rbDetails").addEventListener("toggle",function(){if(this.open&&!document.getElementById("rbGrid").children.length){rbBuildActionTabs();rbRender();}});
 
 document.addEventListener("keydown",e=>{
   if(!answered){
