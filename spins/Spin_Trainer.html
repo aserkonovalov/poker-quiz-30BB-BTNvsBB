@@ -99,6 +99,7 @@
       <span class="lbl">Drill mode</span>
       <div class="tabs" id="modeTabs">
         <button class="tab active" data-m="all">All hands</button>
+        <button class="tab" data-m="srs">Due (spaced)</button>
         <button class="tab" data-m="mixed">Mixed cells only</button>
         <button class="tab" data-m="miss">Repeat my misses</button>
       </div>
@@ -150,6 +151,28 @@
       <div class="feedback" id="rbFeedback"></div>
       <div class="mini" id="rbResult"></div>
       <div class="legend" id="rbLegend" style="margin-top:8px"></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <details id="hmDetails">
+      <summary>My progress &mdash; mastery heatmap</summary>
+      <div class="modeRow" style="margin-top:12px">
+        <div class="posbar" id="hmPosBar">
+          <button class="postab active" data-hmpos="BTN">BTN</button>
+          <button class="postab" data-hmpos="SB">SB</button>
+          <button class="postab" data-hmpos="BB">BB</button>
+        </div>
+        <div class="tabs" id="hmDepthTabs">
+          <button class="tab active" data-hmd="25">25 BB</button>
+          <button class="tab" data-hmd="15">15 BB</button>
+          <button class="tab" data-hmd="10">10 BB</button>
+        </div>
+      </div>
+      <div class="mini" id="hmSummary"></div>
+      <div class="matrix" id="hmGrid"></div>
+      <div class="legend" id="hmLegend"></div>
+      <button class="next" id="hmReset" style="max-width:220px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)">Reset my progress</button>
     </details>
   </div>
 
@@ -253,14 +276,21 @@ const SPEED_MS=3000;
 let STATS={};
 try{STATS=JSON.parse(lsGet("stats")||"{}");}catch(e){STATS={};}
 function statKey(pos,d,h){return pos+"|"+d+"|"+h;}
-function getStat(pos,d,h){const k=statKey(pos,d,h);return STATS[k]||(STATS[k]={seen:0,correct:0,wrong:0,streak:0,lastMs:0});}
+function getStat(pos,d,h){const k=statKey(pos,d,h);return STATS[k]||(STATS[k]={seen:0,correct:0,wrong:0,streak:0,lastMs:0,box:0,due:0});}
 function saveStats(){lsSet("stats",JSON.stringify(STATS));}
+/* Leitner spaced-repetition intervals per box (ms). Correct promotes a box
+   (longer wait); wrong resets to box 0 (due immediately). */
+const SRS_INTERVALS=[0, 30e3, 2*60e3, 10*60e3, 60*60e3, 24*3600e3, 3*24*3600e3];
 function recordResult(pos,d,h,wasCorrect,ms){
   const s=getStat(pos,d,h);s.seen++;
-  if(wasCorrect){s.correct++;s.streak++;}else{s.wrong++;s.streak=0;}
+  if(s.box===undefined){s.box=0;s.due=0;}
+  if(wasCorrect){s.correct++;s.streak++;s.box=Math.min((s.box||0)+1,SRS_INTERVALS.length-1);}
+  else{s.wrong++;s.streak=0;s.box=0;}
+  s.due=Date.now()+SRS_INTERVALS[s.box];
   if(ms)s.lastMs=ms;
   saveStats();
 }
+function isDue(pos,d,h){const s=STATS[statKey(pos,d,h)];return !s||(s.due||0)<=Date.now();}
 /* a hand is "missed/due" if its most recent answer was wrong, i.e. streak===0 && wrong>0 */
 function missKeys(){return Object.keys(STATS).filter(k=>STATS[k].wrong>0&&STATS[k].streak===0);}
 function parseKey(k){const [pos,depth,hand]=k.split("|");return {pos,depth,hand};}
@@ -315,9 +345,21 @@ function pickQuestion(){
     if(!mk.length)return null;
     return parseKey(mk[Math.floor(Math.random()*mk.length)]);
   }
+  if(drillMode==="srs"){
+    /* serve due cards: unseen (box 0, due 0) and anything past its due time,
+       prioritizing the most overdue; light randomness among the top few. */
+    const now=Date.now();
+    const due=fullPool().filter(q=>isDue(q.pos,q.depth,q.hand));
+    if(!due.length)return null;
+    due.sort((a,b)=>{const sa=STATS[statKey(a.pos,a.depth,a.hand)],sb=STATS[statKey(b.pos,b.depth,b.hand)];
+      return ((sa&&sa.due)||0)-((sb&&sb.due)||0);});
+    const topN=due.slice(0,Math.min(8,due.length));
+    return topN[Math.floor(Math.random()*topN.length)];
+  }
   if(drillMode==="mixed"){const p=mixedPool();return weightedPick(p);}
   return weightedPick(fullPool());
 }
+function dueCount(){const now=Date.now();return fullPool().filter(q=>isDue(q.pos,q.depth,q.hand)).length;}
 
 /* ---- UI ---- */
 function flash(msg,good){const fb=document.getElementById("feedback");fb.textContent=msg;fb.className="feedback "+(good?"good":"bad");}
@@ -553,8 +595,9 @@ function newQuestion(){
     document.getElementById("feedback").textContent="";document.getElementById("pcts").textContent="";
     document.getElementById("qtitle").textContent="";document.getElementById("nextBtn").style.display="none";
     document.getElementById("matrixWrap").classList.remove("show");
-    empty.style.display=drillMode==="miss"?"block":"none";
+    empty.style.display=(drillMode==="miss"||drillMode==="srs")?"block":"none";
     if(drillMode==="miss")empty.textContent="No misses yet \u2014 play some hands first.";
+    if(drillMode==="srs")empty.textContent="\ud83c\udf89 Nothing due right now \u2014 come back later, or switch to All hands.";
     if(drillMode==="mixed"){empty.style.display="block";empty.textContent="No mixed cells at this selection.";}
     stopSpeedTimer();
     return;
@@ -711,6 +754,42 @@ document.getElementById("rbDetails").addEventListener("toggle",function(){if(thi
 /* end a drag-paint on release anywhere (covers dragging off the grid) */
 document.addEventListener("pointerup",()=>{rbPainting=false;});
 document.addEventListener("pointercancel",()=>{rbPainting=false;});
+
+/* ---- Progress heatmap ---- */
+let hmPos="BTN",hmDepth="25";
+function accColor(s){
+  if(!s||!s.seen)return "var(--panel2)"; /* unseen */
+  const acc=s.correct/s.seen;
+  /* red (0) -> amber (0.5) -> green (1) */
+  const hue=Math.round(acc*120); /* 0=red,120=green */
+  return "hsl("+hue+",70%,45%)";
+}
+function hmRender(){
+  const dd=getRangeData(hmPos,hmDepth);
+  const g=document.getElementById("hmGrid");g.innerHTML="";
+  let seen=0,mastered=0,cells=0;
+  for(let r=0;r<13;r++)for(let c=0;c<13;c++){
+    const h=handAt(r,c);const s=STATS[statKey(hmPos,hmDepth,h)];cells++;
+    const cell=document.createElement("div");cell.className="cell";
+    cell.style.background=accColor(s);
+    cell.textContent=h;cell.style.color=(s&&s.seen)?"#0b0d12":"#6b7280";
+    if(s&&s.seen){seen++;if(s.streak>=3)mastered++;cell.title=h+": "+s.correct+"/"+s.seen+(s.box!==undefined?" (box "+s.box+")":"");}
+    g.appendChild(cell);
+  }
+  const masterPct=Math.round(100*mastered/cells);
+  document.getElementById("hmSummary").innerHTML=
+    "<b>"+hmPos+" "+hmDepth+"BB</b> \u2014 seen "+seen+"/169 \u00b7 <b>mastered "+mastered+"/169 ("+masterPct+"%)</b> \u00b7 due now: "+
+    allHands().filter(h=>isDue(hmPos,hmDepth,h)&&STATS[statKey(hmPos,hmDepth,h)]).length;
+  document.getElementById("hmLegend").innerHTML=
+    '<span><i class="sw" style="background:hsl(0,70%,45%)"></i>low acc</span>'+
+    '<span><i class="sw" style="background:hsl(60,70%,45%)"></i>mid</span>'+
+    '<span><i class="sw" style="background:hsl(120,70%,45%)"></i>high</span>'+
+    '<span><i class="sw" style="background:var(--panel2)"></i>unseen</span> \u00b7 mastered = 3+ correct in a row';
+}
+document.querySelectorAll("#hmPosBar .postab").forEach(t=>{t.onclick=()=>{document.querySelectorAll("#hmPosBar .postab").forEach(x=>x.classList.remove("active"));t.classList.add("active");hmPos=t.dataset.hmpos;hmRender();};});
+document.querySelectorAll("#hmDepthTabs .tab").forEach(t=>{t.onclick=()=>{document.querySelectorAll("#hmDepthTabs .tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");hmDepth=t.dataset.hmd;hmRender();};});
+document.getElementById("hmDetails").addEventListener("toggle",function(){if(this.open)hmRender();});
+document.getElementById("hmReset").onclick=function(){if(confirm("Reset all your progress stats? This cannot be undone.")){STATS={};saveStats();hmRender();updateStats();}};
 
 document.addEventListener("keydown",e=>{
   if(!answered){
