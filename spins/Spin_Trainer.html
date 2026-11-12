@@ -522,6 +522,14 @@ function showMatrixForPos(pos,depth,hand){
   buildMatrix(document.getElementById("matrix"),h=>dd[h]?dd[h].a:"Fold",cm,null,hand);
   document.getElementById("matrixWrap").classList.add("show");
 }
+/* show the call-vs-jam chart (Call/Fold/NA) with the current hand highlighted */
+function showMatrixCall(chart,caption,hand){
+  document.getElementById("mxCaption").innerHTML=caption;
+  const lg=Object.entries(C_BTN_CALL).map(([k,v])=>'<span><i class="sw" style="background:'+v+'"></i>'+k+'</span>').join("");
+  document.getElementById("mxLegend").innerHTML=lg;
+  buildMatrix(document.getElementById("matrix"),h=>chart[h]?chart[h].a:"NA",C_BTN_CALL,a=>a==="NA",hand);
+  document.getElementById("matrixWrap").classList.add("show");
+}
 
 /* ---- BTN call follow-up ---- */
 function hasCall(depth){return DATA.BTN.call&&DATA.BTN.call.hasOwnProperty(depth);}
@@ -545,14 +553,17 @@ function askCall(){
   const liveP=(bb!=="NA"&&bbE)?bbE.p:(sbE?sbE.p:{});
   setButtons(["Call","Fold"],function(choice){
     if(answered)return;answered=true;total++;
+    const chart=(bb!=="NA"&&cd.BB)?cd.BB:cd.SB;
+    const chartWho=(bb!=="NA"&&cd.BB)?"BB":"SB";
     if(split){score++;streak++;flash("\u2139 Depends on who jams \u2014 counted correct",true);
       const callWho=bb==="Call"?"BB":"SB",foldWho=bb==="Call"?"SB":"BB";
       document.getElementById("pcts").innerHTML="<b>"+cur+"</b>: Call vs <b>"+callWho+"</b> jam \u00b7 Fold vs <b>"+foldWho+"</b> jam";
+      showMatrixCall(cd.BB||cd.SB,"Call vs jam \u2014 "+curDepth+"BB",cur);
       updateStats();afterResolved(true);return;
     }
     const correct=live;
-    if(choice===correct){score++;streak++;flash("\u2713 Correct \u2014 "+correct+" vs a jam",true);showPcts(liveP);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(true);}
-    else{streak=0;flash("\u2717 "+cur+" vs a jam is "+correct+" (you picked "+choice+")",false);recordResult(curPos,curDepth+"j",cur,false,0);showPcts(liveP);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(false);}
+    if(choice===correct){score++;streak++;flash("\u2713 Correct \u2014 "+correct+" vs a jam",true);showPcts(liveP);showMatrixCall(chart,"Call vs "+chartWho+" jam \u2014 "+curDepth+"BB",cur);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(true);}
+    else{streak=0;flash("\u2717 "+cur+" vs a jam is "+correct+" (you picked "+choice+")",false);recordResult(curPos,curDepth+"j",cur,false,0);showPcts(liveP);showMatrixCall(chart,"Call vs "+chartWho+" jam \u2014 "+curDepth+"BB",cur);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(false);}
   },function(a){return a.toLowerCase();});
 }
 
@@ -565,12 +576,13 @@ function askRaiseCall(src,who){
   document.getElementById("feedback").textContent="";document.getElementById("feedback").className="feedback";
   document.getElementById("pcts").textContent="";document.getElementById("matrixWrap").classList.remove("show");
   document.getElementById("qtitle").innerHTML="You raised \u2014 "+who+" <b>jams</b>. Call?";
-  const e=src[curDepth][who][cur];
+  const chart=src[curDepth][who];
+  const e=chart[cur];
   const correct=e?e.a:"NA";
   setButtons(["Call","Fold"],function(choice){
     if(answered)return;answered=true;total++;
-    if(choice===correct){score++;streak++;flash("\u2713 Correct \u2014 "+correct+" vs a jam",true);showPcts(e.p);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(true);}
-    else{streak=0;flash("\u2717 "+cur+" vs a jam is "+correct+" (you picked "+choice+")",false);recordResult(curPos,curDepth+"j",cur,false,0);showPcts(e?e.p:{});document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(false);}
+    if(choice===correct){score++;streak++;flash("\u2713 Correct \u2014 "+correct+" vs a jam",true);showPcts(e.p);showMatrixCall(chart,"Call vs "+who+" jam \u2014 "+curDepth+"BB",cur);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(true);}
+    else{streak=0;flash("\u2717 "+cur+" vs a jam is "+correct+" (you picked "+choice+")",false);recordResult(curPos,curDepth+"j",cur,false,0);showPcts(e?e.p:{});showMatrixCall(chart,"Call vs "+who+" jam \u2014 "+curDepth+"BB",cur);document.getElementById("whyLine").innerHTML="\ud83d\udca1 "+jamMnemonic(cur);document.getElementById("whyLine").style.display="block";updateStats();afterResolved(false);}
   },function(a){return a.toLowerCase();});
 }
 
